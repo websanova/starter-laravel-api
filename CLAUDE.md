@@ -91,9 +91,20 @@
 - User instructions always override this file.
 
 ## Project
+- Starter/boilerplate project. Code should be clean, minimal, and well-structured as a reference for new projects.
 - Stack: Laravel, PHP, MySQL
 - Testing: Pest
 - This is a dedicated API (no frontend). No /api/ prefix needed in routes.
+
+## Architecture
+- Flat controller namespace. No subfolders in `Controllers/`.
+- Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
+- Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
+- Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
+- API responses use Laravel API Resources (`app/Http/Resources/`).
+- All requests return JSON. `ForceJsonResponse` middleware handles this globally.
+- Auth via Sanctum token. No sessions, no cookies.
+- No frontend. No Vite, no npm, no Blade views.
 - No version prefix (v1, v2) unless a breaking v2 becomes necessary.
 - NEVER touch the git repo. No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind. Ever.
 - NEVER edit any file unless the user has said one of these exact go-ahead phrases in their most recent message: "add it", "implement", "implement it", "go ahead", "go", "go for it", "do it", "write it", "make it", "ok do it", "ok, do it". No other phrasing counts. Not "ok good", not "lol", not "ok", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT implement — just describe the fix and stop. Do not ask for a go-ahead. Wait silently.
