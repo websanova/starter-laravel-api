@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Register\StoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +13,7 @@ class RegisterController extends Controller
     /**
      * Register a new user and return a Sanctum token.
      */
-    public function store(RegisterRequest $request): JsonResponse
+    public function store(StoreRequest $request): JsonResponse
     {
         $user = User::create([
             'name' => $request->name,
