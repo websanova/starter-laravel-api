@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('register.store');
+
 use App\Models\User;
 
 test('user can register with valid data', function () {

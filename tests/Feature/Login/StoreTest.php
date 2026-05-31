@@ -1,5 +1,7 @@
 <?php
 
+uses()->group('login.store');
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
