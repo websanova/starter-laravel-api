@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Login\DestroyRequest;
 use App\Http\Requests\Login\StoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -30,5 +31,15 @@ class LoginController extends Controller
             'data' => new UserResource($user),
             'token' => $token,
         ]);
+    }
+
+    /**
+     * Revoke the current access token (logout).
+     */
+    public function destroy(DestroyRequest $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(null, 204);
     }
 }
