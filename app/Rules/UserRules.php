@@ -7,9 +7,21 @@ use Illuminate\Validation\Rules\Password;
 class UserRules
 {
     /**
-     * Validation rules for the name field.
+     * Validation rules for the first_name field.
      */
-    public static function name(bool $required = true): array
+    public static function firstName(bool $required = true): array
+    {
+        return [
+            $required ? 'required' : 'sometimes',
+            'string',
+            'max:255',
+        ];
+    }
+
+    /**
+     * Validation rules for the last_name field.
+     */
+    public static function lastName(bool $required = true): array
     {
         return [
             $required ? 'required' : 'sometimes',

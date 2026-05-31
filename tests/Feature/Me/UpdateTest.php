@@ -4,15 +4,26 @@ uses()->group('me.update');
 
 use App\Models\User;
 
-test('user can update their name', function () {
+test('user can update their first name', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->patchJson('/me', [
-        'name' => 'New Name',
+        'first_name' => 'New',
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.name', 'New Name');
+        ->assertJsonPath('data.first_name', 'New');
+});
+
+test('user can update their last name', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patchJson('/me', [
+        'last_name' => 'Name',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.last_name', 'Name');
 });
 
 test('user can update their email', function () {
@@ -50,7 +61,7 @@ test('update fails with duplicate email', function () {
 });
 
 test('unauthenticated user cannot update profile', function () {
-    $response = $this->patchJson('/me', ['name' => 'Test']);
+    $response = $this->patchJson('/me', ['first_name' => 'Test']);
 
     $response->assertStatus(401);
 });

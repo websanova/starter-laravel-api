@@ -13,7 +13,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => UserRules::name(required: false),
+            'first_name' => UserRules::firstName(required: false),
+            'last_name' => UserRules::lastName(required: false),
             'email' => UserRules::email(required: false, ignore: $this->user()->id),
         ];
     }

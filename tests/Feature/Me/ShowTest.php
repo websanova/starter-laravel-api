@@ -11,7 +11,7 @@ test('authenticated user can view their profile', function () {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data' => ['id', 'name', 'email', 'created_at', 'updated_at'],
+            'data' => ['id', 'first_name', 'last_name', 'email', 'created_at', 'updated_at'],
         ]);
 });
 
