@@ -3,6 +3,7 @@
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MeController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
@@ -12,7 +13,12 @@ Route::post('/login', [LoginController::class, 'store']);
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy']);
-    Route::get('/me', [MeController::class, 'show']);
-    Route::patch('/me', [MeController::class, 'update']);
-    Route::delete('/me', [MeController::class, 'destroy']);
+    Route::post('/verify', [VerificationController::class, 'verify']);
+    Route::post('/verify/resend', [VerificationController::class, 'resend']);
+
+    Route::middleware('verified')->group(function () {
+        Route::get('/me', [MeController::class, 'show']);
+        Route::patch('/me', [MeController::class, 'update']);
+        Route::delete('/me', [MeController::class, 'destroy']);
+    });
 });

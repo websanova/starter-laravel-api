@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Services;
+
+use App\Contracts\VerificationChannel;
+use App\Models\User;
+use App\Models\VerificationCode;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
+class VerificationService
+{
+    /**
+     * Map of channel name to class.
+     */
+    protected array $channelMap = [
+        'email' => \App\Services\Verification\EmailChannel::class,
+    ];
+
+    /**
+     * Send a verification code to the user via all configured channels.
+     */
+    public function send(User $user): void
+    {
+        if (config('verification.mode') === 'disabled') {
+            return;
+        }
+
+        $code = $this->generateCode();
+
+        VerificationCode::create([
+            'user_id' => $user->id,
+            'code' => Hash::make($code),
+            'expires_at' => now()->addSeconds(config('verification.code_expiry')),
+        ]);
+
+        foreach ($this->resolveChannels() as $channel) {
+            $channel->send($user, $code);
+        }
+    }
+
+    /**
+     * Verify the code for the given user.
+     */
+    public function verify(User $user, string $code): void
+    {
+        $record = VerificationCode::where('user_id', $user->id)
+            ->whereNull('verified_at')
+            ->where('expires_at', '>', now())
+            ->where('attempts', '<', config('verification.max_attempts'))
+            ->latest()
+            ->first();
+
+        if (!$record) {
+            throw ValidationException::withMessages([
+                'code' => ['No valid verification code found. Please request a new one.'],
+            ]);
+        }
+
+        if (!Hash::check($code, $record->code)) {
+            $record->increment('attempts');
+
+            throw ValidationException::withMessages([
+                'code' => ['The verification code is incorrect.'],
+            ]);
+        }
+
+        $record->update(['verified_at' => now()]);
+        $user->update(['email_verified_at' => now()]);
+    }
+
+    /**
+     * Check if the user can request a new code (throttle check).
+     */
+    public function canResend(User $user): bool
+    {
+        $latest = VerificationCode::where('user_id', $user->id)
+            ->latest()
+            ->first();
+
+        if (!$latest) {
+            return true;
+        }
+
+        return $latest->created_at->diffInSeconds(now()) >= config('verification.resend_throttle');
+    }
+
+    /**
+     * Generate a random numeric code.
+     */
+    protected function generateCode(): string
+    {
+        $length = config('verification.code_length');
+
+        return str_pad((string) random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Resolve channel instances from config.
+     *
+     * @return VerificationChannel[]
+     */
+    protected function resolveChannels(): array
+    {
+        $channels = [];
+
+        foreach (config('verification.channels') as $name) {
+            if (isset($this->channelMap[$name])) {
+                $channels[] = app($this->channelMap[$name]);
+            }
+        }
+
+        return $channels;
+    }
+}

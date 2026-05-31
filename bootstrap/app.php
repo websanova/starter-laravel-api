@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\ForceJsonResponse::class);
         $middleware->alias([
             'track-active' => \App\Http\Middleware\TrackLastActive::class,
+            'verified' => \App\Http\Middleware\EnsureVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
