@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Login\DestroyRequest;
 use App\Http\Requests\Login\StoreRequest;
+use App\Http\Requests\Login\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,22 @@ class LoginController extends Controller
                 'email' => [__('auth.failed')],
             ]);
         }
+
+        $token = $user->createToken('auth')->plainTextToken;
+
+        return response()->json([
+            'data' => new UserResource($user),
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Refresh the current token (delete old, issue new).
+     */
+    public function update(UpdateRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->currentAccessToken()->delete();
 
         $token = $user->createToken('auth')->plainTextToken;
 

@@ -13,6 +13,7 @@ Route::post('/login', [LoginController::class, 'store']);
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy']);
+    Route::post('/token/refresh', [LoginController::class, 'update']);
     Route::post('/verify', [VerificationController::class, 'verify']);
     Route::post('/verify/resend', [VerificationController::class, 'resend']);
 
