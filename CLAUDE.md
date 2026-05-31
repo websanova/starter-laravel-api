@@ -96,6 +96,15 @@
 - Testing: Pest
 - This is a dedicated API (no frontend). No /api/ prefix needed in routes.
 
+## Documentation
+- Docs live in a separate repo. When asked to write docs, output the markdown here for easy copy/paste. Do not integrate it into this project.
+- When asked to write docs, write for a developer who already knows Laravel. Explain why something deviates from default Laravel, not how Laravel works.
+- Human tone, not robotic. No colons as sentence connectors. Write like you're explaining to a colleague.
+- Keep it light. Explain the reasoning and tradeoffs, not implementation details that are already in the code.
+- No endpoint request/response examples, no file tree dumps, no config tables unless explicitly asked.
+- Reference env vars and config keys inline where relevant, don't create dedicated reference sections.
+- This is an API with no frontend. When discussing client behavior, frame it as "the client can..." not "the app does...". The API doesn't dictate client implementation.
+
 ## Architecture
 - Flat controller namespace. No subfolders in `Controllers/`.
 - Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
