@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
-Route::post('/register', [RegisterController::class, 'store']);
-Route::post('/login', [LoginController::class, 'store']);
-Route::post('/forgot-password', [ForgotPasswordController::class, 'store']);
-Route::post('/reset-password', [ResetPasswordController::class, 'store']);
+Route::middleware('throttle:auth')->group(function () {
+    Route::post('/register', [RegisterController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store']);
+    Route::post('/reset-password', [ResetPasswordController::class, 'store']);
+});
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy']);

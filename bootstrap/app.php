@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,11 +13,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\ForceJsonResponse::class);
+        $middleware->api(prepend: [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
+        ]);
         $middleware->alias([
             'track-active' => \App\Http\Middleware\TrackLastActive::class,
             'verified' => \App\Http\Middleware\EnsureVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (ThrottleRequestsException $e) {
+            return response()->json([
+                'message' => __('responses.throttle', ['seconds' => $e->getHeaders()['Retry-After']]),
+            ], 429)->withHeaders($e->getHeaders());
+        });
     })->create();

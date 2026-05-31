@@ -19,4 +19,6 @@ return [
     'verification.invalid_code' => 'The verification code is incorrect.',
     'verification.no_valid_code' => 'No valid verification code found. Please request a new one.',
 
+    'throttle' => 'Too many requests. Please try again in :seconds seconds.',
+
 ];
