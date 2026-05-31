@@ -4,7 +4,7 @@ uses()->group('forgot-password.store');
 
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\ResetPasswordNotification;
 
 test('forgot password sends reset link for existing user', function () {
     Notification::fake();
@@ -18,7 +18,7 @@ test('forgot password sends reset link for existing user', function () {
     $response->assertStatus(200)
         ->assertJson(['message' => __('passwords.sent_if_exists')]);
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    Notification::assertSentTo($user, ResetPasswordNotification::class);
 });
 
 test('forgot password returns same response for nonexistent email', function () {

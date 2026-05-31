@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,6 +39,14 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Send the password reset notification.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 
     /**
      * Get the attributes that should be cast.
