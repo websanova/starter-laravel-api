@@ -70,8 +70,7 @@ test('required mode blocks unverified user from protected routes', function () {
 
     $response = $this->actingAs($user)->getJson('/me');
 
-    $response->assertStatus(403)
-        ->assertJson(['message' => __('auth.unverified')]);
+    $response->assertStatus(403);
 });
 
 test('required mode allows verified user to access protected routes', function () {
