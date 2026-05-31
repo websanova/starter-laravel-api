@@ -38,9 +38,9 @@ class VerificationCodeNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Verify Your Email')
-            ->line('Your verification code is:')
+            ->subject(__('notifications.verification.subject'))
+            ->line(__('notifications.verification.line1'))
             ->line($this->code)
-            ->line('This code expires in ' . (int) (config('verification.code_expiry') / 60) . ' minutes.');
+            ->line(__('notifications.verification.line2', ['minutes' => (int) (config('verification.code_expiry') / 60)]));
     }
 }

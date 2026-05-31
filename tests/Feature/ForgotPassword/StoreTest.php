@@ -16,7 +16,7 @@ test('forgot password sends reset link for existing user', function () {
     ]);
 
     $response->assertStatus(200)
-        ->assertJson(['message' => __('passwords.sent_if_exists')]);
+        ->assertJson(['message' => __('responses.passwords.sent_if_exists')]);
 
     Notification::assertSentTo($user, ResetPasswordNotification::class);
 });
@@ -29,7 +29,7 @@ test('forgot password returns same response for nonexistent email', function () 
     ]);
 
     $response->assertStatus(200)
-        ->assertJson(['message' => __('passwords.sent_if_exists')]);
+        ->assertJson(['message' => __('responses.passwords.sent_if_exists')]);
 
     Notification::assertNothingSent();
 });

@@ -18,7 +18,7 @@ test('user can reset password with valid token', function () {
     ]);
 
     $response->assertStatus(200)
-        ->assertJson(['message' => __(\Illuminate\Support\Facades\Password::PASSWORD_RESET)]);
+        ->assertJson(['message' => __('responses.passwords.reset')]);
 
     $user->refresh();
     expect(Hash::check('newpassword123', $user->password))->toBeTrue();

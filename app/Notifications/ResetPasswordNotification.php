@@ -15,10 +15,10 @@ class ResetPasswordNotification extends ResetPassword
         $url = $this->resetUrl($notifiable);
 
         return (new MailMessage)
-            ->subject('Reset Your Password')
-            ->line('We received a request to reset your password.')
-            ->action('Reset Password', $url)
-            ->line('This link will expire in ' . config('auth.passwords.users.expire') . ' minutes.')
-            ->line('If you did not request this, no action is needed.');
+            ->subject(__('notifications.reset_password.subject'))
+            ->line(__('notifications.reset_password.line1'))
+            ->action(__('notifications.reset_password.action'), $url)
+            ->line(__('notifications.reset_password.line2', ['minutes' => config('auth.passwords.users.expire')]))
+            ->line(__('notifications.reset_password.line3'));
     }
 }

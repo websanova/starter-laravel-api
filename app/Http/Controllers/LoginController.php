@@ -22,7 +22,7 @@ class LoginController extends Controller
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => [__('auth.failed')],
+                'email' => [__('responses.auth.failed')],
             ]);
         }
 

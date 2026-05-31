@@ -21,7 +21,7 @@ class VerificationController extends Controller
     {
         $this->verificationService->verify($request->user(), $request->code);
 
-        return response()->json(['message' => __('verification.verified')]);
+        return response()->json(['message' => __('responses.verification.verified')]);
     }
 
     /**
@@ -31,12 +31,12 @@ class VerificationController extends Controller
     {
         if (!$this->verificationService->canResend($request->user())) {
             throw ValidationException::withMessages([
-                'code' => [__('verification.throttled')],
+                'code' => [__('responses.verification.throttled')],
             ]);
         }
 
         $this->verificationService->send($request->user());
 
-        return response()->json(['message' => __('verification.sent')]);
+        return response()->json(['message' => __('responses.verification.sent')]);
     }
 }

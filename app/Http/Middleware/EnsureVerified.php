@@ -29,7 +29,7 @@ class EnsureVerified
             }
 
             return response()->json([
-                'message' => __('auth.unverified'),
+                'message' => __('responses.auth.unverified'),
             ], 403);
         }
 

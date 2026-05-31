@@ -31,12 +31,14 @@ class ResetPasswordController extends Controller
             }
         );
 
+        $key = 'responses.passwords.' . str_replace('passwords.', '', $status);
+
         if ($status !== Password::PASSWORD_RESET) {
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'email' => [__($key)],
             ]);
         }
 
-        return response()->json(['message' => __($status)]);
+        return response()->json(['message' => __($key)]);
     }
 }
