@@ -4,6 +4,10 @@
 - [ ] Register, login, logout, refresh token (Sanctum)
 - [ ] Email verification, password reset
 - [ ] Rate-limited login attempts
+- [ ] Remember me token setup (check user factory).
+- [ ] Verification grace periods (also needs to be included in user data for front end to notify the user verification is required).
+- [ ] Update main docs Verification.md section.
+- [ ] All the messages to lang files.
 
 ## Subscriptions
 - [ ] Stripe via Laravel Cashier
