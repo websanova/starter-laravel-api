@@ -2,21 +2,14 @@
 
 namespace App\Services;
 
-use App\Contracts\VerificationChannel;
 use App\Models\User;
 use App\Models\VerificationCode;
+use App\Notifications\VerificationCodeNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class VerificationService
 {
-    /**
-     * Map of channel name to class.
-     */
-    protected array $channelMap = [
-        'email' => \App\Services\Verification\EmailChannel::class,
-    ];
-
     /**
      * Send a verification code to the user via all configured channels.
      */
@@ -34,9 +27,7 @@ class VerificationService
             'expires_at' => now()->addSeconds(config('verification.code_expiry')),
         ]);
 
-        foreach ($this->resolveChannels() as $channel) {
-            $channel->send($user, $code);
-        }
+        $user->notify(new VerificationCodeNotification($code));
     }
 
     /**
@@ -95,21 +86,4 @@ class VerificationService
         return str_pad((string) random_int(0, pow(10, $length) - 1), $length, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * Resolve channel instances from config.
-     *
-     * @return VerificationChannel[]
-     */
-    protected function resolveChannels(): array
-    {
-        $channels = [];
-
-        foreach (config('verification.channels') as $name) {
-            if (isset($this->channelMap[$name])) {
-                $channels[] = app($this->channelMap[$name]);
-            }
-        }
-
-        return $channels;
-    }
 }

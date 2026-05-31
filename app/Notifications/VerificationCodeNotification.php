@@ -15,11 +15,21 @@ class VerificationCodeNotification extends Notification
     ) {}
 
     /**
+     * Map config channel names to Laravel notification channels.
+     */
+    protected array $channelMap = [
+        'email' => 'mail',
+        'sms' => 'vonage',
+    ];
+
+    /**
      * Get the notification's delivery channels.
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return collect(config('verification.channels'))
+            ->map(fn (string $channel) => $this->channelMap[$channel] ?? $channel)
+            ->all();
     }
 
     /**
