@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Throttle
+    |--------------------------------------------------------------------------
+    |
+    | The number of seconds between last_active_at updates. This prevents
+    | a database write on every authenticated request.
+    |
+    */
+
+    'activity_throttle' => env('AUTH_ACTIVITY_THROTTLE', 60),
+
 ];

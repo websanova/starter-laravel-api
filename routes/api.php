@@ -10,7 +10,7 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 Route::post('/register', [RegisterController::class, 'store']);
 Route::post('/login', [LoginController::class, 'store']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::get('/me', [MeController::class, 'show']);
     Route::patch('/me', [MeController::class, 'update']);
     Route::delete('/me', [MeController::class, 'destroy']);
