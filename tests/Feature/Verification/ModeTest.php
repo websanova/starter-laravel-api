@@ -103,3 +103,37 @@ test('auto mode allows all users to access protected routes', function () {
 
     $response->assertStatus(200);
 });
+
+test('grace period allows unverified user within window', function () {
+    config(['verification.mode' => 'required']);
+    config(['verification.grace_period' => 3600]);
+
+    $user = User::factory()->unverified()->create();
+
+    $response = $this->actingAs($user)->getJson('/me');
+
+    $response->assertStatus(200);
+});
+
+test('grace period blocks unverified user after window expires', function () {
+    config(['verification.mode' => 'required']);
+    config(['verification.grace_period' => 3600]);
+
+    $user = User::factory()->unverified()->create();
+    $user->forceFill(['created_at' => now()->subSeconds(3601)])->save();
+
+    $response = $this->actingAs($user)->getJson('/me');
+
+    $response->assertStatus(403);
+});
+
+test('no grace period blocks unverified user immediately', function () {
+    config(['verification.mode' => 'required']);
+    config(['verification.grace_period' => null]);
+
+    $user = User::factory()->unverified()->create();
+
+    $response = $this->actingAs($user)->getJson('/me');
+
+    $response->assertStatus(403);
+});

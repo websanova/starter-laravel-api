@@ -19,7 +19,15 @@ class EnsureVerified
             return $next($request);
         }
 
-        if (!$request->user()->email_verified_at) {
+        $user = $request->user();
+
+        if (!$user->email_verified_at) {
+            $gracePeriod = config('verification.grace_period');
+
+            if ($gracePeriod && $user->created_at->diffInSeconds(now()) < $gracePeriod) {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Your email address is not verified.',
             ], 403);

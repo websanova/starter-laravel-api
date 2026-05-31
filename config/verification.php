@@ -32,6 +32,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Grace Period
+    |--------------------------------------------------------------------------
+    |
+    | The number of seconds after registration during which an unverified
+    | user can still access protected routes. Only applies when mode is
+    | "required". Set to null or 0 to require immediate verification.
+    |
+    */
+
+    'grace_period' => env('VERIFICATION_GRACE_PERIOD', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Code Length
     |--------------------------------------------------------------------------
     |
