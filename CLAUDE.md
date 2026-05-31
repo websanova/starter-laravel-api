@@ -102,6 +102,7 @@
 - Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
 - Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
 - API responses use Laravel API Resources (`app/Http/Resources/`).
+- All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
 - All requests return JSON. `ForceJsonResponse` middleware handles this globally.
 - Auth via Sanctum token. No sessions, no cookies.
 - No frontend. No Vite, no npm, no Blade views.

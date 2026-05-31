@@ -44,7 +44,7 @@ class VerificationService
 
         if (!$record) {
             throw ValidationException::withMessages([
-                'code' => ['No valid verification code found. Please request a new one.'],
+                'code' => [__('verification.no_valid_code')],
             ]);
         }
 
@@ -52,7 +52,7 @@ class VerificationService
             $record->increment('attempts');
 
             throw ValidationException::withMessages([
-                'code' => ['The verification code is incorrect.'],
+                'code' => [__('verification.invalid_code')],
             ]);
         }
 
