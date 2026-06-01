@@ -26,38 +26,15 @@ test('user can update their last name', function () {
         ->assertJsonPath('data.last_name', 'Name');
 });
 
-test('user can update their email', function () {
-    $user = User::factory()->create();
+test('update ignores email field', function () {
+    $user = User::factory()->create(['email' => 'original@example.com']);
 
     $response = $this->actingAs($user)->patchJson('/me', [
         'email' => 'new@example.com',
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.email', 'new@example.com');
-});
-
-test('update fails with invalid email', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->patchJson('/me', [
-        'email' => 'not-an-email',
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['email']);
-});
-
-test('update fails with duplicate email', function () {
-    User::factory()->create(['email' => 'taken@example.com']);
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->patchJson('/me', [
-        'email' => 'taken@example.com',
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['email']);
+        ->assertJsonPath('data.email', 'original@example.com');
 });
 
 test('unauthenticated user cannot update profile', function () {

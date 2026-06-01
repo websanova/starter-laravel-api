@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 test('user can update their password', function () {
-    $user = User::factory()->verified()->create([
+    $user = User::factory()->create([
         'password' => Hash::make('current-password'),
     ]);
 
@@ -23,7 +23,7 @@ test('user can update their password', function () {
 });
 
 test('update fails with incorrect current password', function () {
-    $user = User::factory()->verified()->create([
+    $user = User::factory()->create([
         'password' => Hash::make('current-password'),
     ]);
 
@@ -38,7 +38,7 @@ test('update fails with incorrect current password', function () {
 });
 
 test('update fails without current password', function () {
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     $response = $this->actingAs($user)->patchJson('/me/password', [
         'password' => 'new-password-123',
@@ -50,7 +50,7 @@ test('update fails without current password', function () {
 });
 
 test('update fails without password confirmation', function () {
-    $user = User::factory()->verified()->create([
+    $user = User::factory()->create([
         'password' => Hash::make('current-password'),
     ]);
 
@@ -64,7 +64,7 @@ test('update fails without password confirmation', function () {
 });
 
 test('update fails when password confirmation does not match', function () {
-    $user = User::factory()->verified()->create([
+    $user = User::factory()->create([
         'password' => Hash::make('current-password'),
     ]);
 

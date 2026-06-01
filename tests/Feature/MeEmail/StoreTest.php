@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Notification;
 test('user can request email change', function () {
     Notification::fake();
 
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/me/email', [
         'email' => 'new@example.com',
@@ -27,7 +27,7 @@ test('user can request email change', function () {
 test('request email change deletes previous tokens', function () {
     Notification::fake();
 
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     EmailChangeToken::create([
         'user_id' => $user->id,
@@ -47,7 +47,7 @@ test('request email change deletes previous tokens', function () {
 test('request email change fails when throttled', function () {
     Notification::fake();
 
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     EmailChangeToken::create([
         'user_id' => $user->id,
@@ -67,7 +67,7 @@ test('request email change fails when throttled', function () {
 });
 
 test('request email change fails with missing email', function () {
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/me/email', []);
 
@@ -76,7 +76,7 @@ test('request email change fails with missing email', function () {
 });
 
 test('request email change fails with invalid email', function () {
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/me/email', [
         'email' => 'not-an-email',
@@ -88,7 +88,7 @@ test('request email change fails with invalid email', function () {
 
 test('request email change fails with already taken email', function () {
     User::factory()->create(['email' => 'taken@example.com']);
-    $user = User::factory()->verified()->create();
+    $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/me/email', [
         'email' => 'taken@example.com',
