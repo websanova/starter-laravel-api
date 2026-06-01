@@ -105,8 +105,17 @@
 - Reference env vars and config keys inline where relevant, don't create dedicated reference sections.
 - This is an API with no frontend. When discussing client behavior, frame it as "the client can..." not "the app does...". The API doesn't dictate client implementation.
 
+## Routing Convention
+- Three route groups:
+  - **Public/auth** - general and guest routes (`POST /login`, `GET /users/{id}`)
+  - **`/me`** - current user managing themselves (`GET /me`, `PATCH /me`)
+  - **`/admin`** - admin managing any resource (`GET /admin/users`, `PUT /admin/users/{id}`)
+- `/me` routes use flat controllers (`MeController`). When sub-resources appear (e.g., password), use `MePasswordController`, etc.
+- `/admin` routes use an `Admin/` namespace: `Controllers/Admin/UserController`, `Resources/Admin/UserResource`, `Requests/Admin/User/UpdateRequest`.
+- No `/users/me` endpoint. `/me` replaces it entirely.
+
 ## Architecture
-- Flat controller namespace. No subfolders in `Controllers/`.
+- Flat controller namespace. No subfolders in `Controllers/` (except `Admin/`).
 - Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
 - Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
 - Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
