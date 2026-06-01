@@ -13,6 +13,8 @@ return [
     'passwords.token' => 'This password reset token is invalid.',
     'passwords.user' => 'No account found with that email address.',
 
+    'password.updated' => 'Your password has been updated.',
+
     'verification.verified' => 'Email verified successfully.',
     'verification.sent' => 'Verification code sent.',
     'verification.throttled' => 'Please wait before requesting a new code.',

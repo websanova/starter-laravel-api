@@ -5,6 +5,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MeController;
 use App\Http\Controllers\MeEmailController;
+use App\Http\Controllers\MePasswordController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\VerificationController;
@@ -31,5 +32,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::patch('/me', [MeController::class, 'update']);
         Route::delete('/me', [MeController::class, 'destroy']);
         Route::post('/me/email', [MeEmailController::class, 'store']);
+        Route::patch('/me/password', [MePasswordController::class, 'update']);
     });
 });
