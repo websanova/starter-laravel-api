@@ -19,6 +19,11 @@ return [
     'verification.invalid_code' => 'The verification code is incorrect.',
     'verification.no_valid_code' => 'No valid verification code found. Please request a new one.',
 
+    'email_change.sent' => 'A confirmation link has been sent to your new email address.',
+    'email_change.confirmed' => 'Your email address has been updated.',
+    'email_change.invalid_token' => 'This email change token is invalid or has expired.',
+    'email_change.throttled' => 'Please wait before requesting another email change.',
+
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 
 ];

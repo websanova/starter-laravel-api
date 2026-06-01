@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Me;
+namespace App\Http\Requests\MeEmail;
 
 use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,8 +13,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => UserRules::firstName(required: false),
-            'last_name' => UserRules::lastName(required: false),
+            'email' => UserRules::email(ignore: $this->user()->id),
         ];
     }
 }
