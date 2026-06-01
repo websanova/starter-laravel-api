@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\EmailReset\StoreRequest;
+use App\Http\Requests\ChangeEmail\StoreRequest;
 use App\Services\EmailChangeService;
 use Illuminate\Http\JsonResponse;
 
-class EmailResetController extends Controller
+class ChangeEmailController extends Controller
 {
     public function __construct(
         protected EmailChangeService $emailChangeService

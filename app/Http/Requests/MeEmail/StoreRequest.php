@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\EmailReset;
+namespace App\Http\Requests\MeEmail;
 
+use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -12,8 +13,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
+            'email' => UserRules::email(ignore: $this->user()->id),
         ];
     }
 }

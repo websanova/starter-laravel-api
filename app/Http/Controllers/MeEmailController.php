@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\MeEmail\UpdateRequest;
+use App\Http\Requests\MeEmail\StoreRequest;
 use App\Services\EmailChangeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -16,7 +16,7 @@ class MeEmailController extends Controller
     /**
      * Request an email change for the authenticated user.
      */
-    public function update(UpdateRequest $request): JsonResponse
+    public function store(StoreRequest $request): JsonResponse
     {
         $user = $request->user();
 

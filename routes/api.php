@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\EmailResetController;
+use App\Http\Controllers\ChangeEmailController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MeController;
@@ -17,7 +17,7 @@ Route::middleware('throttle:auth')->group(function () {
     Route::post('/login', [LoginController::class, 'store']);
     Route::post('/forgot-password', [ForgotPasswordController::class, 'store']);
     Route::post('/reset-password', [ResetPasswordController::class, 'store']);
-    Route::post('/email-reset', [EmailResetController::class, 'store']);
+    Route::post('/change-email', [ChangeEmailController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
@@ -30,6 +30,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::get('/me', [MeController::class, 'show']);
         Route::patch('/me', [MeController::class, 'update']);
         Route::delete('/me', [MeController::class, 'destroy']);
-        Route::put('/me/email', [MeEmailController::class, 'update']);
+        Route::post('/me/email', [MeEmailController::class, 'store']);
     });
 });
