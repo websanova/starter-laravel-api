@@ -73,7 +73,7 @@ test('unauthenticated user cannot resend', function () {
 
 test('resend does nothing when mode is disabled', function () {
     Notification::fake();
-    config(['verification.mode' => 'disabled']);
+    config(['verification.mode' => \App\Enums\VerificationMode::Disabled]);
 
     $user = User::factory()->unverified()->create();
 
