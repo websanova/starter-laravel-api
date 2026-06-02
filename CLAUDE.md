@@ -107,9 +107,6 @@
 
 ## Architecture
 - Flat controller namespace. No subfolders in `Controllers/` (except `Admin/`).
-- Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
-- Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
-- Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
 - API responses use Laravel API Resources (`app/Http/Resources/`).
 - All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
 - All requests return JSON. `ForceJsonResponse` middleware handles this globally.
@@ -123,3 +120,8 @@
 
 ## Style Guide
 - Model ordering: traits, constants, properties (`$fillable`, `$hidden`, `$appends`), `casts()`, boot/initialization, relationships, accessors/mutators, scopes, public methods, protected/private methods.
+- Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
+- Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
+- Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
+- Accessors use `Attribute::make()`, not `getFieldAttribute()`.
+- Shared constants that will grow use enums in `app/Enums/`.
