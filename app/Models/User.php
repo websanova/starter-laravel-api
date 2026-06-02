@@ -5,16 +5,21 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    private const AVATAR_PATH = 'users/avatars';
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +32,7 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'password',
+        'avatar',
         'last_active_at',
     ];
 
@@ -46,6 +52,42 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    /**
+     * Get the full URL of the user's avatar.
+     */
+    protected function avatarUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->avatar
+                ? Storage::disk('s3')->url($this->avatar)
+                : null,
+        );
+    }
+
+    /**
+     * Store a new avatar, replacing any existing one.
+     */
+    public function storeAvatar(UploadedFile $file): string
+    {
+        $this->deleteAvatar();
+
+        $path = $file->store(self::AVATAR_PATH, 's3');
+        $this->update(['avatar' => $path]);
+
+        return $path;
+    }
+
+    /**
+     * Delete the user's avatar from storage.
+     */
+    public function deleteAvatar(): void
+    {
+        if ($this->avatar) {
+            Storage::disk('s3')->delete($this->avatar);
+            $this->update(['avatar' => null]);
+        }
     }
 
     /**

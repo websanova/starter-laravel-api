@@ -26,6 +26,9 @@ return [
     'email_change.invalid_token' => 'This email change token is invalid or has expired.',
     'email_change.throttled' => 'Please wait before requesting another email change.',
 
+    'avatar.stored' => 'Avatar uploaded successfully.',
+    'avatar.destroyed' => 'Avatar removed successfully.',
+
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 
 ];

@@ -59,4 +59,17 @@ class UserRules
             Password::defaults(),
         ];
     }
+
+    /**
+     * Validation rules for the avatar field.
+     */
+    public static function avatar(): array
+    {
+        return [
+            'required',
+            'image',
+            'mimes:jpeg,png,webp',
+            'max:2048',
+        ];
+    }
 }
