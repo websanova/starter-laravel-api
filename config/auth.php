@@ -116,6 +116,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Account Deletion
+    |--------------------------------------------------------------------------
+    |
+    | Controls the behavior of self-service account deletion. The grace period
+    | is the number of days a soft-deleted account can be restored by logging
+    | in again. Set to 0 for immediate pruning with no restoration window.
+    |
+    | The prune strategy determines what happens when the grace period expires:
+    | "delete" hard-deletes the user record, "anonymize" nulls PII fields
+    | and replaces the email with a hash.
+    |
+    */
+
+    'delete' => [
+        'grace_period' => env('AUTH_DELETE_GRACE_PERIOD', 30),
+        'prune_strategy' => env('AUTH_DELETE_PRUNE_STRATEGY', 'anonymize'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Activity Throttle
     |--------------------------------------------------------------------------
     |

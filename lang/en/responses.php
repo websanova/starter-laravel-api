@@ -5,6 +5,7 @@ return [
     'auth.failed' => 'The provided credentials are incorrect.',
     'auth.unverified' => 'Your email address is not verified.',
     'auth.throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'auth.deleted' => 'This account has been deleted.',
 
     'passwords.reset' => 'Your password has been reset.',
     'passwords.sent' => 'We have emailed your password reset link.',

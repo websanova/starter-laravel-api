@@ -8,6 +8,7 @@ use App\Http\Requests\Login\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -18,12 +19,25 @@ class LoginController extends Controller
      */
     public function store(StoreRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::withTrashed()->where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => [__('responses.auth.failed')],
             ]);
+        }
+
+        if ($user->trashed()) {
+            $gracePeriod = config('auth.delete.grace_period');
+            $deadline = $user->deleted_at->addDays($gracePeriod);
+
+            if ($gracePeriod === 0 || Carbon::now()->greaterThan($deadline)) {
+                throw ValidationException::withMessages([
+                    'email' => [__('responses.auth.deleted')],
+                ]);
+            }
+
+            $user->restore();
         }
 
         $token = $user->createToken('auth')->plainTextToken;
