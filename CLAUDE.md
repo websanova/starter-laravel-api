@@ -120,3 +120,6 @@
 - NEVER touch the git repo. No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind. Ever.
 - NEVER edit any file unless the user has said one of these exact go-ahead phrases in their most recent message: "add it", "implement", "implement it", "go ahead", "go", "go for it", "do it", "write it", "make it", "ok do it", "ok, do it". No other phrasing counts. Not "ok good", not "lol", not "ok", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT implement — just describe the fix and stop. Do not ask for a go-ahead. Wait silently.
 - Default behavior is DESCRIBE ONLY. Summarize what would change - files, methods, key logic - but never write to disk. The go-ahead phrase is the ONLY trigger that authorizes a file write or edit.
+
+## Style Guide
+- Model ordering: traits, constants, properties (`$fillable`, `$hidden`, `$appends`), `casts()`, boot/initialization, relationships, accessors/mutators, scopes, public methods, protected/private methods.

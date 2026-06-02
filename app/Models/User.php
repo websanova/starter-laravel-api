@@ -46,11 +46,17 @@ class User extends Authenticatable
     ];
 
     /**
-     * Send the password reset notification.
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
-    public function sendPasswordResetNotification($token): void
+    protected function casts(): array
     {
-        $this->notify(new ResetPasswordNotification($token));
+        return [
+            'email_verified_at' => 'datetime',
+            'last_active_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
     /**
@@ -63,6 +69,14 @@ class User extends Authenticatable
                 ? Storage::disk('s3')->url($this->avatar)
                 : null,
         );
+    }
+
+    /**
+     * Send the password reset notification.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     /**
@@ -87,19 +101,5 @@ class User extends Authenticatable
             Storage::disk('s3')->delete($this->avatar);
             $this->update(['avatar' => null]);
         }
-    }
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'last_active_at' => 'datetime',
-            'password' => 'hashed',
-        ];
     }
 }
