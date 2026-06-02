@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AccountPruneStrategy;
 use App\Models\User;
 
 return [
@@ -131,7 +132,7 @@ return [
 
     'delete' => [
         'grace_period' => env('AUTH_DELETE_GRACE_PERIOD', 30),
-        'prune_strategy' => env('AUTH_DELETE_PRUNE_STRATEGY', 'anonymize'),
+        'prune_strategy' => AccountPruneStrategy::from(env('AUTH_DELETE_PRUNE_STRATEGY', 'anonymize')),
     ],
 
     /*

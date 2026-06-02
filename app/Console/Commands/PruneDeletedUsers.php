@@ -30,7 +30,7 @@ class PruneDeletedUsers extends Command
     public function handle(): int
     {
         $gracePeriod = config('auth.delete.grace_period');
-        $strategy = AccountPruneStrategy::from(config('auth.delete.prune_strategy'));
+        $strategy = config('auth.delete.prune_strategy');
         $cutoff = now()->subDays($gracePeriod);
 
         $users = User::onlyTrashed()

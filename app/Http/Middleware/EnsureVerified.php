@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\VerificationMode;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ class EnsureVerified
     {
         $mode = config('verification.mode');
 
-        if ($mode !== 'required') {
+        if ($mode !== VerificationMode::Required) {
             return $next($request);
         }
 

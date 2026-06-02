@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
 use App\Notifications\VerificationCodeNotification;
@@ -15,7 +16,7 @@ class VerificationService
      */
     public function send(User $user): void
     {
-        if (config('verification.mode') === 'disabled') {
+        if (config('verification.mode') === VerificationMode::Disabled) {
             return;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\VerificationMode;
+
 return [
 
     /*
@@ -14,7 +16,7 @@ return [
     |
     */
 
-    'mode' => env('VERIFICATION_MODE', 'required'),
+    'mode' => VerificationMode::from(env('VERIFICATION_MODE', 'required')),
 
     /*
     |--------------------------------------------------------------------------

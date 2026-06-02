@@ -125,3 +125,4 @@
 - Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
 - Accessors use `Attribute::make()`, not `getFieldAttribute()`.
 - Shared constants that will grow use enums in `app/Enums/`.
+- Artisan command signatures use `{resource}:{action}` format (e.g., `users:prune-deleted`).

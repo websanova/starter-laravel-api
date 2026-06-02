@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\VerificationMode;
 use App\Http\Requests\Register\StoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -29,11 +30,11 @@ class RegisterController extends Controller
 
         $mode = config('verification.mode');
 
-        if ($mode === 'auto') {
-            $user->update(['email_verified_at' => now()]);
-        } elseif ($mode === 'required') {
-            $this->verificationService->send($user);
-        }
+        match ($mode) {
+            VerificationMode::Auto => $user->update(['email_verified_at' => now()]),
+            VerificationMode::Required => $this->verificationService->send($user),
+            VerificationMode::Disabled => null,
+        };
 
         $token = $user->createToken('auth')->plainTextToken;
 
