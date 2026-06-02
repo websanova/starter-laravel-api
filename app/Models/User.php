@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -101,5 +102,32 @@ class User extends Authenticatable
             Storage::disk('s3')->delete($this->avatar);
             $this->update(['avatar' => null]);
         }
+    }
+
+    /**
+     * Clean up all related data and hard delete the user.
+     */
+    public function purge(): void
+    {
+        $this->deleteAvatar();
+        $this->tokens()->delete();
+        $this->forceDelete();
+    }
+
+    /**
+     * Strip personally identifiable information but keep the row.
+     */
+    public function anonymize(): void
+    {
+        $this->deleteAvatar();
+        $this->tokens()->delete();
+
+        $this->forceFill([
+            'first_name' => 'Deleted',
+            'last_name' => 'User',
+            'email' => 'deleted_' . Str::random(32) . '@anonymized.local',
+            'password' => Str::random(64),
+            'remember_token' => null,
+        ])->save();
     }
 }
