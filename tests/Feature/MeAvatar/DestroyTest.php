@@ -18,17 +18,23 @@ test('user can delete their avatar', function () {
 
     $response = $this->actingAs($user)->deleteJson('/me/avatar');
 
-    $response->assertStatus(204);
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data' => ['id', 'first_name', 'last_name', 'email', 'avatar_url', 'created_at', 'updated_at'],
+        ])
+        ->assertJsonPath('data.avatar_url', null);
+
     expect($user->fresh()->avatar)->toBeNull();
     Storage::disk('s3')->assertMissing($avatarPath);
 });
 
-test('deleting avatar when none exists returns 204', function () {
+test('deleting avatar when none exists returns user', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->deleteJson('/me/avatar');
 
-    $response->assertStatus(204);
+    $response->assertStatus(200)
+        ->assertJsonPath('data.avatar_url', null);
 });
 
 test('delete fails when unauthenticated', function () {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\StoragePath;
 use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -18,8 +19,6 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
-
-    private const AVATAR_PATH = 'users/avatars';
 
     /**
      * The attributes that are mass assignable.
@@ -73,7 +72,7 @@ class User extends Authenticatable
     {
         $this->deleteAvatar();
 
-        $path = $file->store(self::AVATAR_PATH, 's3');
+        $path = $file->store(StoragePath::UserAvatar->value, 's3');
         $this->update(['avatar' => $path]);
 
         return $path;

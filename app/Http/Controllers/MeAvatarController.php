@@ -27,8 +27,11 @@ class MeAvatarController extends Controller
      */
     public function destroy(DestroyRequest $request): JsonResponse
     {
-        $request->user()->deleteAvatar();
+        $user = $request->user();
+        $user->deleteAvatar();
 
-        return response()->json(null, 204);
+        return response()->json([
+            'data' => new UserResource($user),
+        ]);
     }
 }
