@@ -15,6 +15,7 @@ class MePasswordController extends Controller
     {
         $request->user()->update([
             'password' => Hash::make($request->validated('password')),
+            'is_password_reset_required' => false,
         ]);
 
         return response()->json(['message' => __('responses.password.updated')]);

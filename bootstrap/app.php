@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'track-active' => \App\Http\Middleware\TrackLastActive::class,
             'verified' => \App\Http\Middleware\EnsureVerified::class,
+            'password-updated' => \App\Http\Middleware\EnsurePasswordUpdated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -29,11 +29,14 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::post('/verify/resend', [VerificationController::class, 'resend']);
 
     Route::middleware('verified')->group(function () {
+        Route::patch('/me/password', [MePasswordController::class, 'update']);
+    });
+
+    Route::middleware(['verified', 'password-updated'])->group(function () {
         Route::get('/me', [MeController::class, 'show']);
         Route::patch('/me', [MeController::class, 'update']);
         Route::delete('/me', [MeController::class, 'destroy']);
         Route::post('/me/email', [MeEmailController::class, 'store']);
-        Route::patch('/me/password', [MePasswordController::class, 'update']);
         Route::post('/me/avatar', [MeAvatarController::class, 'store']);
         Route::delete('/me/avatar', [MeAvatarController::class, 'destroy']);
     });

@@ -6,6 +6,7 @@ return [
     'auth.unverified' => 'Your email address is not verified.',
     'auth.throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'auth.deleted' => 'This account has been deleted.',
+    'auth.password_reset_required' => 'You must update your password before continuing.',
 
     'passwords.reset' => 'Your password has been reset.',
     'passwords.sent' => 'We have emailed your password reset link.',

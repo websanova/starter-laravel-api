@@ -17,11 +17,14 @@ use Illuminate\Support\Str;
 use Intervention\Image\Format;
 use Intervention\Image\Laravel\Facades\Image;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
+
+    protected $guard_name = 'api';
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +39,7 @@ class User extends Authenticatable
         'password',
         'avatar',
         'last_active_at',
+        'is_password_reset_required',
     ];
 
     /**
@@ -59,6 +63,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
             'password' => 'hashed',
+            'is_password_reset_required' => 'boolean',
         ];
     }
 
