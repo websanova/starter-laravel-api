@@ -4,10 +4,14 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    && docker-php-ext-configure gd --with-jpeg \
     && docker-php-ext-install \
     pdo_mysql \
     zip \
     bcmath \
+    gd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
