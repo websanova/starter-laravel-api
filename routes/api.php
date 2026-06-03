@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\UserAvatarController as AdminUserAvatarController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\UserForceDeleteController as AdminUserForceDeleteController;
+use App\Http\Controllers\Admin\UserRestoreController as AdminUserRestoreController;
+use App\Http\Controllers\Admin\UserRoleController as AdminUserRoleController;
 use App\Http\Controllers\ChangeEmailController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LoginController;
@@ -39,5 +44,16 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/me/email', [MeEmailController::class, 'store']);
         Route::post('/me/avatar', [MeAvatarController::class, 'store']);
         Route::delete('/me/avatar', [MeAvatarController::class, 'destroy']);
+    });
+
+    Route::prefix('admin')->middleware(['verified', 'password-updated'])->group(function () {
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::get('/users/{user}', [AdminUserController::class, 'show']);
+        Route::patch('/users/{user}', [AdminUserController::class, 'update']);
+        Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
+        Route::delete('/users/{user}/avatar', [AdminUserAvatarController::class, 'destroy']);
+        Route::delete('/users/{user}/force', [AdminUserForceDeleteController::class, 'destroy'])->withTrashed();
+        Route::patch('/users/{user}/restore', [AdminUserRestoreController::class, 'update'])->withTrashed();
+        Route::patch('/users/{user}/role', [AdminUserRoleController::class, 'update']);
     });
 });

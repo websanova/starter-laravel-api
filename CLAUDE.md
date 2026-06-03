@@ -101,6 +101,7 @@
   - **Public/auth** - general and guest routes (`POST /login`, `GET /users/{id}`)
   - **`/me`** - current user managing themselves (`GET /me`, `PATCH /me`)
   - **`/admin`** - admin managing any resource (`GET /admin/users`, `PUT /admin/users/{id}`)
+- `/me` and `/admin` groups sit side by side inside the `auth:sanctum` group. No deeper nesting beyond that. Each declares its own middleware explicitly.
 - `/me` routes use flat controllers (`MeController`). When sub-resources appear (e.g., password), use `MePasswordController`, etc.
 - `/admin` routes use an `Admin/` namespace: `Controllers/Admin/UserController`, `Resources/Admin/UserResource`, `Requests/Admin/User/UpdateRequest`.
 - No `/users/me` endpoint. `/me` replaces it entirely.
