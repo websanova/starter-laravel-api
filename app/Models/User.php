@@ -14,6 +14,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Format;
+use Intervention\Image\Laravel\Facades\Image;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -87,7 +89,13 @@ class User extends Authenticatable
     {
         $this->deleteAvatar();
 
-        $path = $file->store(StoragePath::UserAvatar->value, 's3');
+        $image = Image::decode($file)
+            ->coverDown(200, 200)
+            ->encodeUsingFormat(Format::PNG);
+
+        $path = StoragePath::UserAvatar->value . '/' . Str::random(40) . '.png';
+
+        Storage::disk('s3')->put($path, (string) $image);
         $this->update(['avatar' => $path]);
 
         return $path;
