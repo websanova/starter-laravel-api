@@ -1,20 +1,48 @@
 # Starter Laravel API
 
-A minimal Laravel API boilerplate with authentication, account management, and common integrations pre-wired. No frontend, no Blade, no Vite. Just a clean JSON API.
+A Laravel API starter with a full auth system, account management, and production-ready integrations out of the box. No frontend, no Blade, no Vite. Just a clean JSON API.
 
 ## Features
 
-- Token authentication (Sanctum)
-- Register, login, logout, token refresh
-- Email verification (code-based)
-- Forgot/reset password
-- Email change with confirmation
-- `/me` routes for account self-management (profile, password, avatar)
-- Role and permission system (Spatie)
-- Stripe billing (Cashier)
-- S3-compatible file storage
-- Pest test suite
-- Dockerized development environment
+- **Token Auth (Sanctum)**
+  - Register, login, logout, token refresh
+  - Configurable token expiration
+  - Soft-deleted accounts auto-restore on login during grace period
+
+- **Email Verification**
+  - Code-based, not signed URLs, works with any client
+  - Three modes: disabled, auto, required
+  - Optional grace period before enforcement
+  - Multi-channel ready (email now, SMS later)
+
+- **Password Reset and Email Change**
+  - Token-based two-step flows with frontend URL redirect
+  - All sessions revoked on password reset
+  - Email change confirmed via new inbox, old stays active until confirmed
+
+- **Account Self-Management (`/me`)**
+  - Profile, password, avatar (S3-compatible storage)
+  - Soft delete with configurable grace period
+  - Scheduled prune with anonymize or hard delete strategy
+
+- **Rate Limiting**
+  - Global throttle on all routes
+  - Stricter throttle on auth routes, keyed by email + IP
+
+- **Route Structure**
+  - Public routes, `/me` for self-management, `/admin` for resource management
+  - API Resources for all responses
+  - JSON-only, lang files for all user-facing strings
+
+- **Integrations**
+  - Spatie roles and permissions
+  - Laravel Cashier (Stripe)
+  - S3-compatible file storage
+
+- **Dev Environment**
+  - Dockerized (PHP-FPM + MySQL)
+  - `./dev` script for container commands
+  - Pest test suite
 
 ## Setup
 
