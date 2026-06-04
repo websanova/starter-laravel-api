@@ -34,8 +34,14 @@ A Laravel API starter with a full auth system, account management, and productio
   - API Resources for all responses
   - JSON-only, lang files for all user-facing strings
 
+- **Roles and Permissions (Spatie)**
+  - Two roles: super (god mode), admin (manages users)
+  - Coarse permissions with policy-based target checks
+  - Admin can't touch super users, can't delete other admins
+  - Forced password reset flow with temp password email
+  - Seeded super user on first migrate
+
 - **Integrations**
-  - Spatie roles and permissions
   - Laravel Cashier (Stripe)
   - S3-compatible file storage
 
@@ -58,7 +64,10 @@ The container boots but won't serve the app yet. Dependencies aren't installed a
 ./dev composer install
 docker compose restart php
 ./dev artisan migrate
+./dev artisan db:seed
 ```
+
+Migration creates roles, permissions, and a super user (`super@starter.com` / `initinit`). The super account requires a password change on first login. Seeding adds dev users (`admin@starter.com`, `user@starter.com`, both `testtest`).
 
 On subsequent runs, just start the containers. The entrypoint detects `vendor/` and serves automatically.
 
