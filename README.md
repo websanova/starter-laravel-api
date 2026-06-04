@@ -22,9 +22,12 @@ A Laravel API starter with a full auth system, account management, and productio
 
 - **Account Self-Management (`/account`)**
   - Profile, password, avatar (S3-compatible storage)
-  - Bookmarks with optional categories
   - Soft delete with configurable grace period
   - Scheduled prune with anonymize or hard delete strategy
+
+- **Sample CRUD (Bookmarks)**
+  - Bookmarks with optional flat categories
+  - Demonstrates: relationships, ownership scoping, filtering, nullable foreign keys
 
 - **Rate Limiting**
   - Global throttle on all routes
