@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\User;
 
 use App\Enums\Role;
+use App\Enums\TrashedFilter;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,7 @@ class IndexRequest extends FormRequest
         return [
             'search' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', 'string', Rule::in(array_column(Role::cases(), 'value'))],
-            'trashed' => ['sometimes', 'boolean'],
+            'trashed' => ['sometimes', 'string', Rule::in(array_column(TrashedFilter::cases(), 'value'))],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];
     }

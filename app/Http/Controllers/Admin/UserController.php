@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TrashedFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\IndexRequest;
 use App\Http\Requests\Admin\User\ShowRequest;
@@ -21,14 +22,8 @@ class UserController extends Controller
         $query = User::query();
 
         $query->forSearch($request->validated('search'));
-
-        if ($role = $request->validated('role')) {
-            $query->role($role);
-        }
-
-        if ($request->boolean('trashed')) {
-            $query->onlyTrashed();
-        }
+        $query->forRole($request->validated('role'));
+        $query->forTrashed(TrashedFilter::tryFrom($request->validated('trashed')));
 
         $users = $query->latest()->paginate($request->validated('per_page', 15));
 

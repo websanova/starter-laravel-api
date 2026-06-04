@@ -95,7 +95,7 @@ test('can filter trashed users', function () {
     $deleted = User::factory()->create();
     $deleted->delete();
 
-    $response = $this->actingAs($admin)->getJson('/admin/users?trashed=1');
+    $response = $this->actingAs($admin)->getJson('/admin/users?trashed=only');
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data');

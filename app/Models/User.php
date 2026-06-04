@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\StoragePath;
+use App\Models\Concerns\HasTrashedScope;
 use App\Models\Concerns\Searchable;
 use App\Notifications\ResetPasswordNotification;
 use App\Observers\SearchableObserver;
@@ -28,7 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, Searchable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasRoles, HasTrashedScope, Notifiable, Searchable, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -110,6 +111,18 @@ class User extends Authenticatable
                 ? Storage::disk('s3')->url($this->avatar)
                 : null,
         );
+    }
+
+    /**
+     * Filter by role.
+     */
+    public function scopeForRole(Builder $query, ?string $role): void
+    {
+        if (is_null($role)) {
+            return;
+        }
+
+        $query->role($role);
     }
 
     /**
