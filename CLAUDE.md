@@ -129,3 +129,4 @@
 - Accessors use `Attribute::make()`, not `getFieldAttribute()`.
 - Shared constants that will grow use enums in `app/Enums/`.
 - Artisan command signatures use `{resource}:{action}` format (e.g., `users:prune-deleted`).
+- Query filters belong in model scopes, not inlined in controllers. Scopes use `for*` prefix (e.g., `forCategory`, `forStatus`). Optional filter scopes accept nullable and no-op on null so callers can chain without conditionals.
