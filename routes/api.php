@@ -38,9 +38,10 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(function () {
+    Route::post('/verify', [VerificationController::class, 'verify']);
+    Route::post('/verify/resend', [VerificationController::class, 'resend']);
+
     Route::middleware('verified')->group(function () {
-        Route::post('/verify', [VerificationController::class, 'verify']);
-        Route::post('/verify/resend', [VerificationController::class, 'resend']);
         Route::patch('/password', [PasswordController::class, 'update']);
     });
 

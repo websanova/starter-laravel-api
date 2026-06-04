@@ -5,6 +5,7 @@ uses()->group('auth.verification.mode');
 use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Notifications\VerificationCodeNotification;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Notification;
 
 test('required mode sends verification on register', function () {
@@ -42,7 +43,8 @@ test('auto mode verifies user immediately on register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     expect($user->email_verified_at)->not->toBeNull();
-    Notification::assertNothingSent();
+    Notification::assertSentTo($user, WelcomeNotification::class);
+    Notification::assertNotSentTo($user, VerificationCodeNotification::class);
 });
 
 test('disabled mode skips verification on register', function () {
@@ -61,7 +63,8 @@ test('disabled mode skips verification on register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     expect($user->email_verified_at)->toBeNull();
-    Notification::assertNothingSent();
+    Notification::assertSentTo($user, WelcomeNotification::class);
+    Notification::assertNotSentTo($user, VerificationCodeNotification::class);
 });
 
 test('required mode blocks unverified user from protected routes', function () {

@@ -21,7 +21,7 @@ class BookmarkController extends Controller
         $query = $request->user()->bookmarks();
 
         if ($request->has('category_id')) {
-            $categoryId = $request->validated('category_id');
+            $categoryId = (int) $request->validated('category_id');
 
             if ($categoryId === 0) {
                 $query->whereNull('category_id');
