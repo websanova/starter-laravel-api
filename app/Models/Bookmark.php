@@ -40,4 +40,20 @@ class Bookmark extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    /**
+     * Filter by category, where 0 means uncategorized.
+     */
+    public function scopeForCategory($query, ?int $categoryId): void
+    {
+        if (is_null($categoryId)) {
+            return;
+        }
+
+        if ($categoryId === 0) {
+            $query->whereNull('category_id');
+        } else {
+            $query->where('category_id', $categoryId);
+        }
+    }
 }

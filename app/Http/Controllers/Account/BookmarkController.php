@@ -18,19 +18,10 @@ class BookmarkController extends Controller
      */
     public function index(IndexRequest $request): JsonResponse
     {
-        $query = $request->user()->bookmarks();
-
-        if ($request->has('category_id')) {
-            $categoryId = (int) $request->validated('category_id');
-
-            if ($categoryId === 0) {
-                $query->whereNull('category_id');
-            } else {
-                $query->where('category_id', $categoryId);
-            }
-        }
-
-        $bookmarks = $query->latest()->paginate($request->validated('per_page', 15));
+        $bookmarks = $request->user()->bookmarks()
+            ->forCategory($request->validated('category_id'))
+            ->latest()
+            ->paginate($request->validated('per_page', 15));
 
         return response()->json(BookmarkResource::collection($bookmarks)->response()->getData(true));
     }
