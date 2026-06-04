@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Avatar\DestroyRequest;
 use App\Http\Requests\Account\Avatar\StoreRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Account\UserResource;
 use Illuminate\Http\JsonResponse;
 
 class AvatarController extends Controller

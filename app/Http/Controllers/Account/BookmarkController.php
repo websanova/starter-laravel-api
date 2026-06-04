@@ -7,7 +7,7 @@ use App\Http\Requests\Account\Bookmark\DestroyRequest;
 use App\Http\Requests\Account\Bookmark\IndexRequest;
 use App\Http\Requests\Account\Bookmark\StoreRequest;
 use App\Http\Requests\Account\Bookmark\UpdateRequest;
-use App\Http\Resources\BookmarkResource;
+use App\Http\Resources\Account\BookmarkResource;
 use App\Models\Bookmark;
 use Illuminate\Http\JsonResponse;
 

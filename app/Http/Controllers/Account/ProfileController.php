@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Profile\DestroyRequest;
 use App\Http\Requests\Account\Profile\ShowRequest;
 use App\Http\Requests\Account\Profile\UpdateRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Account\UserResource;
 use Illuminate\Http\JsonResponse;
 
 class ProfileController extends Controller

@@ -7,7 +7,7 @@ use App\Http\Requests\Account\Category\DestroyRequest;
 use App\Http\Requests\Account\Category\IndexRequest;
 use App\Http\Requests\Account\Category\StoreRequest;
 use App\Http\Requests\Account\Category\UpdateRequest;
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\Account\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 

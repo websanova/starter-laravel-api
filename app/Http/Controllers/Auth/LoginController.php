@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Login\DestroyRequest;
 use App\Http\Requests\Auth\Login\StoreRequest;
 use App\Http\Requests\Auth\Login\UpdateRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Account\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;

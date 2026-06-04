@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\VerificationMode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Register\StoreRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Account\UserResource;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
 use App\Services\VerificationService;
