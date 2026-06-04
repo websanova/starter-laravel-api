@@ -18,4 +18,13 @@ return [
     'verification.line1' => 'Your verification code is:',
     'verification.line2' => 'This code expires in :minutes minutes.',
 
+    'temp_password.subject' => 'Your Temporary Password',
+    'temp_password.line1' => 'An administrator has reset your password.',
+    'temp_password.line2' => 'Your temporary password is: :password',
+    'temp_password.line3' => 'You will be required to change this password on your next login.',
+
+    'password_changed.subject' => 'Your Password Was Changed',
+    'password_changed.line1' => 'Your account password was recently changed.',
+    'password_changed.line2' => 'If you did not make this change, please contact support immediately.',
+
 ];

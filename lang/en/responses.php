@@ -37,6 +37,7 @@ return [
     'admin.user.restored' => 'User restored successfully.',
     'admin.user.avatar_destroyed' => 'User avatar removed successfully.',
     'admin.user.role_updated' => 'User role updated successfully.',
+    'admin.user.password_reset' => 'A temporary password has been sent to the user.',
 
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 

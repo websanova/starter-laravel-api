@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserAvatarController as AdminUserAvatarController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\UserForceDeleteController as AdminUserForceDeleteController;
+use App\Http\Controllers\Admin\UserPasswordResetController as AdminUserPasswordResetController;
 use App\Http\Controllers\Admin\UserRestoreController as AdminUserRestoreController;
 use App\Http\Controllers\Admin\UserRoleController as AdminUserRoleController;
 use App\Http\Controllers\ChangeEmailController;
@@ -55,5 +56,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::delete('/users/{user}/force', [AdminUserForceDeleteController::class, 'destroy'])->withTrashed();
         Route::patch('/users/{user}/restore', [AdminUserRestoreController::class, 'update'])->withTrashed();
         Route::patch('/users/{user}/role', [AdminUserRoleController::class, 'update']);
+        Route::post('/users/{user}/password-reset', [AdminUserPasswordResetController::class, 'store']);
     });
 });
