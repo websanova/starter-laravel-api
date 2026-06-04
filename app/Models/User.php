@@ -4,8 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\StoragePath;
+use App\Models\Concerns\Searchable;
 use App\Notifications\ResetPasswordNotification;
+use App\Observers\SearchableObserver;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,12 +24,23 @@ use Intervention\Image\Laravel\Facades\Image;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+#[ObservedBy(SearchableObserver::class)]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, Searchable, SoftDeletes;
 
     protected $guard_name = 'api';
+
+    /**
+     * The fields that feed into the keywords column for fulltext search.
+     *
+     * @var list<string>
+     */
+    protected array $searchable = [
+        'first_name',
+        'last_name',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -39,6 +54,7 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'avatar',
+        'keywords',
         'last_active_at',
         'is_password_reset_required',
     ];
@@ -94,6 +110,21 @@ class User extends Authenticatable
                 ? Storage::disk('s3')->url($this->avatar)
                 : null,
         );
+    }
+
+    /**
+     * Search keywords and email.
+     */
+    public function scopeForSearch(Builder $query, ?string $term): void
+    {
+        if (is_null($term) || trim($term) === '') {
+            return;
+        }
+
+        $query->where(function ($q) use ($term) {
+            $q->forKeywordsSearch($term)
+                ->orWhere('email', 'like', "%{$term}%");
+        });
     }
 
     /**

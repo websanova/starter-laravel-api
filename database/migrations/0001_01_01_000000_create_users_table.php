@@ -20,10 +20,13 @@ return new class extends Migration
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->boolean('is_password_reset_required')->default(false);
+            $table->text('keywords')->nullable();
             $table->rememberToken();
             $table->timestamp('last_active_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->fullText('keywords');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -20,13 +20,7 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        if ($search = $request->validated('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
+        $query->forSearch($request->validated('search'));
 
         if ($role = $request->validated('role')) {
             $query->role($role);
