@@ -64,7 +64,7 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
     });
 });
 
-Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 'password-updated'])->group(function () {
+Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 'password-updated', 'admin'])->group(function () {
     Route::get('/users', [AdminUserController::class, 'index']);
     Route::get('/users/{user}', [AdminUserController::class, 'show']);
     Route::patch('/users/{user}', [AdminUserController::class, 'update']);

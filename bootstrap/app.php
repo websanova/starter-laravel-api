@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'track-active' => \App\Http\Middleware\TrackLastActive::class,
             'verified' => \App\Http\Middleware\EnsureVerified::class,
             'password-updated' => \App\Http\Middleware\EnsurePasswordUpdated::class,
+            'admin' => \App\Http\Middleware\EnsureAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
