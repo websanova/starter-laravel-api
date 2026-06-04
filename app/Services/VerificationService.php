@@ -6,6 +6,7 @@ use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
 use App\Notifications\VerificationCodeNotification;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -59,6 +60,7 @@ class VerificationService
 
         $record->update(['verified_at' => now()]);
         $user->update(['email_verified_at' => now()]);
+        $user->notify(new WelcomeNotification());
     }
 
     /**

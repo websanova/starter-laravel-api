@@ -27,4 +27,8 @@ return [
     'password_changed.line1' => 'Your account password was recently changed.',
     'password_changed.line2' => 'If you did not make this change, please contact support immediately.',
 
+    'welcome.subject' => 'Welcome!',
+    'welcome.line1' => 'Your account has been created successfully.',
+    'welcome.line2' => 'You are all set to get started.',
+
 ];

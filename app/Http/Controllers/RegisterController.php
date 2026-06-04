@@ -6,6 +6,7 @@ use App\Enums\VerificationMode;
 use App\Http\Requests\Register\StoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +36,10 @@ class RegisterController extends Controller
             VerificationMode::Required => $this->verificationService->send($user),
             VerificationMode::Disabled => null,
         };
+
+        if ($mode !== VerificationMode::Required) {
+            $user->notify(new WelcomeNotification());
+        }
 
         $token = $user->createToken('auth')->plainTextToken;
 
