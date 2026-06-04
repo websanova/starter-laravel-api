@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Email\StoreRequest;
 use App\Services\EmailChangeService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class EmailController extends Controller
 {
@@ -22,9 +22,7 @@ class EmailController extends Controller
         $user = $request->user();
 
         if ($this->emailChangeService->isThrottled($user)) {
-            throw ValidationException::withMessages([
-                'email' => [__('responses.email_change.throttled')],
-            ]);
+            throw new TooManyRequestsHttpException(null, __('responses.email_change.throttled'));
         }
 
         $this->emailChangeService->sendConfirmation($user, $request->validated('email'));

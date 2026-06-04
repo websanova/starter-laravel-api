@@ -7,7 +7,7 @@ use App\Http\Requests\Account\Verification\ResendRequest;
 use App\Http\Requests\Account\Verification\VerifyRequest;
 use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VerificationController extends Controller
 {
@@ -31,9 +31,7 @@ class VerificationController extends Controller
     public function resend(ResendRequest $request): JsonResponse
     {
         if (!$this->verificationService->canResend($request->user())) {
-            throw ValidationException::withMessages([
-                'code' => [__('responses.verification.throttled')],
-            ]);
+            throw new TooManyRequestsHttpException(null, __('responses.verification.throttled'));
         }
 
         $this->verificationService->send($request->user());

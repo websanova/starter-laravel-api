@@ -40,8 +40,7 @@ test('resend is throttled', function () {
 
     $response = $this->actingAs($user)->postJson('/account/verify/resend');
 
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['code']);
+    $response->assertStatus(429);
 });
 
 test('resend allowed after throttle period', function () {

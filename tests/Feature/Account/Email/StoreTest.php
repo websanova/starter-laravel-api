@@ -60,8 +60,7 @@ test('request email change fails when throttled', function () {
         'email' => 'new@example.com',
     ]);
 
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors(['email']);
+    $response->assertStatus(429);
 
     Notification::assertNothingSent();
 });
