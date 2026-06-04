@@ -25,6 +25,11 @@ A Laravel API starter with a full auth system, account management, and productio
   - Soft delete with configurable grace period
   - Scheduled prune with anonymize or hard delete strategy
 
+- **Search (Fulltext)**
+  - Searchable trait with MySQL fulltext index on a denormalized keywords column
+  - Observer auto-syncs keywords when searchable fields change
+  - Models override `forSearch` to add column-specific clauses (e.g. email)
+
 - **Sample CRUD (Bookmarks)**
   - Bookmarks with optional flat categories
   - Demonstrates: relationships, ownership scoping, filtering, nullable foreign keys
