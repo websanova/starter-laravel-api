@@ -20,8 +20,9 @@ A Laravel API starter with a full auth system, account management, and productio
   - All sessions revoked on password reset
   - Email change confirmed via new inbox, old stays active until confirmed
 
-- **Account Self-Management (`/me`)**
+- **Account Self-Management (`/account`)**
   - Profile, password, avatar (S3-compatible storage)
+  - Bookmarks with optional categories
   - Soft delete with configurable grace period
   - Scheduled prune with anonymize or hard delete strategy
 
@@ -30,7 +31,7 @@ A Laravel API starter with a full auth system, account management, and productio
   - Stricter throttle on auth routes, keyed by email + IP
 
 - **Route Structure**
-  - Public routes, `/me` for self-management, `/admin` for resource management
+  - `/auth` for authentication, `/account` for self-management, `/admin` for resource management
   - API Resources for all responses
   - JSON-only, lang files for all user-facing strings
 

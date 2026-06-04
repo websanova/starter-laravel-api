@@ -97,17 +97,19 @@
 - This is a dedicated API (no frontend). No /api/ prefix needed in routes.
 
 ## Routing Convention
-- Three route groups:
-  - **Public/auth** - general and guest routes (`POST /login`, `GET /users/{id}`)
-  - **`/me`** - current user managing themselves (`GET /me`, `PATCH /me`)
-  - **`/admin`** - admin managing any resource (`GET /admin/users`, `PUT /admin/users/{id}`)
-- `/me` and `/admin` groups sit side by side inside the `auth:sanctum` group. No deeper nesting beyond that. Each declares its own middleware explicitly.
-- `/me` routes use flat controllers (`MeController`). When sub-resources appear (e.g., password), use `MePasswordController`, etc.
-- `/admin` routes use an `Admin/` namespace: `Controllers/Admin/UserController`, `Resources/Admin/UserResource`, `Requests/Admin/User/UpdateRequest`.
-- No `/users/me` endpoint. `/me` replaces it entirely.
+- Three route prefixes:
+  - **`/auth`** - authentication flows (`POST /auth/login`, `POST /auth/register`, `POST /auth/logout`)
+  - **`/account`** - authenticated user managing themselves (`GET /account/profile`, `PATCH /account/profile`, `GET /account/bookmarks`)
+  - **`/admin`** - admin managing any resource (`GET /admin/users`, `PATCH /admin/users/{id}`)
+- `/auth` has both guest routes (login, register, password reset) and authenticated routes (logout, token refresh).
+- `/account` and `/admin` groups each declare their own middleware explicitly.
+- `/auth` routes use `Auth/` namespace: `Controllers/Auth/LoginController`, `Requests/Auth/Login/StoreRequest`.
+- `/account` routes use `Account/` namespace: `Controllers/Account/ProfileController`, `Requests/Account/Profile/UpdateRequest`.
+- `/admin` routes use `Admin/` namespace: `Controllers/Admin/UserController`, `Resources/Admin/UserResource`, `Requests/Admin/User/UpdateRequest`.
+- `/admin` group has an `admin` middleware as a safety net that requires admin or super role.
 
 ## Architecture
-- Flat controller namespace. No subfolders in `Controllers/` (except `Admin/`).
+- Controllers organized under `Auth/`, `Account/`, and `Admin/` namespaces. No controllers in the root `Controllers/` directory (except `Controller.php` base class).
 - API responses use Laravel API Resources (`app/Http/Resources/`).
 - All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
 - All requests return JSON. `ForceJsonResponse` middleware handles this globally.
@@ -121,8 +123,8 @@
 
 ## Style Guide
 - Model ordering: traits, constants, properties (`$fillable`, `$hidden`, `$appends`), `casts()`, boot/initialization, relationships, accessors/mutators, scopes, public methods, protected/private methods.
-- Requests namespaced by controller: `Requests/{Controller}/StoreRequest.php`.
-- Tests mirror requests: `tests/Feature/{Controller}/StoreTest.php`.
+- Requests namespaced by group and resource: `Requests/Account/Profile/UpdateRequest.php`, `Requests/Auth/Login/StoreRequest.php`.
+- Tests mirror route groups: `tests/Feature/Account/Profile/UpdateTest.php`, `tests/Feature/Auth/Login/StoreTest.php`.
 - Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
 - Accessors use `Attribute::make()`, not `getFieldAttribute()`.
 - Shared constants that will grow use enums in `app/Enums/`.
