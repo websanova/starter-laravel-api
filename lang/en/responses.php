@@ -39,6 +39,14 @@ return [
     'admin.user.role_updated' => 'User role updated successfully.',
     'admin.user.password_reset' => 'A temporary password has been sent to the user.',
 
+    'category.created' => 'Category created successfully.',
+    'category.updated' => 'Category updated successfully.',
+    'category.deleted' => 'Category deleted successfully.',
+
+    'bookmark.created' => 'Bookmark created successfully.',
+    'bookmark.updated' => 'Bookmark updated successfully.',
+    'bookmark.deleted' => 'Bookmark deleted successfully.',
+
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 
 ];

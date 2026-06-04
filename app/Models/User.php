@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Enums\StoragePath;
 use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -65,6 +66,22 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_password_reset_required' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the user's categories.
+     */
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    /**
+     * Get the user's bookmarks.
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
     }
 
     /**

@@ -10,6 +10,8 @@ use App\Http\Controllers\ChangeEmailController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MeAvatarController;
+use App\Http\Controllers\MeBookmarkController;
+use App\Http\Controllers\MeCategoryController;
 use App\Http\Controllers\MeController;
 use App\Http\Controllers\MeEmailController;
 use App\Http\Controllers\MePasswordController;
@@ -45,6 +47,16 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/me/email', [MeEmailController::class, 'store']);
         Route::post('/me/avatar', [MeAvatarController::class, 'store']);
         Route::delete('/me/avatar', [MeAvatarController::class, 'destroy']);
+
+        Route::get('/me/categories', [MeCategoryController::class, 'index']);
+        Route::post('/me/categories', [MeCategoryController::class, 'store']);
+        Route::put('/me/categories/{category}', [MeCategoryController::class, 'update']);
+        Route::delete('/me/categories/{category}', [MeCategoryController::class, 'destroy']);
+
+        Route::get('/me/bookmarks', [MeBookmarkController::class, 'index']);
+        Route::post('/me/bookmarks', [MeBookmarkController::class, 'store']);
+        Route::put('/me/bookmarks/{bookmark}', [MeBookmarkController::class, 'update']);
+        Route::delete('/me/bookmarks/{bookmark}', [MeBookmarkController::class, 'destroy']);
     });
 
     Route::prefix('admin')->middleware(['verified', 'password-updated'])->group(function () {
