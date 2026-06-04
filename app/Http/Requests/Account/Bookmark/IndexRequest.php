@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Account\Bookmark;
 
+use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class IndexRequest extends FormRequest
@@ -12,8 +13,8 @@ class IndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['sometimes', 'integer', 'min:0'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'category_id' => SharedRules::id(allowZero: true),
+            'per_page' => SharedRules::perPage(),
         ];
     }
 }
