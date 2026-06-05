@@ -57,4 +57,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::patch('/users/{user}/restore', [App\Http\Controllers\Admin\UserRestoreController::class, 'update'])->withTrashed();
     Route::patch('/users/{user}/role', [App\Http\Controllers\Admin\UserRoleController::class, 'update']);
     Route::post('/users/{user}/password-reset', [App\Http\Controllers\Admin\UserPasswordResetController::class, 'store']);
+
+    Route::get('/users/{user}/bookmarks', [App\Http\Controllers\Admin\UserBookmarkController::class, 'index']);
+    Route::delete('/users/{user}/bookmarks/{bookmark}', [App\Http\Controllers\Admin\UserBookmarkController::class, 'destroy'])->scopeBindings();
+
+    Route::get('/users/{user}/categories', [App\Http\Controllers\Admin\UserCategoryController::class, 'index']);
+    Route::delete('/users/{user}/categories/{category}', [App\Http\Controllers\Admin\UserCategoryController::class, 'destroy'])->scopeBindings();
 });
