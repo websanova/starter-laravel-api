@@ -102,7 +102,7 @@ These are strict behavioral commands. Follow them exactly. Do not anticipate the
 `:process` / `:pr` — THINK ONLY. Read files yourself as needed for context, never ask the user what is in a file. Give thoughts and suggestions only. ABSOLUTELY NO writing, NO file changes, NO commands that modify anything.
 `:summarize` / `:su` — SUMMARIZE ONLY. List the changes required based on current discussion. ABSOLUTELY NO coding, NO file changes, NO terminal commands.
 `:execute` / `:ex` — CODE ONLY. Implement exactly what was discussed. NO commits, NO terminal commands beyond what is needed to make the changes.
-`:commsg` / `:cm` — Generate a commit message for the changes just made. NOTHING ELSE.
+`:commsg` / `:cm` — Generate a commit message for the changes just made. One-liner only. No body, no `Co-Authored-By`, no extras. NOTHING ELSE.
 `:commit` / `:co` — Commit staged changes using the commit message just generated. NOTHING ELSE.
 
 If no command is given, default to `:pr` behavior — respond only, do not touch files.
