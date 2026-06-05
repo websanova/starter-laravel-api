@@ -31,6 +31,20 @@ test('user only sees their own categories', function () {
         ->assertJsonCount(2, 'data');
 });
 
+test('categories are sorted by name ascending by default', function () {
+    $user = User::factory()->create();
+    Category::factory()->create(['user_id' => $user->id, 'name' => 'Zebra']);
+    Category::factory()->create(['user_id' => $user->id, 'name' => 'Apple']);
+    Category::factory()->create(['user_id' => $user->id, 'name' => 'Mango']);
+
+    $response = $this->actingAs($user)->getJson('/account/categories');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.name', 'Apple')
+        ->assertJsonPath('data.1.name', 'Mango')
+        ->assertJsonPath('data.2.name', 'Zebra');
+});
+
 test('unauthenticated user cannot list categories', function () {
     $response = $this->getJson('/account/categories');
 

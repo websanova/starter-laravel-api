@@ -70,6 +70,78 @@ test('can set per page limit', function () {
         ->assertJsonCount(2, 'data');
 });
 
+test('bookmarks are sorted by created_at descending by default', function () {
+    $user = User::factory()->create();
+    $old = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Old', 'created_at' => now()->subDays(2)]);
+    $new = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'New', 'created_at' => now()]);
+    $mid = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Mid', 'created_at' => now()->subDay()]);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.title', 'New')
+        ->assertJsonPath('data.1.title', 'Mid')
+        ->assertJsonPath('data.2.title', 'Old');
+});
+
+test('bookmarks can be sorted by title ascending', function () {
+    $user = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Zebra']);
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Apple']);
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Mango']);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks?sort_by=title&sort_dir=asc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.title', 'Apple')
+        ->assertJsonPath('data.1.title', 'Mango')
+        ->assertJsonPath('data.2.title', 'Zebra');
+});
+
+test('bookmarks can be sorted by title descending', function () {
+    $user = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Zebra']);
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Apple']);
+    Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Mango']);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks?sort_by=title&sort_dir=desc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.title', 'Zebra')
+        ->assertJsonPath('data.1.title', 'Mango')
+        ->assertJsonPath('data.2.title', 'Apple');
+});
+
+test('bookmarks can be sorted by created_at ascending', function () {
+    $user = User::factory()->create();
+    $old = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Old', 'created_at' => now()->subDays(2)]);
+    $new = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'New', 'created_at' => now()]);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks?sort_by=created_at&sort_dir=asc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.title', 'Old')
+        ->assertJsonPath('data.1.title', 'New');
+});
+
+test('invalid sort_by value returns validation error', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks?sort_by=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('sort_by');
+});
+
+test('invalid sort_dir value returns validation error', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks?sort_dir=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('sort_dir');
+});
+
 test('unauthenticated user cannot list bookmarks', function () {
     $response = $this->getJson('/account/bookmarks');
 

@@ -112,3 +112,82 @@ test('can set per page limit', function () {
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
 });
+
+test('users are sorted by created_at descending by default', function () {
+    $admin = User::factory()->create(['first_name' => 'Admin', 'created_at' => now()->subDays(3)]);
+    $admin->assignRole(UserRole::Admin);
+
+    $old = User::factory()->create(['first_name' => 'Old', 'created_at' => now()->subDays(2)]);
+    $new = User::factory()->create(['first_name' => 'New', 'created_at' => now()]);
+    $mid = User::factory()->create(['first_name' => 'Mid', 'created_at' => now()->subDay()]);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.first_name', 'New')
+        ->assertJsonPath('data.1.first_name', 'Mid')
+        ->assertJsonPath('data.2.first_name', 'Old');
+});
+
+test('users can be sorted by name ascending', function () {
+    $admin = User::factory()->create(['first_name' => 'Admin']);
+    $admin->assignRole(UserRole::Admin);
+
+    User::factory()->create(['first_name' => 'Zebra', 'last_name' => 'Smith']);
+    User::factory()->create(['first_name' => 'Apple', 'last_name' => 'Jones']);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=name&sort_dir=asc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.first_name', 'Admin')
+        ->assertJsonPath('data.1.first_name', 'Apple')
+        ->assertJsonPath('data.2.first_name', 'Zebra');
+});
+
+test('users can be sorted by email', function () {
+    $admin = User::factory()->create(['email' => 'b@example.com']);
+    $admin->assignRole(UserRole::Admin);
+
+    User::factory()->create(['email' => 'a@example.com']);
+    User::factory()->create(['email' => 'c@example.com']);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=email&sort_dir=asc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.email', 'a@example.com')
+        ->assertJsonPath('data.1.email', 'b@example.com')
+        ->assertJsonPath('data.2.email', 'c@example.com');
+});
+
+test('users can be sorted by last_active_at', function () {
+    $admin = User::factory()->create(['last_active_at' => now()->subDays(3)]);
+    $admin->assignRole(UserRole::Admin);
+
+    $recent = User::factory()->create(['first_name' => 'Recent', 'last_active_at' => now()]);
+    $stale = User::factory()->create(['first_name' => 'Stale', 'last_active_at' => now()->subWeek()]);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=last_active_at&sort_dir=desc');
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.0.first_name', 'Recent');
+});
+
+test('invalid sort_by value returns validation error', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('sort_by');
+});
+
+test('invalid sort_dir value returns validation error', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?sort_dir=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('sort_dir');
+});
