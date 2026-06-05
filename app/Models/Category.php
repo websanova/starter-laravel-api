@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\CategorySort;
+use App\Enums\SortDirection;
 use Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,5 +40,16 @@ class Category extends Model
     public function bookmarks(): HasMany
     {
         return $this->hasMany(Bookmark::class);
+    }
+
+    /**
+     * Sort by the given column and direction.
+     */
+    public function scopeSortBy(Builder $query, ?CategorySort $column = null, ?SortDirection $direction = null): void
+    {
+        $query->orderBy(
+            ($column ?? CategorySort::Name)->value,
+            ($direction ?? SortDirection::Asc)->value
+        );
     }
 }

@@ -18,7 +18,7 @@ class CategoryController extends Controller
      */
     public function index(IndexRequest $request): JsonResponse
     {
-        $categories = $request->user()->categories()->latest()->get();
+        $categories = $request->user()->categories()->sortBy()->get();
 
         return response()->json([
             'data' => CategoryResource::collection($categories),

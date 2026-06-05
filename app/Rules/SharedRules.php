@@ -2,6 +2,9 @@
 
 namespace App\Rules;
 
+use App\Enums\SortDirection;
+use Illuminate\Validation\Rule;
+
 class SharedRules
 {
     /**
@@ -25,6 +28,6 @@ class SharedRules
      */
     public static function sortDir(): array
     {
-        return ['sometimes', 'string', 'in:asc,desc'];
+        return ['sometimes', 'string', Rule::enum(SortDirection::class)];
     }
 }

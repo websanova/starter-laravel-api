@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\BookmarkSort;
+use App\Enums\SortDirection;
 use Database\Factories\BookmarkFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,5 +58,16 @@ class Bookmark extends Model
         } else {
             $query->where('category_id', $categoryId);
         }
+    }
+
+    /**
+     * Sort by the given column and direction.
+     */
+    public function scopeSortBy(Builder $query, ?BookmarkSort $column = null, ?SortDirection $direction = null): void
+    {
+        $query->orderBy(
+            ($column ?? BookmarkSort::CreatedAt)->value,
+            ($direction ?? SortDirection::Desc)->value
+        );
     }
 }
