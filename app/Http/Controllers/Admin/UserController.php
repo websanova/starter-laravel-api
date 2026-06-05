@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\TrashedFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\IndexRequest;
 use App\Http\Requests\Admin\User\ShowRequest;
@@ -19,13 +18,12 @@ class UserController extends Controller
      */
     public function index(IndexRequest $request): JsonResponse
     {
-        $query = User::query();
-
-        $query->forSearch($request->validated('search'));
-        $query->forRole($request->validated('role'));
-        $query->forTrashed(TrashedFilter::tryFrom($request->validated('trashed')));
-
-        $users = $query->latest()->paginate($request->validated('per_page', 15));
+        $users = User::query()
+            ->forSearch($request->validated('search'))
+            ->forRole($request->validated('role'))
+            ->forTrashed($request->validated('trashed'))
+            ->latest()
+            ->paginate($request->validated('per_page', 15));
 
         return response()->json(UserResource::collection($users)->response()->getData(true));
     }

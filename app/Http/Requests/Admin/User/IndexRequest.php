@@ -10,6 +10,20 @@ use Illuminate\Validation\Rule;
 class IndexRequest extends FormRequest
 {
     /**
+     * Cast validated enum fields after validation passes.
+     */
+    protected function passedValidation(): void
+    {
+        if ($this->has('role')) {
+            $this->merge(['role' => Role::from($this->input('role'))]);
+        }
+
+        if ($this->has('trashed')) {
+            $this->merge(['trashed' => TrashedFilter::from($this->input('trashed'))]);
+        }
+    }
+
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -24,8 +38,8 @@ class IndexRequest extends FormRequest
     {
         return [
             'search' => ['sometimes', 'string', 'max:255'],
-            'role' => ['sometimes', 'string', Rule::in(array_column(Role::cases(), 'value'))],
-            'trashed' => ['sometimes', 'string', Rule::in(array_column(TrashedFilter::cases(), 'value'))],
+            'role' => ['sometimes', 'string', Rule::enum(Role::class)],
+            'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];
     }
