@@ -25,6 +25,12 @@ A Laravel API starter with a full auth system, account management, and productio
   - Soft delete with configurable grace period
   - Scheduled prune with anonymize or hard delete strategy
 
+- **Delete & Restore**
+  - Soft delete, anonymize, and hard delete strategies
+  - `TrashedFilter` enum with `HasTrashedScope` trait for filtering trashed records
+  - Grace period with auto-restore on login
+  - Scheduled prune command with configurable strategy
+
 - **Search (Fulltext)**
   - Searchable trait with MySQL fulltext index on a denormalized keywords column
   - Observer auto-syncs keywords when searchable fields change
