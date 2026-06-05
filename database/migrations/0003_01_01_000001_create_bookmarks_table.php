@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->timestamps();
+
+            // Sorting indexes
+            $table->index('title');
+            $table->index('created_at');
         });
     }
 

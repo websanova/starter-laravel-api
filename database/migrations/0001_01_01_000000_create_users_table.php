@@ -27,9 +27,15 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            // Search index
             if (DB::getDriverName() !== 'sqlite') {
                 $table->fullText('keywords');
             }
+
+            // Sorting indexes
+            $table->index(['first_name', 'last_name']);
+            $table->index('created_at');
+            $table->index('last_active_at');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

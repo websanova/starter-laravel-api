@@ -16,6 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
+
+            // Sorting indexes
+            $table->index('name');
         });
     }
 
