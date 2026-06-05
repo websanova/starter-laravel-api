@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +16,7 @@ class EnsureAdmin
     {
         $user = $request->user();
 
-        if (!$user || (!$user->hasRole(Role::Admin) && !$user->hasRole(Role::Super))) {
+        if (!$user || (!$user->hasRole(UserRole::Admin) && !$user->hasRole(UserRole::Super))) {
             return response()->json([
                 'message' => __('responses.auth.forbidden'),
             ], 403);

@@ -3,14 +3,14 @@
 uses()->group('admin.user-force-delete.destroy');
 
 use App\Enums\AccountPruneStrategy;
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('admin can force delete a regular user with delete strategy', function () {
     config(['auth.delete.prune_strategy' => AccountPruneStrategy::Delete]);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -24,7 +24,7 @@ test('admin can force delete a regular user with anonymize strategy', function (
     config(['auth.delete.prune_strategy' => AccountPruneStrategy::Anonymize]);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create(['email' => 'original@example.com']);
 
@@ -39,7 +39,7 @@ test('admin can force delete a soft-deleted user', function () {
     config(['auth.delete.prune_strategy' => AccountPruneStrategy::Delete]);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->delete();
@@ -52,10 +52,10 @@ test('admin can force delete a soft-deleted user', function () {
 
 test('admin cannot force delete another admin', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/users/{$otherAdmin->id}/force");
 
@@ -64,10 +64,10 @@ test('admin cannot force delete another admin', function () {
 
 test('admin cannot force delete a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/users/{$super->id}/force");
 
@@ -78,10 +78,10 @@ test('super can force delete an admin', function () {
     config(['auth.delete.prune_strategy' => AccountPruneStrategy::Delete]);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($super)->deleteJson("/admin/users/{$admin->id}/force");
 

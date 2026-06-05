@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 class UserPolicy
@@ -12,7 +12,7 @@ class UserPolicy
      */
     public function before(User $user, string $ability): ?bool
     {
-        if ($user->hasRole(Role::Super)) {
+        if ($user->hasRole(UserRole::Super)) {
             return true;
         }
 
@@ -33,7 +33,7 @@ class UserPolicy
     public function view(User $user, User $target): bool
     {
         return $user->hasPermissionTo('users.manage')
-            && !$target->hasRole(Role::Super);
+            && !$target->hasRole(UserRole::Super);
     }
 
     /**
@@ -42,7 +42,7 @@ class UserPolicy
     public function update(User $user, User $target): bool
     {
         return $user->hasPermissionTo('users.manage')
-            && !$target->hasRole(Role::Super);
+            && !$target->hasRole(UserRole::Super);
     }
 
     /**
@@ -51,8 +51,8 @@ class UserPolicy
     public function delete(User $user, User $target): bool
     {
         return $user->hasPermissionTo('users.manage')
-            && !$target->hasRole(Role::Super)
-            && !$target->hasRole(Role::Admin);
+            && !$target->hasRole(UserRole::Super)
+            && !$target->hasRole(UserRole::Admin);
     }
 
     /**
@@ -61,8 +61,8 @@ class UserPolicy
     public function assignRole(User $user, User $target): bool
     {
         return $user->hasPermissionTo('users.assign-role')
-            && !$target->hasRole(Role::Super)
-            && !$target->hasRole(Role::Admin);
+            && !$target->hasRole(UserRole::Super)
+            && !$target->hasRole(UserRole::Admin);
     }
 
     /**

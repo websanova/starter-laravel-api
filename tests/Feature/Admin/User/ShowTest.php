@@ -2,12 +2,12 @@
 
 uses()->group('admin.user.show');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('super can view any user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
 
@@ -21,7 +21,7 @@ test('super can view any user', function () {
 
 test('admin can view a regular user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -32,10 +32,10 @@ test('admin can view a regular user', function () {
 
 test('admin can view another admin', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->getJson("/admin/users/{$otherAdmin->id}");
 
@@ -44,10 +44,10 @@ test('admin can view another admin', function () {
 
 test('admin cannot view a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->getJson("/admin/users/{$super->id}");
 

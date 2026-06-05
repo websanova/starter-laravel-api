@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\User;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Enums\TrashedFilter;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +24,7 @@ class IndexRequest extends FormRequest
     {
         return [
             'search' => ['sometimes', 'string', 'max:255'],
-            'role' => ['sometimes', 'string', Rule::enum(Role::class)],
+            'role' => ['sometimes', 'string', Rule::enum(UserRole::class)],
             'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];
@@ -38,7 +38,7 @@ class IndexRequest extends FormRequest
         $data = parent::validated();
 
         if (isset($data['role'])) {
-            $data['role'] = Role::from($data['role']);
+            $data['role'] = UserRole::from($data['role']);
         }
 
         if (isset($data['trashed'])) {

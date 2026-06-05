@@ -2,12 +2,12 @@
 
 uses()->group('admin.user-role.update');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('admin can assign admin role to a regular user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -18,12 +18,12 @@ test('admin can assign admin role to a regular user', function () {
     $response->assertStatus(200)
         ->assertJsonPath('data.role', 'admin');
 
-    expect($target->fresh()->hasRole(Role::Admin))->toBeTrue();
+    expect($target->fresh()->hasRole(UserRole::Admin))->toBeTrue();
 });
 
 test('super can assign admin role to a regular user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
 
@@ -37,7 +37,7 @@ test('super can assign admin role to a regular user', function () {
 
 test('super can assign super role to a user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
 
@@ -51,10 +51,10 @@ test('super can assign super role to a user', function () {
 
 test('super can remove admin role from an admin', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
-    $target->assignRole(Role::Admin);
+    $target->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($super)->patchJson("/admin/users/{$target->id}/role", [
         'role' => null,
@@ -63,15 +63,15 @@ test('super can remove admin role from an admin', function () {
     $response->assertStatus(200)
         ->assertJsonPath('data.role', null);
 
-    expect($target->fresh()->hasRole(Role::Admin))->toBeFalse();
+    expect($target->fresh()->hasRole(UserRole::Admin))->toBeFalse();
 });
 
 test('admin cannot remove admin role from another admin', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$otherAdmin->id}/role", [
         'role' => null,
@@ -82,10 +82,10 @@ test('admin cannot remove admin role from another admin', function () {
 
 test('admin cannot assign role to a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/role", [
         'role' => 'admin',
@@ -96,10 +96,10 @@ test('admin cannot assign role to a super user', function () {
 
 test('admin cannot assign role to another admin', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$otherAdmin->id}/role", [
         'role' => 'admin',
@@ -131,7 +131,7 @@ test('unauthenticated user cannot assign roles', function () {
 
 test('invalid role value is rejected', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 

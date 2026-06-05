@@ -2,12 +2,12 @@
 
 uses()->group('admin.user.update');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('admin can update a regular user name', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -23,7 +23,7 @@ test('admin can update a regular user name', function () {
 
 test('admin can partially update a user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create(['last_name' => 'Original']);
 
@@ -38,7 +38,7 @@ test('admin can partially update a user', function () {
 
 test('super can update any user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
 
@@ -52,10 +52,10 @@ test('super can update any user', function () {
 
 test('super can update an admin user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($super)->patchJson("/admin/users/{$admin->id}", [
         'first_name' => 'Updated',
@@ -67,10 +67,10 @@ test('super can update an admin user', function () {
 
 test('admin cannot update a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}", [
         'first_name' => 'Updated',
@@ -102,7 +102,7 @@ test('unauthenticated user cannot update a user', function () {
 
 test('update ignores email field', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create(['email' => 'original@example.com']);
 

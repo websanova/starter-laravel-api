@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -25,8 +25,8 @@ class RoleAndPermissionSeeder extends Seeder
             Permission::findOrCreate($permission, 'api');
         }
 
-        $super = SpatieRole::findOrCreate(Role::Super->value, 'api');
-        $admin = SpatieRole::findOrCreate(Role::Admin->value, 'api');
+        $super = SpatieRole::findOrCreate(UserRole::Super->value, 'api');
+        $admin = SpatieRole::findOrCreate(UserRole::Admin->value, 'api');
 
         $admin->syncPermissions($permissions);
 

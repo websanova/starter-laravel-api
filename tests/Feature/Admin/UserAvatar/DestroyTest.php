@@ -2,7 +2,7 @@
 
 uses()->group('admin.user-avatar.destroy');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 test('admin can delete a user avatar', function () {
     Storage::fake('s3');
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->storeAvatar(UploadedFile::fake()->image('avatar.png'));
@@ -27,7 +27,7 @@ test('admin can delete a user avatar', function () {
 
 test('deleting avatar when none exists returns user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -39,10 +39,10 @@ test('deleting avatar when none exists returns user', function () {
 
 test('admin cannot delete a super user avatar', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/users/{$super->id}/avatar");
 

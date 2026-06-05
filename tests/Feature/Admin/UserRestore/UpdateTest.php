@@ -2,12 +2,12 @@
 
 uses()->group('admin.user-restore.update');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('admin can restore a soft-deleted user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->delete();
@@ -23,10 +23,10 @@ test('admin can restore a soft-deleted user', function () {
 
 test('super can restore a soft-deleted admin', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
     $admin->delete();
 
     $response = $this->actingAs($super)->patchJson("/admin/users/{$admin->id}/restore");
@@ -37,10 +37,10 @@ test('super can restore a soft-deleted admin', function () {
 
 test('admin cannot restore a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
     $super->delete();
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/restore");

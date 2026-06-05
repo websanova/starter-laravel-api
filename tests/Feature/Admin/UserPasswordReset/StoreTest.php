@@ -2,7 +2,7 @@
 
 uses()->group('admin.user-password-reset.store');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Notifications\TempPasswordNotification;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +12,7 @@ test('admin can force password reset on a regular user', function () {
     Notification::fake();
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $originalPassword = $target->password;
@@ -33,7 +33,7 @@ test('tokens are revoked on forced password reset', function () {
     Notification::fake();
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->createToken('auth');
@@ -48,10 +48,10 @@ test('super can force password reset on an admin', function () {
     Notification::fake();
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($super)->postJson("/admin/users/{$admin->id}/password-reset");
 
@@ -65,10 +65,10 @@ test('admin cannot force password reset on a super user', function () {
     Notification::fake();
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->postJson("/admin/users/{$super->id}/password-reset");
 

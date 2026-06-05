@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\UserRole;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => ['nullable', 'string', Rule::in(array_column(Role::cases(), 'value'))],
+            'role' => ['nullable', 'string', Rule::in(array_column(UserRole::cases(), 'value'))],
         ];
     }
 }

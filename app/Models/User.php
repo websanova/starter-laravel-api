@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Enums\StoragePath;
 use App\Models\Concerns\HasTrashedScope;
 use App\Models\Concerns\Searchable;
@@ -117,7 +117,7 @@ class User extends Authenticatable
     /**
      * Filter by role.
      */
-    public function scopeForRole(Builder $query, ?Role $role): void
+    public function scopeForRole(Builder $query, ?UserRole $role): void
     {
         if (is_null($role)) {
             return;

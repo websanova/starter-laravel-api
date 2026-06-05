@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +22,7 @@ class DevSeeder extends Seeder
             'password' => Hash::make('testtest'),
         ]);
 
-        $admin->assignRole(SpatieRole::findByName(Role::Admin->value, 'api'));
+        $admin->assignRole(SpatieRole::findByName(UserRole::Admin->value, 'api'));
 
         User::factory()->create([
             'first_name' => 'Test',

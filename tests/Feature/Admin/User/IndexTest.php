@@ -2,12 +2,12 @@
 
 uses()->group('admin.user.index');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('super can list users', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     User::factory()->count(3)->create();
 
@@ -23,7 +23,7 @@ test('super can list users', function () {
 
 test('admin can list users', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     User::factory()->count(3)->create();
 
@@ -48,7 +48,7 @@ test('unauthenticated user cannot list users', function () {
 
 test('can search users by name', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     User::factory()->create(['first_name' => 'Findme']);
     User::factory()->create(['first_name' => 'Other']);
@@ -62,7 +62,7 @@ test('can search users by name', function () {
 
 test('can search users by email', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     User::factory()->create(['email' => 'target@example.com']);
     User::factory()->create(['email' => 'other@example.com']);
@@ -75,10 +75,10 @@ test('can search users by email', function () {
 
 test('can filter users by role', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     User::factory()->count(2)->create();
 
@@ -90,7 +90,7 @@ test('can filter users by role', function () {
 
 test('can filter trashed users', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $deleted = User::factory()->create();
     $deleted->delete();
@@ -103,7 +103,7 @@ test('can filter trashed users', function () {
 
 test('can set per page limit', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     User::factory()->count(5)->create();
 

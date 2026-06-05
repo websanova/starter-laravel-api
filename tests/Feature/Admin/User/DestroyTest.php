@@ -2,12 +2,12 @@
 
 uses()->group('admin.user.destroy');
 
-use App\Enums\Role;
+use App\Enums\UserRole;
 use App\Models\User;
 
 test('admin can soft delete a regular user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
@@ -19,7 +19,7 @@ test('admin can soft delete a regular user', function () {
 
 test('user tokens are revoked on soft delete', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->createToken('auth');
@@ -31,10 +31,10 @@ test('user tokens are revoked on soft delete', function () {
 
 test('super can soft delete any user', function () {
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($super)->deleteJson("/admin/users/{$admin->id}");
 
@@ -44,10 +44,10 @@ test('super can soft delete any user', function () {
 
 test('admin cannot soft delete another admin', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $otherAdmin = User::factory()->create();
-    $otherAdmin->assignRole(Role::Admin);
+    $otherAdmin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/users/{$otherAdmin->id}");
 
@@ -56,10 +56,10 @@ test('admin cannot soft delete another admin', function () {
 
 test('admin cannot soft delete a super user', function () {
     $admin = User::factory()->create();
-    $admin->assignRole(Role::Admin);
+    $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
-    $super->assignRole(Role::Super);
+    $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/users/{$super->id}");
 
