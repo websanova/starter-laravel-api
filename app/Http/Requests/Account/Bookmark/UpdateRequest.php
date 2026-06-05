@@ -25,6 +25,7 @@ class UpdateRequest extends FormRequest
             'url' => BookmarkRules::url(required: false),
             'title' => BookmarkRules::title(required: false),
             'description' => BookmarkRules::description(),
+            'is_favorited' => BookmarkRules::isFavorited(),
         ];
     }
 }

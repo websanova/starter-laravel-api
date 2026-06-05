@@ -18,6 +18,7 @@ class BookmarkResource extends JsonResource
             'url' => $this->url,
             'title' => $this->title,
             'description' => $this->description,
+            'is_favorited' => $this->is_favorited,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

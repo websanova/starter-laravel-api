@@ -19,6 +19,7 @@ class BookmarkController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $bookmarks = $request->user()->bookmarks()
+            ->forFavorited($request->validated('favorited'))
             ->forCategory($request->validated('category_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));

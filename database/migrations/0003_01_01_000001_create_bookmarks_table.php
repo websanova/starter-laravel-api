@@ -18,7 +18,11 @@ return new class extends Migration
             $table->string('url');
             $table->string('title');
             $table->text('description')->nullable();
+            $table->boolean('is_favorited')->default(false);
             $table->timestamps();
+
+            // Filtering indexes
+            $table->index('is_favorited');
 
             // Sorting indexes
             $table->index('title');

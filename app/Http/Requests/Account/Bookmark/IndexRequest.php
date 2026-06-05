@@ -17,6 +17,7 @@ class IndexRequest extends FormRequest
     {
         return [
             'category_id' => SharedRules::id(allowZero: true),
+            'favorited' => BookmarkRules::isFavorited(),
             'sort_by' => BookmarkRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
             'per_page' => SharedRules::perPage(),
@@ -29,6 +30,10 @@ class IndexRequest extends FormRequest
     public function validated($key = null, $default = null): mixed
     {
         $data = parent::validated();
+
+        if (array_key_exists('favorited', $data)) {
+            $data['favorited'] = filter_var($data['favorited'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         if (isset($data['sort_by'])) {
             $data['sort_by'] = BookmarkSort::from($data['sort_by']);

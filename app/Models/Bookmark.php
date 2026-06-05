@@ -26,7 +26,20 @@ class Bookmark extends Model
         'url',
         'title',
         'description',
+        'is_favorited',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_favorited' => 'boolean',
+        ];
+    }
 
     /**
      * Get the user that owns the bookmark.
@@ -42,6 +55,18 @@ class Bookmark extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Filter by favorited status.
+     */
+    public function scopeForFavorited(Builder $query, ?bool $favorited): void
+    {
+        if (is_null($favorited)) {
+            return;
+        }
+
+        $query->where('is_favorited', $favorited);
     }
 
     /**

@@ -17,6 +17,7 @@ class StoreRequest extends FormRequest
             'url' => BookmarkRules::url(),
             'title' => BookmarkRules::title(),
             'description' => BookmarkRules::description(),
+            'is_favorited' => BookmarkRules::isFavorited(),
         ];
     }
 }

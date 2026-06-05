@@ -29,6 +29,14 @@ class BookmarkRules
     }
 
     /**
+     * Validation rules for the is_favorited field.
+     */
+    public static function isFavorited(): array
+    {
+        return ['sometimes', 'boolean'];
+    }
+
+    /**
      * Validation rules for the url field.
      */
     public static function url(bool $required = true): array
