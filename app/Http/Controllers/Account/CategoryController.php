@@ -51,6 +51,8 @@ class CategoryController extends Controller
 
     /**
      * Delete a category.
+     *
+     * Associated bookmarks have their category_id nulled via ON DELETE SET NULL.
      */
     public function destroy(DestroyRequest $request, Category $category): JsonResponse
     {
