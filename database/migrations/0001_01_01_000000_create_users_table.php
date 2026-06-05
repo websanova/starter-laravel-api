@@ -32,6 +32,9 @@ return new class extends Migration
                 $table->fullText('keywords');
             }
 
+            // Filtering indexes
+            $table->index('deleted_at');
+
             // Sorting indexes
             $table->index(['first_name', 'last_name']);
             $table->index('created_at');
