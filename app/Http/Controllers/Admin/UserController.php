@@ -22,7 +22,7 @@ class UserController extends Controller
             ->forSearch($request->validated('search'))
             ->forRole($request->validated('role'))
             ->forTrashed($request->validated('trashed'))
-            ->latest()
+            ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 
         return response()->json(UserResource::collection($users)->response()->getData(true));

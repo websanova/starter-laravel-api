@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Admin\User;
 
-use App\Enums\UserRole;
+use App\Enums\SortDirection;
 use App\Enums\TrashedFilter;
+use App\Enums\UserRole;
+use App\Enums\UserSort;
+use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,6 +29,8 @@ class IndexRequest extends FormRequest
             'search' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', 'string', Rule::enum(UserRole::class)],
             'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
+            'sort_by' => ['sometimes', 'string', Rule::enum(UserSort::class)],
+            'sort_dir' => SharedRules::sortDir(),
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];
     }
@@ -43,6 +48,14 @@ class IndexRequest extends FormRequest
 
         if (isset($data['trashed'])) {
             $data['trashed'] = TrashedFilter::from($data['trashed']);
+        }
+
+        if (isset($data['sort_by'])) {
+            $data['sort_by'] = UserSort::from($data['sort_by']);
+        }
+
+        if (isset($data['sort_dir'])) {
+            $data['sort_dir'] = SortDirection::from($data['sort_dir']);
         }
 
         if (!is_null($key)) {

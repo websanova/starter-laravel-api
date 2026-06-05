@@ -3,8 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\UserRole;
+use App\Enums\SortDirection;
 use App\Enums\StoragePath;
+use App\Enums\UserRole;
+use App\Enums\UserSort;
 use App\Models\Concerns\HasTrashedScope;
 use App\Models\Concerns\Searchable;
 use App\Notifications\ResetPasswordNotification;
@@ -112,6 +114,22 @@ class User extends Authenticatable
                 ? Storage::disk('s3')->url($this->avatar)
                 : null,
         );
+    }
+
+    /**
+     * Sort by the given column and direction.
+     */
+    public function scopeSortBy(Builder $query, ?UserSort $column = null, ?SortDirection $direction = null): void
+    {
+        $col = $column ?? UserSort::CreatedAt;
+        $dir = $direction ?? SortDirection::Desc;
+
+        if ($col === UserSort::Name) {
+            $query->orderBy('first_name', $dir->value)
+                ->orderBy('last_name', $dir->value);
+        } else {
+            $query->orderBy($col->value, $dir->value);
+        }
     }
 
     /**
