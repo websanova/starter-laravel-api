@@ -135,13 +135,13 @@ class User extends Authenticatable
     /**
      * Filter by role.
      */
-    public function scopeForRole(Builder $query, ?UserRole $role): void
+    public function scopeForRole(Builder $query, ?array $roles): void
     {
-        if (is_null($role)) {
+        if (is_null($roles)) {
             return;
         }
 
-        $query->role($role->value);
+        $query->role(array_map(fn (UserRole $role) => $role->value, $roles));
     }
 
     /**

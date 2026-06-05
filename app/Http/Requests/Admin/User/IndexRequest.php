@@ -22,13 +22,24 @@ class IndexRequest extends FormRequest
     }
 
     /**
+     * Normalize comma-separated values into arrays.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('role') && is_string($this->role)) {
+            $this->merge(['role' => explode(',', $this->role)]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
     {
         return [
             'search' => ['sometimes', 'string', 'max:255'],
-            'role' => ['sometimes', 'string', Rule::enum(UserRole::class)],
+            'role' => ['sometimes'],
+            'role.*' => ['string', Rule::enum(UserRole::class)],
             'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
             'sort_by' => UserRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
@@ -44,7 +55,10 @@ class IndexRequest extends FormRequest
         $data = parent::validated();
 
         if (isset($data['role'])) {
-            $data['role'] = UserRole::from($data['role']);
+            $data['role'] = array_map(
+                fn ($role) => UserRole::from($role),
+                (array) $data['role'],
+            );
         }
 
         if (isset($data['trashed'])) {

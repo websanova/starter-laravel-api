@@ -73,7 +73,7 @@ test('can search users by email', function () {
         ->assertJsonCount(1, 'data');
 });
 
-test('can filter users by role', function () {
+test('can filter users by single role', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
@@ -86,6 +86,51 @@ test('can filter users by role', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
+});
+
+test('can filter users by multiple roles with array syntax', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $otherAdmin = User::factory()->create();
+    $otherAdmin->assignRole(UserRole::Admin);
+
+    User::factory()->count(2)->create();
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?role[]=admin&role[]=super');
+
+    // 2 admins + 1 seeded super
+    $response->assertStatus(200)
+        ->assertJsonCount(3, 'data');
+});
+
+test('can filter users by multiple roles with comma-separated syntax', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $otherAdmin = User::factory()->create();
+    $otherAdmin->assignRole(UserRole::Admin);
+
+    User::factory()->count(2)->create();
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?role=admin,super');
+
+    // 2 admins + 1 seeded super
+    $response->assertStatus(200)
+        ->assertJsonCount(3, 'data');
+});
+
+test('can filter users by super role', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    User::factory()->count(2)->create();
+
+    $response = $this->actingAs($admin)->getJson('/admin/users?role=super');
+
+    // 1 seeded super
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data');
 });
 
 test('can filter trashed users', function () {
@@ -114,12 +159,12 @@ test('can set per page limit', function () {
 });
 
 test('users are sorted by created_at descending by default', function () {
-    $admin = User::factory()->create(['first_name' => 'Admin', 'created_at' => now()->subDays(3)]);
+    $admin = User::factory()->create(['first_name' => 'Admin', 'created_at' => now()->addDays(10)]);
     $admin->assignRole(UserRole::Admin);
 
-    $old = User::factory()->create(['first_name' => 'Old', 'created_at' => now()->subDays(2)]);
-    $new = User::factory()->create(['first_name' => 'New', 'created_at' => now()]);
-    $mid = User::factory()->create(['first_name' => 'Mid', 'created_at' => now()->subDay()]);
+    $old = User::factory()->create(['first_name' => 'Old', 'created_at' => now()->addDays(11)]);
+    $new = User::factory()->create(['first_name' => 'New', 'created_at' => now()->addDays(13)]);
+    $mid = User::factory()->create(['first_name' => 'Mid', 'created_at' => now()->addDays(12)]);
 
     $response = $this->actingAs($admin)->getJson('/admin/users');
 
@@ -138,10 +183,12 @@ test('users can be sorted by name ascending', function () {
 
     $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=name&sort_dir=asc');
 
+    // Seeded super user (first_name: 'Super') also present in results
     $response->assertStatus(200)
         ->assertJsonPath('data.0.first_name', 'Admin')
         ->assertJsonPath('data.1.first_name', 'Apple')
-        ->assertJsonPath('data.2.first_name', 'Zebra');
+        ->assertJsonPath('data.2.first_name', 'Super')
+        ->assertJsonPath('data.3.first_name', 'Zebra');
 });
 
 test('users can be sorted by email', function () {
@@ -153,10 +200,12 @@ test('users can be sorted by email', function () {
 
     $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=email&sort_dir=asc');
 
+    // Seeded super user (super@starter.com) also present in results
     $response->assertStatus(200)
         ->assertJsonPath('data.0.email', 'a@example.com')
         ->assertJsonPath('data.1.email', 'b@example.com')
-        ->assertJsonPath('data.2.email', 'c@example.com');
+        ->assertJsonPath('data.2.email', 'c@example.com')
+        ->assertJsonPath('data.3.email', 'super@starter.com');
 });
 
 test('users can be sorted by last_active_at', function () {
