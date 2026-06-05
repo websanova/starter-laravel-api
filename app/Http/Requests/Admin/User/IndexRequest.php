@@ -7,6 +7,7 @@ use App\Enums\TrashedFilter;
 use App\Enums\UserRole;
 use App\Enums\UserSort;
 use App\Rules\SharedRules;
+use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,7 +30,7 @@ class IndexRequest extends FormRequest
             'search' => ['sometimes', 'string', 'max:255'],
             'role' => ['sometimes', 'string', Rule::enum(UserRole::class)],
             'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
-            'sort_by' => ['sometimes', 'string', Rule::enum(UserSort::class)],
+            'sort_by' => UserRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];

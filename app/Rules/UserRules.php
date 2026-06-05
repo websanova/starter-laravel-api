@@ -2,10 +2,20 @@
 
 namespace App\Rules;
 
+use App\Enums\UserSort;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UserRules
 {
+    /**
+     * Validation rules for the sort_by field.
+     */
+    public static function sortBy(): array
+    {
+        return ['sometimes', 'string', Rule::enum(UserSort::class)];
+    }
+
     /**
      * Validation rules for the first_name field.
      */

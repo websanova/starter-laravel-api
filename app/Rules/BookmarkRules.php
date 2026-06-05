@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Enums\BookmarkSort;
 use Illuminate\Validation\Rule;
 
 class BookmarkRules
@@ -18,6 +19,14 @@ class BookmarkRules
         ];
     }
 
+
+    /**
+     * Validation rules for the sort_by field.
+     */
+    public static function sortBy(): array
+    {
+        return ['sometimes', 'string', Rule::enum(BookmarkSort::class)];
+    }
 
     /**
      * Validation rules for the url field.

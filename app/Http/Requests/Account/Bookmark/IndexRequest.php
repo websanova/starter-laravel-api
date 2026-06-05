@@ -4,9 +4,9 @@ namespace App\Http\Requests\Account\Bookmark;
 
 use App\Enums\BookmarkSort;
 use App\Enums\SortDirection;
+use App\Rules\BookmarkRules;
 use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class IndexRequest extends FormRequest
 {
@@ -17,7 +17,7 @@ class IndexRequest extends FormRequest
     {
         return [
             'category_id' => SharedRules::id(allowZero: true),
-            'sort_by' => ['sometimes', 'string', Rule::enum(BookmarkSort::class)],
+            'sort_by' => BookmarkRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
             'per_page' => SharedRules::perPage(),
         ];
