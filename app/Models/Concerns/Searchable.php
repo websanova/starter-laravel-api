@@ -32,10 +32,14 @@ trait Searchable
             return;
         }
 
-        $query->whereRaw(
-            'MATCH(keywords) AGAINST(? IN BOOLEAN MODE)',
-            [$term . '*']
-        );
+        if ($query->getConnection()->getDriverName() === 'mysql') {
+            $query->whereRaw(
+                'MATCH(keywords) AGAINST(? IN BOOLEAN MODE)',
+                [$term . '*']
+            );
+        } else {
+            $query->where('keywords', 'like', '%' . $term . '%');
+        }
     }
 
     /**
