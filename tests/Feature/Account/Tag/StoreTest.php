@@ -85,19 +85,15 @@ test('name must not exceed 50 characters', function () {
         ->assertJsonValidationErrors('name');
 });
 
-test('name allows letters numbers spaces dots hyphens plus and hash', function () {
+test('name allows letters numbers spaces dots hyphens plus and hash', function ($name) {
     $user = User::factory()->create();
 
-    $valid = ['vue.js', 'c++', 'c#', 'node-js', 'vue 3'];
+    $response = $this->actingAs($user)->postJson('/account/tags', [
+        'name' => $name,
+    ]);
 
-    foreach ($valid as $name) {
-        $response = $this->actingAs($user)->postJson('/account/tags', [
-            'name' => $name,
-        ]);
-
-        $response->assertStatus(201);
-    }
-});
+    $response->assertStatus(201);
+})->with(['vue.js', 'c++', 'c#', 'node-js', 'vue 3']);
 
 test('name must start with a letter or number', function () {
     $user = User::factory()->create();
@@ -110,20 +106,16 @@ test('name must start with a letter or number', function () {
         ->assertJsonValidationErrors('name');
 });
 
-test('name rejects special characters', function () {
+test('name rejects special characters', function ($name) {
     $user = User::factory()->create();
 
-    $invalid = ['tag!', 'tag@name', 'tag$', 'tag&name'];
+    $response = $this->actingAs($user)->postJson('/account/tags', [
+        'name' => $name,
+    ]);
 
-    foreach ($invalid as $name) {
-        $response = $this->actingAs($user)->postJson('/account/tags', [
-            'name' => $name,
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors('name');
-    }
-});
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('name');
+})->with(['tag!', 'tag@name', 'tag$', 'tag&name']);
 
 test('unauthenticated user cannot create a tag', function () {
     $response = $this->postJson('/account/tags', [
