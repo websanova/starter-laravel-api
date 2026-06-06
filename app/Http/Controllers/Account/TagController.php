@@ -51,6 +51,8 @@ class TagController extends Controller
 
     /**
      * Delete a tag.
+     *
+     * Associated bookmark_tag pivot rows are removed via ON DELETE CASCADE.
      */
     public function destroy(DestroyRequest $request, Tag $tag): JsonResponse
     {

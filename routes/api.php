@@ -68,4 +68,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
 
     Route::get('/users/{user}/categories', [App\Http\Controllers\Admin\UserCategoryController::class, 'index']);
     Route::delete('/users/{user}/categories/{category}', [App\Http\Controllers\Admin\UserCategoryController::class, 'destroy'])->scopeBindings();
+
+    Route::get('/users/{user}/tags', [App\Http\Controllers\Admin\UserTagController::class, 'index']);
+    Route::delete('/users/{user}/tags/{tag}', [App\Http\Controllers\Admin\UserTagController::class, 'destroy'])->scopeBindings();
 });
