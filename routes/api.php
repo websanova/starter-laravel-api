@@ -40,6 +40,11 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
         Route::put('/categories/{category}', [App\Http\Controllers\Account\CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [App\Http\Controllers\Account\CategoryController::class, 'destroy']);
 
+        Route::get('/tags', [App\Http\Controllers\Account\TagController::class, 'index']);
+        Route::post('/tags', [App\Http\Controllers\Account\TagController::class, 'store']);
+        Route::put('/tags/{tag}', [App\Http\Controllers\Account\TagController::class, 'update']);
+        Route::delete('/tags/{tag}', [App\Http\Controllers\Account\TagController::class, 'destroy']);
+
         Route::get('/bookmarks', [App\Http\Controllers\Account\BookmarkController::class, 'index']);
         Route::post('/bookmarks', [App\Http\Controllers\Account\BookmarkController::class, 'store']);
         Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\Account\BookmarkController::class, 'update']);

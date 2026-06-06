@@ -44,6 +44,10 @@ return [
     'category.updated' => 'Category updated successfully.',
     'category.deleted' => 'Category deleted successfully.',
 
+    'tag.created' => 'Tag created successfully.',
+    'tag.updated' => 'Tag updated successfully.',
+    'tag.deleted' => 'Tag deleted successfully.',
+
     'bookmark.created' => 'Bookmark created successfully.',
     'bookmark.updated' => 'Bookmark updated successfully.',
     'bookmark.deleted' => 'Bookmark deleted successfully.',

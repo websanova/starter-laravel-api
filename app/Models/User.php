@@ -105,6 +105,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's tags.
+     */
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    /**
      * Get the full URL of the user's avatar.
      */
     protected function avatarUrl(): Attribute
