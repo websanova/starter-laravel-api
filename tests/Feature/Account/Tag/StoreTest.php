@@ -85,6 +85,46 @@ test('name must not exceed 50 characters', function () {
         ->assertJsonValidationErrors('name');
 });
 
+test('name allows letters numbers spaces dots hyphens plus and hash', function () {
+    $user = User::factory()->create();
+
+    $valid = ['vue.js', 'c++', 'c#', 'node-js', 'vue 3'];
+
+    foreach ($valid as $name) {
+        $response = $this->actingAs($user)->postJson('/account/tags', [
+            'name' => $name,
+        ]);
+
+        $response->assertStatus(201);
+    }
+});
+
+test('name must start with a letter or number', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/account/tags', [
+        'name' => '.dotfirst',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('name');
+});
+
+test('name rejects special characters', function () {
+    $user = User::factory()->create();
+
+    $invalid = ['tag!', 'tag@name', 'tag$', 'tag&name'];
+
+    foreach ($invalid as $name) {
+        $response = $this->actingAs($user)->postJson('/account/tags', [
+            'name' => $name,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('name');
+    }
+});
+
 test('unauthenticated user cannot create a tag', function () {
     $response = $this->postJson('/account/tags', [
         'name' => 'laravel',

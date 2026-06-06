@@ -24,6 +24,7 @@ class TagRules
             $required ? 'required' : 'sometimes',
             'string',
             'max:50',
+            new TagNameFormat,
         ];
     }
 }
