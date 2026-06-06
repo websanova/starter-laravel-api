@@ -19,6 +19,7 @@ class RoleAndPermissionSeeder extends Seeder
         $permissions = [
             'users.manage',
             'users.assign-role',
+            'plans.manage',
         ];
 
         foreach ($permissions as $permission) {

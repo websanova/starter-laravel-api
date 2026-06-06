@@ -14,6 +14,7 @@ use App\Observers\SearchableObserver;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Format;
 use Intervention\Image\Laravel\Facades\Image;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -32,7 +34,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, HasTrashedScope, Notifiable, Searchable, SoftDeletes;
+    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, Notifiable, Searchable, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -58,6 +60,7 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'avatar',
+        'plan_id',
         'keywords',
         'last_active_at',
         'is_password_reset_required',
@@ -86,6 +89,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_password_reset_required' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the user's plan.
+     */
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
     }
 
     /**
@@ -165,6 +176,28 @@ class User extends Authenticatable
             $q->forKeywordsSearch($term)
                 ->orWhere('email', 'like', "%{$term}%");
         });
+    }
+
+    /**
+     * Get a feature value from the user's current plan.
+     */
+    public function planFeature(string $key, mixed $default = null): mixed
+    {
+        return $this->plan?->feature($key, $default) ?? $default;
+    }
+
+    /**
+     * Check if the user is within a plan's feature limit.
+     */
+    public function withinPlanLimit(string $key, int $count): bool
+    {
+        $limit = $this->planFeature($key);
+
+        if (is_null($limit)) {
+            return true;
+        }
+
+        return $count < $limit;
     }
 
     /**

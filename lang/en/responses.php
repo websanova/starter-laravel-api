@@ -52,6 +52,10 @@ return [
     'bookmark.updated' => 'Bookmark updated successfully.',
     'bookmark.deleted' => 'Bookmark deleted successfully.',
 
+    'admin.plan.created' => 'Plan created successfully.',
+    'admin.plan.updated' => 'Plan updated successfully.',
+    'admin.plan.deleted' => 'Plan deleted successfully.',
+
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 
 ];
