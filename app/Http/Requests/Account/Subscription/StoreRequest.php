@@ -3,9 +3,8 @@
 namespace App\Http\Requests\Account\Subscription;
 
 use App\Enums\PlanInterval;
-use App\Rules\PlanRules;
+use App\Rules\SubscriptionRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -15,8 +14,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan' => ['required', 'string', 'exists:plans,slug'],
-            'interval' => ['required', 'string', Rule::enum(PlanInterval::class)],
+            'plan' => SubscriptionRules::plan(),
+            'interval' => SubscriptionRules::interval(),
         ];
     }
 
