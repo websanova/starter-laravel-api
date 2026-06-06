@@ -18,6 +18,12 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'avatar_url' => $this->avatar_url,
+            'plan' => [
+                'id' => $this->plan->id,
+                'name' => $this->plan->name,
+                'slug' => $this->plan->slug,
+                'features' => $this->plan->features,
+            ],
             'role' => $this->roles->first()?->name,
             'is_password_reset_required' => $this->is_password_reset_required,
             'email_verified_at' => $this->email_verified_at,
