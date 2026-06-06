@@ -27,6 +27,10 @@ return new class extends Migration
             $table->index('is_active');
             $table->index('sort_order');
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('plan_id')->nullable()->after('is_password_reset_required')->constrained()->nullOnDelete();
+        });
     }
 
     /**
@@ -34,6 +38,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['plan_id']);
+            $table->dropColumn('plan_id');
+        });
+
         Schema::dropIfExists('plans');
     }
 };
