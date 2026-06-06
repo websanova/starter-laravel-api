@@ -128,4 +128,7 @@ Detailed conventions are in `.claude/rules/` and load automatically when touchin
 - Services for multi-model orchestration only. Simple CRUD stays in models/controllers.
 - All emails through notifications (not `Mail::send()`), extensible to SMS via `$channelMap`.
 - Migrations use `cascadeOnDelete()` for owned resources, `nullOnDelete()` for optional relationships.
+- Plan model uses `rememberForever()` cache with auto-invalidation. Feature limits are JSON with null meaning unlimited.
+- Subscription logic in `ManagesSubscription` trait on User. Three modes via `config/subscription.php`: freemium, trial, required.
+- Plan feature limits checked in account store requests via `canUsePlanFeature()` in `authorize()`.
 - Tests mirror route group structure, use Pest with `RefreshDatabase`, group tags like `account.bookmark.index`.

@@ -56,8 +56,14 @@ A Laravel API starter with a full auth system, account management, and productio
   - Forced password reset flow with temp password email
   - Seeded super user on first migrate
 
+- **Plans & Subscriptions (Cashier/Stripe)**
+  - Plan model with features JSON (countable limits and boolean flags)
+  - Three subscription modes: freemium, trial, required
+  - Subscribe, swap, cancel, resume flows for both account and admin
+  - Plan feature limits enforced in request authorization
+  - Plans cached with auto-invalidation on mutation
+
 - **Integrations**
-  - Laravel Cashier (Stripe)
   - S3-compatible file storage
 
 - **Dev Environment**

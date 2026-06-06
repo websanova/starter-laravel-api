@@ -10,3 +10,4 @@ paths:
   - `auth.delete` - account deletion grace period (days) and prune strategy (`delete`/`anonymize`).
   - `auth.activity_throttle` - seconds between `last_active_at` updates.
   - `auth.email_change` - token expiry and throttle for email change flow.
+- `config/subscription.php` - subscription mode (`freemium`/`trial`/`required`), trial days, require card upfront. All env-driven.

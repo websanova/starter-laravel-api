@@ -15,14 +15,15 @@ test('subscription fields included when subscriptions relation loaded', function
     expect($resource)->toHaveKeys(['is_subscribed', 'is_on_trial', 'is_on_grace_period']);
 });
 
-test('subscription fields omitted when subscriptions relation not loaded', function () {
+test('subscription fields show false when user has no subscriptions', function () {
     $user = User::factory()->create(['plan_id' => null]);
+    $user->load('subscriptions');
 
     $resource = (new UserResource($user))->toArray(request());
 
-    expect($resource)->not->toHaveKey('is_subscribed');
-    expect($resource)->not->toHaveKey('is_on_trial');
-    expect($resource)->not->toHaveKey('is_on_grace_period');
+    expect($resource['is_subscribed'])->toBeFalse();
+    expect($resource['is_on_trial'])->toBeFalse();
+    expect($resource['is_on_grace_period'])->toBeFalse();
 });
 
 test('plan data always included in user resource', function () {
