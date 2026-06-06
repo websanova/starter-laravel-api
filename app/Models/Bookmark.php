@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Bookmark extends Model
 {
@@ -55,6 +57,33 @@ class Bookmark extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the tags attached to this bookmark.
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Sync tags by name, creating any that don't exist.
+     */
+    public function syncTags(?array $names): void
+    {
+        if (is_null($names)) {
+            return;
+        }
+
+        $ids = collect($names)->map(function ($name) {
+            return Tag::firstOrCreate(
+                ['user_id' => $this->user_id, 'slug' => Str::slug(strtolower(trim($name)))],
+                ['name' => strtolower(trim($name))]
+            );
+        })->pluck('id');
+
+        $this->tags()->sync($ids);
     }
 
     /**

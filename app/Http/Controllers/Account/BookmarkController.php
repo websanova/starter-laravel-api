@@ -19,6 +19,7 @@ class BookmarkController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $bookmarks = $request->user()->bookmarks()
+            ->with('tags')
             ->forFavorited($request->validated('favorited'))
             ->forCategory($request->validated('category_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
@@ -33,9 +34,10 @@ class BookmarkController extends Controller
     public function store(StoreRequest $request): JsonResponse
     {
         $bookmark = $request->user()->bookmarks()->create($request->validated());
+        $bookmark->syncTags($request->validated('tags'));
 
         return response()->json([
-            'data' => new BookmarkResource($bookmark),
+            'data' => new BookmarkResource($bookmark->load('tags')),
         ], 201);
     }
 
@@ -45,9 +47,10 @@ class BookmarkController extends Controller
     public function update(UpdateRequest $request, Bookmark $bookmark): JsonResponse
     {
         $bookmark->update($request->validated());
+        $bookmark->syncTags($request->validated('tags'));
 
         return response()->json([
-            'data' => new BookmarkResource($bookmark),
+            'data' => new BookmarkResource($bookmark->load('tags')),
         ]);
     }
 

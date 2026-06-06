@@ -23,6 +23,13 @@ return new class extends Migration
             // Sorting indexes
             $table->index('name');
         });
+
+        Schema::create('bookmark_tag', function (Blueprint $table) {
+            $table->foreignId('bookmark_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
+
+            $table->primary(['bookmark_id', 'tag_id']);
+        });
     }
 
     /**
@@ -30,6 +37,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('bookmark_tag');
         Schema::dropIfExists('tags');
     }
 };

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Account\Bookmark;
 
 use App\Rules\BookmarkRules;
+use App\Rules\TagRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
@@ -26,6 +27,8 @@ class UpdateRequest extends FormRequest
             'title' => BookmarkRules::title(required: false),
             'description' => BookmarkRules::description(),
             'is_favorited' => BookmarkRules::isFavorited(),
+            'tags' => ['sometimes', 'array'],
+            'tags.*' => TagRules::name(),
         ];
     }
 }

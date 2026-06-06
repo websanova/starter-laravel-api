@@ -95,6 +95,55 @@ test('url must be valid', function () {
         ->assertJsonValidationErrors('url');
 });
 
+test('user can create a bookmark with tags', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'tags' => ['Laravel', 'PHP'],
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJsonCount(2, 'data.tags')
+        ->assertJsonPath('data.tags.0.name', 'laravel')
+        ->assertJsonPath('data.tags.1.name', 'php');
+});
+
+test('tags are created if they do not exist', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->postJson('/account/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'tags' => ['new-tag'],
+    ]);
+
+    $this->assertDatabaseHas('tags', [
+        'user_id' => $user->id,
+        'name' => 'new-tag',
+        'slug' => 'new-tag',
+    ]);
+});
+
+test('existing tags are reused', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->postJson('/account/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'First',
+        'tags' => ['laravel'],
+    ]);
+
+    $this->actingAs($user)->postJson('/account/bookmarks', [
+        'url' => 'https://example2.com',
+        'title' => 'Second',
+        'tags' => ['Laravel'],
+    ]);
+
+    expect(\App\Models\Tag::where('user_id', $user->id)->where('slug', 'laravel')->count())->toBe(1);
+});
+
 test('unauthenticated user cannot create a bookmark', function () {
     $response = $this->postJson('/account/bookmarks', [
         'url' => 'https://example.com',

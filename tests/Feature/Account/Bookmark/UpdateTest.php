@@ -73,6 +73,59 @@ test('user cannot update another user bookmark', function () {
     $response->assertStatus(403);
 });
 
+test('user can add tags to a bookmark', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->putJson("/account/bookmarks/{$bookmark->id}", [
+        'tags' => ['laravel', 'php'],
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonCount(2, 'data.tags');
+});
+
+test('user can replace tags on a bookmark', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+    $bookmark->syncTags(['laravel', 'php']);
+
+    $response = $this->actingAs($user)->putJson("/account/bookmarks/{$bookmark->id}", [
+        'tags' => ['vue'],
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data.tags')
+        ->assertJsonPath('data.tags.0.name', 'vue');
+});
+
+test('user can clear tags on a bookmark', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+    $bookmark->syncTags(['laravel']);
+
+    $response = $this->actingAs($user)->putJson("/account/bookmarks/{$bookmark->id}", [
+        'tags' => [],
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonCount(0, 'data.tags');
+});
+
+test('omitting tags leaves them untouched', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+    $bookmark->syncTags(['laravel']);
+
+    $response = $this->actingAs($user)->putJson("/account/bookmarks/{$bookmark->id}", [
+        'title' => 'Updated',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data.tags')
+        ->assertJsonPath('data.tags.0.name', 'laravel');
+});
+
 test('unauthenticated user cannot update a bookmark', function () {
     $bookmark = Bookmark::factory()->create();
 
