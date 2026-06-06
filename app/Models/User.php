@@ -3,12 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\PlanFeature;
 use App\Enums\SortDirection;
 use App\Enums\StoragePath;
 use App\Enums\UserRole;
 use App\Enums\UserSort;
 use App\Models\Concerns\HasTrashedScope;
+use App\Models\Concerns\ManagesSubscription;
 use App\Models\Concerns\Searchable;
 use App\Notifications\ResetPasswordNotification;
 use App\Observers\SearchableObserver;
@@ -35,7 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, Notifiable, Searchable, SoftDeletes;
+    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, ManagesSubscription, Notifiable, Searchable, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -179,26 +179,6 @@ class User extends Authenticatable
             $q->forKeywordsSearch($term)
                 ->orWhere('email', 'like', "%{$term}%");
         });
-    }
-
-    /**
-     * Check if the user can use a plan feature.
-     * For countable features, checks the relationship count against the limit.
-     * For boolean features, checks if the feature is enabled.
-     */
-    public function canUsePlanFeature(PlanFeature $feature): bool
-    {
-        $value = $this->plan->feature($feature->value);
-
-        if ($feature->isCountable()) {
-            if (is_null($value)) {
-                return true;
-            }
-
-            return $this->{$feature->relation()}()->count() < $value;
-        }
-
-        return (bool) $value;
     }
 
     /**

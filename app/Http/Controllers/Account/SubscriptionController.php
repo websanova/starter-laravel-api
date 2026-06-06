@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Account;
 
-use App\Enums\PlanInterval;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Subscription\DestroyRequest;
 use App\Http\Requests\Account\Subscription\ResumeRequest;
@@ -37,20 +36,11 @@ class SubscriptionController extends Controller
     {
         $user = $request->user();
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
-        $priceId = $this->resolvePriceId($plan, $request->validated('interval'));
 
-        $subscription = $user->newSubscription('default', $priceId);
-
-        if (config('subscription.mode')->value === 'trial' && !$user->subscribed()) {
-            $subscription->trialDays(config('subscription.trial_days'));
-        }
-
-        $subscription->create($user->defaultPaymentMethod()?->id);
-
-        $user->update(['plan_id' => $plan->id]);
+        $subscription = $user->subscribeToPlan($plan, $request->validated('interval'));
 
         return response()->json([
-            'data' => new SubscriptionResource($user->subscription()),
+            'data' => new SubscriptionResource($subscription),
             'message' => __('responses.subscription.created'),
         ], 201);
     }
@@ -62,13 +52,11 @@ class SubscriptionController extends Controller
     {
         $user = $request->user();
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
-        $priceId = $this->resolvePriceId($plan, $request->validated('interval'));
 
-        $user->subscription()->swap($priceId);
-        $user->update(['plan_id' => $plan->id]);
+        $subscription = $user->swapPlan($plan, $request->validated('interval'));
 
         return response()->json([
-            'data' => new SubscriptionResource($user->subscription()),
+            'data' => new SubscriptionResource($subscription),
             'message' => __('responses.subscription.updated'),
         ]);
     }
@@ -78,7 +66,7 @@ class SubscriptionController extends Controller
      */
     public function destroy(DestroyRequest $request): JsonResponse
     {
-        $request->user()->subscription()->cancel();
+        $request->user()->cancelPlan();
 
         return response()->json([
             'message' => __('responses.subscription.cancelled'),
@@ -90,22 +78,11 @@ class SubscriptionController extends Controller
      */
     public function resume(ResumeRequest $request): JsonResponse
     {
-        $request->user()->subscription()->resume();
+        $subscription = $request->user()->resumePlan();
 
         return response()->json([
-            'data' => new SubscriptionResource($request->user()->subscription()),
+            'data' => new SubscriptionResource($subscription),
             'message' => __('responses.subscription.resumed'),
         ]);
-    }
-
-    /**
-     * Resolve the Stripe price ID for the given plan and interval.
-     */
-    private function resolvePriceId(Plan $plan, PlanInterval $interval): string
-    {
-        return match ($interval) {
-            PlanInterval::Monthly => $plan->stripe_monthly_price_id,
-            PlanInterval::Yearly => $plan->stripe_yearly_price_id,
-        };
     }
 }

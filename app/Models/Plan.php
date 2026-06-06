@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PlanInterval;
 use App\Enums\PlanSort;
 use App\Enums\PlanTier;
 use App\Enums\SortDirection;
@@ -112,6 +113,17 @@ class Plan extends Model
         }
 
         $query->where('is_active', $active);
+    }
+
+    /**
+     * Get the Stripe price ID for the given billing interval.
+     */
+    public function priceId(PlanInterval $interval): ?string
+    {
+        return match ($interval) {
+            PlanInterval::Monthly => $this->stripe_monthly_price_id,
+            PlanInterval::Yearly => $this->stripe_yearly_price_id,
+        };
     }
 
     /**
