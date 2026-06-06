@@ -53,6 +53,10 @@ return [
     'bookmark.deleted' => 'Bookmark deleted successfully.',
 
     'subscription.required' => 'An active subscription is required to access this resource.',
+    'subscription.created' => 'Subscription created successfully.',
+    'subscription.updated' => 'Subscription updated successfully.',
+    'subscription.cancelled' => 'Subscription cancelled successfully.',
+    'subscription.resumed' => 'Subscription resumed successfully.',
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
 
     'admin.plan.created' => 'Plan created successfully.',

@@ -93,11 +93,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the user's plan.
+     * Get the user's plan, falling back to the free plan.
      */
     public function plan(): BelongsTo
     {
-        return $this->belongsTo(Plan::class);
+        return $this->belongsTo(Plan::class)->withDefault(function () {
+            return Plan::free();
+        });
     }
 
     /**
@@ -186,7 +188,7 @@ class User extends Authenticatable
      */
     public function canUsePlanFeature(PlanFeature $feature): bool
     {
-        $value = $this->plan?->feature($feature->value);
+        $value = $this->plan->feature($feature->value);
 
         if ($feature->isCountable()) {
             if (is_null($value)) {

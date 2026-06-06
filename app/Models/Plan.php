@@ -3,15 +3,23 @@
 namespace App\Models;
 
 use App\Enums\PlanSort;
+use App\Enums\PlanTier;
 use App\Enums\SortDirection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Plan extends Model
 {
     use HasFactory;
+
+    /**
+     * Cache key for all plans.
+     */
+    protected static string $cacheKey = 'plans:all';
 
     /**
      * The attributes that are mass assignable.
@@ -44,6 +52,35 @@ class Plan extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    /**
+     * Invalidate the plans cache when a plan is saved or deleted.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saved(fn () => Cache::forget(static::$cacheKey));
+        static::deleted(fn () => Cache::forget(static::$cacheKey));
+    }
+
+    /**
+     * Get all plans from cache.
+     */
+    public static function cached(): Collection
+    {
+        return Cache::rememberForever(static::$cacheKey, function () {
+            return static::orderBy('sort_order')->get();
+        });
+    }
+
+    /**
+     * Get the free plan from cache.
+     */
+    public static function free(): ?self
+    {
+        return static::cached()->firstWhere('slug', PlanTier::Free->value);
     }
 
     /**

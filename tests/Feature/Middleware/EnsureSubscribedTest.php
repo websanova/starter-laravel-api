@@ -17,15 +17,14 @@ test('freemium mode allows user with a plan', function () {
     $response->assertStatus(200);
 });
 
-test('freemium mode blocks user without a plan', function () {
+test('freemium mode allows user without a plan', function () {
     config(['subscription.mode' => \App\Enums\SubscriptionMode::Freemium]);
 
     $user = User::factory()->create(['plan_id' => null]);
 
     $response = $this->actingAs($user)->getJson('/account/bookmarks');
 
-    $response->assertStatus(403)
-        ->assertJsonPath('message', __('responses.subscription.required'));
+    $response->assertStatus(200);
 });
 
 test('required mode blocks user without subscription', function () {

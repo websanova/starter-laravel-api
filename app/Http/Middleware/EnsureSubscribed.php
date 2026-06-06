@@ -18,7 +18,7 @@ class EnsureSubscribed
         $mode = config('subscription.mode');
 
         $hasAccess = match ($mode) {
-            SubscriptionMode::Freemium => !is_null($user->plan_id),
+            SubscriptionMode::Freemium => true,
             SubscriptionMode::Trial => $user->onTrial() || $user->subscribed(),
             SubscriptionMode::Required => $user->subscribed(),
         };
