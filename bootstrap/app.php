@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureVerified::class,
             'password-updated' => \App\Http\Middleware\EnsurePasswordUpdated::class,
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'subscribed' => \App\Http\Middleware\EnsureSubscribed::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

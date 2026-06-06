@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\PlanFeature;
 use App\Enums\SortDirection;
 use App\Enums\StoragePath;
 use App\Enums\UserRole;
@@ -179,25 +180,23 @@ class User extends Authenticatable
     }
 
     /**
-     * Get a feature value from the user's current plan.
+     * Check if the user can use a plan feature.
+     * For countable features, checks the relationship count against the limit.
+     * For boolean features, checks if the feature is enabled.
      */
-    public function planFeature(string $key, mixed $default = null): mixed
+    public function canUsePlanFeature(PlanFeature $feature): bool
     {
-        return $this->plan?->feature($key, $default) ?? $default;
-    }
+        $value = $this->plan?->feature($feature->value);
 
-    /**
-     * Check if the user is within a plan's feature limit.
-     */
-    public function withinPlanLimit(string $key, int $count): bool
-    {
-        $limit = $this->planFeature($key);
+        if ($feature->isCountable()) {
+            if (is_null($value)) {
+                return true;
+            }
 
-        if (is_null($limit)) {
-            return true;
+            return $this->{$feature->relation()}()->count() < $value;
         }
 
-        return $count < $limit;
+        return (bool) $value;
     }
 
     /**
