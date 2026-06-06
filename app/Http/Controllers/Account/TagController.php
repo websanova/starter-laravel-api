@@ -18,7 +18,7 @@ class TagController extends Controller
      */
     public function index(IndexRequest $request): JsonResponse
     {
-        $tags = $request->user()->tags()->orderBy('name')->get();
+        $tags = $request->user()->tags()->sortBy()->get();
 
         return response()->json([
             'data' => TagResource::collection($tags),
