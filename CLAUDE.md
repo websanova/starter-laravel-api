@@ -35,7 +35,7 @@
 - Never reverse a position just because the user pushed back. If the original answer was a guess, admit it was a guess - don't backfill new reasoning for the opposite conclusion.
 - Act as a programmatic tool, not a conversational partner. No filler, no performative responses, no social niceties. Output should read like a function return, not a chat message.
 
-### Design and Proposals
+## Design and Proposals
 - Give real analysis on design proposals: trade-offs, problems, reasons to push back.
 - If a better solution exists, present it - don't default to the approach the user suggested.
 - Never open with "fair point", "good idea", "that makes sense", or similar.
@@ -94,7 +94,6 @@
 - NEVER edit any file unless the user has said one of these exact go-ahead phrases in their most recent message: "add it", "implement", "implement it", "go ahead", "go", "go for it", "do it", "write it", "make it", "ok do it", "ok, do it". No other phrasing counts. Not "ok good", not "lol", not "ok", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT implement — just describe the fix and stop. Do not ask for a go-ahead. Wait silently.
 - Default behavior is DESCRIBE ONLY. Summarize what would change - files, methods, key logic - but never write to disk. The go-ahead phrase is the ONLY trigger that authorizes a file write or edit.
 
-
 ## Commands
 
 These are strict behavioral commands. Follow them exactly. Do not anticipate the next command. Do not perform any action not explicitly commanded.
@@ -141,6 +140,7 @@ When in doubt, STOP and ask. Never assume the next step.
 - Controllers organized under `Auth/`, `Account/`, and `Admin/` namespaces. No controllers in the root `Controllers/` directory (except `Controller.php` base class).
 - Resources namespaced by group: `Resources/Account/BookmarkResource`, `Resources/Admin/BookmarkResource`. Same resource name can exist in both with different fields (admin includes `user_id`, account doesn't).
 - Requests namespaced by group and resource: `Requests/Account/Profile/UpdateRequest.php`, `Requests/Auth/Login/StoreRequest.php`.
+- Tests mirror route group structure: `tests/Feature/Account/Bookmark/IndexTest.php`, `tests/Feature/Admin/User/ShowTest.php`. Console command tests: `tests/Feature/Console/PruneDeletedUsersTest.php`.
 
 ### Enums
 - All defined option sets go through enums in `app/Enums/`.
@@ -225,6 +225,7 @@ When in doubt, STOP and ask. Never assume the next step.
 - Foreign keys use `cascadeOnDelete()` for owned resources (user's bookmarks, tags, categories cascade on user delete).
 - `nullOnDelete()` for optional relationships (bookmark's `category_id` nulls when category deleted).
 - Pivot tables cascade on both sides (`bookmark_tag`).
+- Fulltext indexes are guarded with a `DB::getDriverName() !== 'sqlite'` check since SQLite doesn't support them. Tests run on SQLite, so the `Searchable` trait falls back from `MATCH ... AGAINST` to `LIKE` based on driver.
 - Migrations numbered with a group prefix scheme (`0001_` for core/users, `0002_` for seeding, `0003_` for domain resources, etc.).
 - Role/permission seeding runs as a migration calling a seeder class.
 
