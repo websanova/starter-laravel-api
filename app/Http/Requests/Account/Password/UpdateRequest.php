@@ -13,8 +13,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => ['required', 'current_password'],
-            'password' => UserRules::password(),
+            'current_password' => UserRules::passwordCurrent(),
+            'password' => UserRules::passwordNew(),
         ];
     }
 }

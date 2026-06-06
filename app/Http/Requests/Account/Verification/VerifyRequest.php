@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Account\Verification;
 
+use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class VerifyRequest extends FormRequest
@@ -12,7 +13,7 @@ class VerifyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string', 'size:' . config('verification.code_length')],
+            'code' => SharedRules::verificationCode(),
         ];
     }
 }

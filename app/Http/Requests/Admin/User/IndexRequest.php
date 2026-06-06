@@ -9,7 +9,6 @@ use App\Enums\UserSort;
 use App\Rules\SharedRules;
 use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class IndexRequest extends FormRequest
 {
@@ -37,13 +36,13 @@ class IndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search' => ['sometimes', 'string', 'max:255'],
+            'search' => SharedRules::search(),
             'role' => ['sometimes'],
-            'role.*' => ['string', Rule::enum(UserRole::class)],
-            'trashed' => ['sometimes', 'string', Rule::enum(TrashedFilter::class)],
+            'role.*' => UserRules::role(),
+            'trashed' => SharedRules::trashed(),
             'sort_by' => UserRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'per_page' => SharedRules::perPage(),
         ];
     }
 

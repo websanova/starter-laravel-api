@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth\ResetPassword;
 
+use App\Rules\SharedRules;
 use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,9 +14,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
-            'password' => UserRules::password(),
+            'token' => SharedRules::token(),
+            'email' => UserRules::email(),
+            'password' => UserRules::passwordNew(),
         ];
     }
 }

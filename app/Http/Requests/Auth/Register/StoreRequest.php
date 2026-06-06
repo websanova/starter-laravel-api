@@ -15,8 +15,8 @@ class StoreRequest extends FormRequest
         return [
             'first_name' => UserRules::firstName(),
             'last_name' => UserRules::lastName(),
-            'email' => UserRules::email(),
-            'password' => UserRules::password(),
+            'email' => UserRules::emailNew(),
+            'password' => UserRules::passwordNew(),
         ];
     }
 }

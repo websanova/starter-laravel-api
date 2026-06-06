@@ -13,7 +13,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => UserRules::email(ignore: $this->user()->id),
+            'email' => UserRules::emailNew(ignore: $this->user()->id),
         ];
     }
 }

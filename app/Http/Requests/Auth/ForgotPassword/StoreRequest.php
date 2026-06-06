@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth\ForgotPassword;
 
+use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -12,7 +13,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => UserRules::email(),
         ];
     }
 }

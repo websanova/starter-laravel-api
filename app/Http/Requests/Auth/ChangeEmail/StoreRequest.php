@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth\ChangeEmail;
 
+use App\Rules\SharedRules;
+use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -12,8 +14,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
+            'token' => SharedRules::token(),
+            'email' => UserRules::email(),
         ];
     }
 }
