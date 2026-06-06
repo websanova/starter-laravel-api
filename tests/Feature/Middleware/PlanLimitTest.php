@@ -97,3 +97,23 @@ test('user without a plan feature defined gets no limit', function () {
 
     $response->assertStatus(201);
 });
+
+test('user without a plan gets free plan limits', function () {
+    config(['subscription.mode' => \App\Enums\SubscriptionMode::Freemium]);
+
+    $freePlan = Plan::factory()->create([
+        'slug' => 'free',
+        'features' => ['bookmarks' => 1],
+    ]);
+
+    $user = User::factory()->create(['plan_id' => null]);
+
+    Bookmark::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+    ]);
+
+    $response->assertStatus(403);
+});
