@@ -29,7 +29,7 @@ test('admin can delete a plan with no users', function () {
     $response->assertStatus(204);
 });
 
-test('cannot delete a plan that has users', function () {
+test('admin cannot delete a plan that has users', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
@@ -37,6 +37,19 @@ test('cannot delete a plan that has users', function () {
     User::factory()->create(['plan_id' => $plan->id]);
 
     $response = $this->actingAs($admin)->deleteJson("/admin/plans/{$plan->id}");
+
+    $response->assertStatus(403);
+    $this->assertDatabaseHas('plans', ['id' => $plan->id]);
+});
+
+test('super cannot delete a plan that has users', function () {
+    $super = User::factory()->create();
+    $super->assignRole(UserRole::Super);
+
+    $plan = Plan::factory()->create();
+    User::factory()->create(['plan_id' => $plan->id]);
+
+    $response = $this->actingAs($super)->deleteJson("/admin/plans/{$plan->id}");
 
     $response->assertStatus(403);
     $this->assertDatabaseHas('plans', ['id' => $plan->id]);

@@ -14,7 +14,7 @@ class PlanPolicy
     public function before(User $user, string $ability): ?bool
     {
         if ($user->hasRole(UserRole::Super)) {
-            return true;
+            return $ability === 'delete' ? null : true;
         }
 
         return null;
