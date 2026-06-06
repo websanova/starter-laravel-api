@@ -9,7 +9,6 @@ use App\Models\User;
 test('regular user cannot subscribe another user', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($user)->postJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
@@ -36,8 +35,6 @@ test('admin cannot subscribe a super user', function () {
 
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
-
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($admin)->postJson("/admin/users/{$super->id}/subscription", [
         'plan' => 'pro',
@@ -66,7 +63,6 @@ test('interval is required', function () {
     $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($admin)->postJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',

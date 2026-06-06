@@ -9,7 +9,6 @@ use App\Models\User;
 test('regular user cannot update a user subscription', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($user)->patchJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
@@ -36,8 +35,6 @@ test('admin cannot update a super user subscription', function () {
 
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
-
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/subscription", [
         'plan' => 'pro',

@@ -57,37 +57,46 @@ test('can filter plans by active status', function () {
     $response = $this->actingAs($admin)->getJson('/admin/plans?active=1');
 
     $response->assertStatus(200)
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(4, 'data');
 });
 
 test('plans are sorted by sort_order ascending by default', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
-    Plan::factory()->create(['name' => 'Pro', 'sort_order' => 2]);
-    Plan::factory()->create(['name' => 'Free', 'sort_order' => 0]);
-    Plan::factory()->create(['name' => 'Business', 'sort_order' => 1]);
+    Plan::factory()->create(['name' => 'Alpha', 'sort_order' => 10]);
+    Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 30]);
+    Plan::factory()->create(['name' => 'Beta', 'sort_order' => 20]);
 
     $response = $this->actingAs($admin)->getJson('/admin/plans');
 
-    $response->assertStatus(200)
-        ->assertJsonPath('data.0.name', 'Free')
-        ->assertJsonPath('data.1.name', 'Business')
-        ->assertJsonPath('data.2.name', 'Pro');
+    $response->assertStatus(200);
+
+    $names = collect($response->json('data'))->pluck('name');
+    $alphaIndex = $names->search('Alpha');
+    $betaIndex = $names->search('Beta');
+    $gammaIndex = $names->search('Gamma');
+
+    expect($alphaIndex)->toBeLessThan($betaIndex);
+    expect($betaIndex)->toBeLessThan($gammaIndex);
 });
 
 test('plans can be sorted by name', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
-    Plan::factory()->create(['name' => 'Pro']);
-    Plan::factory()->create(['name' => 'Basic']);
+    Plan::factory()->create(['name' => 'Zeta']);
+    Plan::factory()->create(['name' => 'Alpha']);
 
     $response = $this->actingAs($admin)->getJson('/admin/plans?sort_by=name&sort_dir=asc');
 
-    $response->assertStatus(200)
-        ->assertJsonPath('data.0.name', 'Basic')
-        ->assertJsonPath('data.1.name', 'Pro');
+    $response->assertStatus(200);
+
+    $names = collect($response->json('data'))->pluck('name')->values();
+    $alphaIndex = $names->search('Alpha');
+    $zetaIndex = $names->search('Zeta');
+
+    expect($alphaIndex)->toBeLessThan($zetaIndex);
 });
 
 test('invalid sort_by value returns validation error', function () {

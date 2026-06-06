@@ -7,7 +7,6 @@ use App\Models\Plan;
 use App\Models\User;
 
 test('subscription fields included when subscriptions relation loaded', function () {
-    Plan::factory()->create(['slug' => 'free']);
     $user = User::factory()->create(['plan_id' => null, 'trial_ends_at' => null]);
     $user->load('subscriptions');
 
@@ -17,7 +16,6 @@ test('subscription fields included when subscriptions relation loaded', function
 });
 
 test('subscription fields omitted when subscriptions relation not loaded', function () {
-    Plan::factory()->create(['slug' => 'free']);
     $user = User::factory()->create(['plan_id' => null]);
 
     $resource = (new UserResource($user))->toArray(request());
@@ -28,11 +26,8 @@ test('subscription fields omitted when subscriptions relation not loaded', funct
 });
 
 test('plan data always included in user resource', function () {
-    $plan = Plan::factory()->create([
-        'name' => 'Pro',
-        'slug' => 'pro',
-        'features' => ['bookmarks' => 100],
-    ]);
+    $plan = Plan::where('slug', 'pro')->first();
+    $plan->update(['features' => ['bookmarks' => 100]]);
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
     $resource = (new UserResource($user))->toArray(request());
@@ -43,7 +38,6 @@ test('plan data always included in user resource', function () {
 });
 
 test('trial_ends_at always included in user resource', function () {
-    Plan::factory()->create(['slug' => 'free']);
     $trialEnd = now()->addDays(7);
     $user = User::factory()->create(['plan_id' => null, 'trial_ends_at' => $trialEnd]);
 

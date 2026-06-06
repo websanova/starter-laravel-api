@@ -57,7 +57,7 @@ class PlanPolicy
      */
     public function delete(User $user, Plan $plan): bool
     {
-        return $user->hasPermissionTo('plans.manage')
+        return ($user->hasRole(UserRole::Super) || $user->hasPermissionTo('plans.manage'))
             && $plan->users()->count() === 0;
     }
 }

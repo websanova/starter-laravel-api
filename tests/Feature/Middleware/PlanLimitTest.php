@@ -101,10 +101,8 @@ test('user without a plan feature defined gets no limit', function () {
 test('user without a plan gets free plan limits', function () {
     config(['subscription.mode' => \App\Enums\SubscriptionMode::Freemium]);
 
-    $freePlan = Plan::factory()->create([
-        'slug' => 'free',
-        'features' => ['bookmarks' => 1],
-    ]);
+    $freePlan = Plan::where('slug', 'free')->first();
+    $freePlan->update(['features' => ['bookmarks' => 1]]);
 
     $user = User::factory()->create(['plan_id' => null]);
 

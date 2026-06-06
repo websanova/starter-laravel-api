@@ -106,8 +106,8 @@ test('can create a plan with stripe price ids', function () {
     $admin->assignRole(UserRole::Admin);
 
     $response = $this->actingAs($admin)->postJson('/admin/plans', [
-        'name' => 'Pro',
-        'slug' => 'pro',
+        'name' => 'Business',
+        'slug' => 'business',
         'stripe_monthly_price_id' => 'price_monthly_abc123',
         'stripe_yearly_price_id' => 'price_yearly_abc123',
     ]);

@@ -27,7 +27,6 @@ test('plan slug is required', function () {
 
 test('interval is required', function () {
     $user = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($user)->postJson('/account/subscription', [
         'plan' => 'pro',
@@ -51,7 +50,6 @@ test('plan must exist', function () {
 
 test('interval must be valid', function () {
     $user = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($user)->postJson('/account/subscription', [
         'plan' => 'pro',

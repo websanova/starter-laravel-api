@@ -7,8 +7,6 @@ use App\Models\Plan;
 use App\Models\User;
 
 test('user without plan falls back to free plan', function () {
-    Plan::factory()->create(['slug' => 'free', 'name' => 'Free']);
-
     $user = User::factory()->create(['plan_id' => null]);
 
     expect($user->plan->slug)->toBe('free');
@@ -16,7 +14,7 @@ test('user without plan falls back to free plan', function () {
 });
 
 test('user with plan returns their assigned plan', function () {
-    $pro = Plan::factory()->create(['slug' => 'pro', 'name' => 'Pro']);
+    $pro = Plan::where('slug', 'pro')->first();
 
     $user = User::factory()->create(['plan_id' => $pro->id]);
 

@@ -6,44 +6,42 @@ use App\Enums\PlanInterval;
 use App\Models\Plan;
 
 test('cached returns all plans ordered by sort_order', function () {
-    Plan::factory()->create(['name' => 'Pro', 'sort_order' => 2]);
-    Plan::factory()->create(['name' => 'Free', 'sort_order' => 0]);
-    Plan::factory()->create(['name' => 'Business', 'sort_order' => 1]);
+    Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 20]);
+    Plan::factory()->create(['name' => 'Alpha', 'sort_order' => 10]);
 
     $plans = Plan::cached();
+    $names = $plans->pluck('name');
 
-    expect($plans)->toHaveCount(3);
-    expect($plans[0]->name)->toBe('Free');
-    expect($plans[1]->name)->toBe('Business');
-    expect($plans[2]->name)->toBe('Pro');
+    $alphaIndex = $names->search('Alpha');
+    $gammaIndex = $names->search('Gamma');
+
+    expect($alphaIndex)->toBeLessThan($gammaIndex);
 });
 
 test('cached is invalidated when a plan is saved', function () {
-    $plan = Plan::factory()->create(['name' => 'Original']);
+    $plan = Plan::factory()->create(['name' => 'Original', 'sort_order' => 99]);
 
     $cached = Plan::cached();
-    expect($cached->first()->name)->toBe('Original');
+    expect($cached->last()->name)->toBe('Original');
 
     $plan->update(['name' => 'Updated']);
 
     $cached = Plan::cached();
-    expect($cached->first()->name)->toBe('Updated');
+    expect($cached->last()->name)->toBe('Updated');
 });
 
 test('cached is invalidated when a plan is deleted', function () {
-    Plan::factory()->count(2)->create();
+    $initialCount = Plan::count();
+    Plan::factory()->create();
 
-    expect(Plan::cached())->toHaveCount(2);
+    expect(Plan::cached())->toHaveCount($initialCount + 1);
 
-    Plan::first()->delete();
+    Plan::orderBy('id', 'desc')->first()->delete();
 
-    expect(Plan::cached())->toHaveCount(1);
+    expect(Plan::cached())->toHaveCount($initialCount);
 });
 
 test('free returns the free plan', function () {
-    Plan::factory()->create(['slug' => 'pro']);
-    Plan::factory()->create(['slug' => 'free']);
-
     $free = Plan::free();
 
     expect($free)->not->toBeNull();
@@ -51,7 +49,7 @@ test('free returns the free plan', function () {
 });
 
 test('free returns null when no free plan exists', function () {
-    Plan::factory()->create(['slug' => 'pro']);
+    Plan::where('slug', 'free')->delete();
 
     expect(Plan::free())->toBeNull();
 });

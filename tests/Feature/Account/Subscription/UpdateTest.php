@@ -16,7 +16,6 @@ test('unauthenticated user cannot update subscription', function () {
 
 test('user without subscription cannot swap plans', function () {
     $user = User::factory()->create();
-    Plan::factory()->create(['slug' => 'pro']);
 
     $response = $this->actingAs($user)->patchJson('/account/subscription', [
         'plan' => 'pro',
