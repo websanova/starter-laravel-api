@@ -27,7 +27,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => UserRules::roleNullable(),
+            'role' => UserRules::roleUpdate(),
         ];
     }
 }

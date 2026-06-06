@@ -114,9 +114,9 @@ class UserRules
     }
 
     /**
-     * Validation rules for the role field when nullable.
+     * Validation rules for the role field when updating a user's role.
      */
-    public static function roleNullable(): array
+    public static function roleUpdate(): array
     {
         return ['nullable', 'string', Rule::in(array_column(UserRole::cases(), 'value'))];
     }
