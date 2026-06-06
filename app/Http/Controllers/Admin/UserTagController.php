@@ -17,7 +17,9 @@ class UserTagController extends Controller
      */
     public function index(IndexRequest $request, User $user): JsonResponse
     {
-        $tags = $user->tags()->sortBy()->get();
+        $tags = $user->tags()
+            ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
+            ->get();
 
         return response()->json([
             'data' => TagResource::collection($tags),
