@@ -112,35 +112,130 @@ When in doubt, STOP and ask. Never assume the next step.
 - Starter/boilerplate project. Code should be clean, minimal, and well-structured as a reference for new projects.
 - Stack: Laravel, PHP, MySQL
 - Testing: Pest
-- This is a dedicated API (no frontend). No /api/ prefix needed in routes.
+- This is a dedicated API (no frontend). No /api/ prefix needed in routes. No Vite, no npm, no Blade views.
+- Auth via Sanctum token. No sessions, no cookies.
+- Roles/permissions via `spatie/laravel-permission` (`UserRole` enum defines `super` and `admin`).
+- Image processing via `intervention/image-laravel`. File storage on S3 (`league/flysystem-aws-s3-v3`).
+- Billing via `laravel/cashier` (Stripe).
+- All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
+- All requests return JSON. `ForceJsonResponse` middleware handles this globally.
+- No version prefix (v1, v2) unless a breaking v2 becomes necessary.
 
-## Routing Convention
+## Conventions
+
+### Routing
 - Three route prefixes:
   - **`/auth`** - authentication flows (`POST /auth/login`, `POST /auth/register`, `POST /auth/logout`)
   - **`/account`** - authenticated user managing themselves (`GET /account/profile`, `PATCH /account/profile`, `GET /account/bookmarks`)
   - **`/admin`** - admin managing any resource (`GET /admin/users`, `PATCH /admin/users/{id}`)
 - `/auth` has both guest routes (login, register, password reset) and authenticated routes (logout, token refresh).
 - `/account` and `/admin` groups each declare their own middleware explicitly.
+- REST convention: nested resources for direct ownership (`/admin/users/{user}/bookmarks`) rather than flat with query filters (`/admin/bookmarks?user_id=`). Both styles can coexist if a flat filter endpoint is needed, but nested is the default for direct parent-child access.
+- `scopeBindings()` on nested resource routes to ensure child belongs to parent.
+- `withTrashed()` on routes that need to resolve soft-deleted models.
+
+### Namespacing
 - `/auth` routes use `Auth/` namespace: `Controllers/Auth/LoginController`, `Requests/Auth/Login/StoreRequest`.
 - `/account` routes use `Account/` namespace: `Controllers/Account/ProfileController`, `Requests/Account/Profile/UpdateRequest`.
 - `/admin` routes use `Admin/` namespace: `Controllers/Admin/UserController`, `Resources/Admin/UserResource`, `Requests/Admin/User/UpdateRequest`.
-- `/admin` group has an `admin` middleware as a safety net that requires admin or super role.
-
-## Architecture
 - Controllers organized under `Auth/`, `Account/`, and `Admin/` namespaces. No controllers in the root `Controllers/` directory (except `Controller.php` base class).
-- API responses use Laravel API Resources (`app/Http/Resources/`).
-- All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
-- All requests return JSON. `ForceJsonResponse` middleware handles this globally.
-- Auth via Sanctum token. No sessions, no cookies.
-- No frontend. No Vite, no npm, no Blade views.
-- No version prefix (v1, v2) unless a breaking v2 becomes necessary.
-
-## Style Guide
-- Model ordering: traits, constants, properties (`$fillable`, `$hidden`, `$appends`), `casts()`, boot/initialization, relationships, accessors/mutators, scopes, public methods, protected/private methods.
+- Resources namespaced by group: `Resources/Account/BookmarkResource`, `Resources/Admin/BookmarkResource`. Same resource name can exist in both with different fields (admin includes `user_id`, account doesn't).
 - Requests namespaced by group and resource: `Requests/Account/Profile/UpdateRequest.php`, `Requests/Auth/Login/StoreRequest.php`.
-- Tests mirror route groups: `tests/Feature/Account/Profile/UpdateTest.php`, `tests/Feature/Auth/Login/StoreTest.php`.
-- Shared validation rules live in `app/Rules/` as static methods (e.g., `UserRules::email()`).
+
+### Enums
+- All defined option sets go through enums in `app/Enums/`.
+- Sort columns per resource: `UserSort`, `BookmarkSort`, `CategorySort`, `TagSort`.
+- Sort direction: `SortDirection` (`asc`, `desc`).
+- Roles: `UserRole` (`super`, `admin`).
+- Config-driven modes: `VerificationMode` (`disabled`, `auto`, `required`), `AccountPruneStrategy` (`delete`, `anonymize`).
+- Admin filters: `TrashedFilter` (`only`, `with`).
+- Storage paths: `StoragePath` centralizes file storage path prefixes (e.g., `UserAvatar = 'users/avatars'`).
+
+### Controllers
+- Thin controllers. Filtering/sorting/search delegated to model scopes. Authorization delegated to requests. Response shaping delegated to resources.
+- Always return resources, never raw models. Collections use `->response()->getData(true)` to include pagination meta.
+- Single-item responses wrap in `['data' => new Resource($model)]`.
+- 201 for creates, 204 (null body) for deletes, 200 for everything else.
+
+### Models
+- Ordering: traits, constants, properties (`$fillable`, `$hidden`, `$appends`), `casts()`, boot/initialization, relationships, accessors/mutators, scopes, public methods, protected/private methods.
 - Accessors use `Attribute::make()`, not `getFieldAttribute()`.
-- Shared constants that will grow use enums in `app/Enums/`.
-- Artisan command signatures use `{resource}:{action}` format (e.g., `users:prune-deleted`).
-- Query filters belong in model scopes, not inlined in controllers. Scopes use `for*` prefix (e.g., `forCategory`, `forStatus`). Optional filter scopes accept nullable and no-op on null so callers can chain without conditionals.
+- Query filters as scopes with `for*` prefix (`forCategory`, `forFavorited`, `forRole`, `forTrashed`). Accept nullable, no-op on null so callers can chain without conditionals.
+- Sorting via `scopeSortBy` that accepts typed enum params and applies a default column/direction when null. Every listable model has one.
+- `Searchable` trait + `SearchableObserver` pattern: models define `$searchable` fields, observer auto-syncs a `keywords` column on save, `forKeywordsSearch` scope does fulltext (MySQL) or LIKE (SQLite) search. Models can override `scopeForSearch` to add extra clauses (e.g., User adds email search).
+- `HasTrashedScope` trait for models with `SoftDeletes` - provides `forTrashed` scope using `TrashedFilter` enum.
+- Domain logic (avatar storage, `purge()`, `anonymize()`, tag syncing) lives in models, not controllers.
+- Boot-time model events for computed fields (e.g., Tag auto-generates `slug` from `name` in `creating`/`updating`).
+
+### Requests
+- Account requests do ownership checks inline in `authorize()` (e.g., `$this->route('bookmark')->user_id === $this->user()->id`). No policies needed since it's always a simple "does the user own this resource" check.
+- Admin requests delegate to policies via `$this->user()->can('view', $this->route('user'))` for fine-grained permission checks.
+- Index requests override `validated()` to cast string inputs to their enum types (`BookmarkSort::from(...)`, `SortDirection::from(...)`) so controllers receive typed values.
+
+### Resources
+- API responses always use Laravel API Resources (`app/Http/Resources/`). Never return raw model arrays.
+- Namespaced by group so account and admin can expose different fields for the same model.
+
+### Rules
+- One rules class per resource (`UserRules`, `BookmarkRules`, `CategoryRules`, `TagRules`) plus `SharedRules` for cross-resource fields (`perPage`, `sortDir`, `search`, `trashed`, `id`, `token`, `verificationCode`).
+- Methods are generic by default, then more specific by action when needed. Pattern: `password()` (base), `passwordNew()` (with `confirmed` + `Password::defaults()`), `passwordCurrent()` (with `current_password`). Same for `email()` / `emailNew()`, `role()` / `roleUpdate()`.
+- Custom validation rule classes (e.g., `TagNameFormat`) for complex regex validation, implementing `ValidationRule`.
+
+### Services
+- Used when business logic spans multiple models or has complex orchestration that doesn't belong in a single model (e.g., `VerificationService` coordinates codes, hashing, notifications, throttling; `EmailChangeService` coordinates tokens, notifications, email swaps).
+- Not used for simple CRUD that a model or controller can handle directly.
+
+### Middleware
+- `ForceJsonResponse` - global, forces `Accept: application/json` on all requests.
+- `track-active` (`TrackLastActive`) - updates `last_active_at` with a configurable throttle (`auth.activity_throttle`) to avoid a write on every request.
+- `verified` (`EnsureVerified`) - blocks unverified users when `verification.mode` is `required`. Supports a configurable grace period.
+- `password-updated` (`EnsurePasswordUpdated`) - blocks users flagged with `is_password_reset_required` until they update their password.
+- `admin` (`EnsureAdmin`) - safety net requiring `admin` or `super` role. Individual admin requests then do finer checks via policies.
+- Stack order on `/account`: `auth:sanctum`, `track-active`, then `verified` and `password-updated` on inner routes.
+- Stack order on `/admin`: `auth:sanctum`, `track-active`, `verified`, `password-updated`, `admin`.
+
+### Policies
+- Used for admin-side authorization where permission checks are granular (specific permissions like `users.manage`, `users.assign-role`).
+- `before()` method grants super users unconditional access.
+- Protect against privilege escalation (admins cannot modify super users, cannot delete other admins).
+- Account-side routes don't use policies since ownership checks are simpler and handled in requests.
+
+### Observers
+- Used for cross-cutting concerns that apply to multiple models (e.g., `SearchableObserver` updates keywords for any model using the `Searchable` trait).
+- Simple model-specific lifecycle hooks use `boot()` in the model instead (e.g., Tag slug generation).
+- Registered via `#[ObservedBy]` attribute on the model.
+
+### Notifications
+- All emails route through notifications (`app/Notifications/`), not raw `Mail::send()`. This keeps a single interface that can be extended to SMS via the `$channelMap` pattern (maps config channel names like `'sms'` to Laravel channels like `'vonage'`).
+- Verification notifications use `config('verification.channels')` to determine delivery channels.
+
+### Config
+- `config/verification.php` - verification mode (`disabled`/`auto`/`required`), channels, grace period, code length/expiry, resend throttle, max attempts. All env-driven.
+- `config/auth.php` custom sections:
+  - `auth.delete` - account deletion grace period (days) and prune strategy (`delete`/`anonymize`).
+  - `auth.activity_throttle` - seconds between `last_active_at` updates.
+  - `auth.email_change` - token expiry and throttle for email change flow.
+
+### Commands
+- Signature format: `{resource}:{action}` (e.g., `users:prune-deleted`).
+- `users:prune-deleted` runs daily, applies the configured `AccountPruneStrategy` (`delete` calls `purge()` which hard-deletes + cleans up storage/tokens, `anonymize` strips PII but keeps the row).
+- Scheduled commands registered in `routes/console.php`. Also runs `sanctum:prune-expired --hours=1` daily.
+
+### Migrations
+- Foreign keys use `cascadeOnDelete()` for owned resources (user's bookmarks, tags, categories cascade on user delete).
+- `nullOnDelete()` for optional relationships (bookmark's `category_id` nulls when category deleted).
+- Pivot tables cascade on both sides (`bookmark_tag`).
+- Migrations numbered with a group prefix scheme (`0001_` for core/users, `0002_` for seeding, `0003_` for domain resources, etc.).
+- Role/permission seeding runs as a migration calling a seeder class.
+
+### Sorting
+- Every list endpoint supports `sort_by` and `sort_dir` query params, validated via resource-specific `*Sort` enums and `SortDirection` enum.
+- `scopeSortBy` always provides a default column and direction when params are null (sorting always applies, even without explicit params).
+- Convention: timestamp-based resources default to `created_at desc`, name-based resources default to `name asc`.
+
+### Tests
+- Pest with `RefreshDatabase` on all feature tests.
+- Mirror route group structure: `tests/Feature/Account/Bookmark/IndexTest.php`, `tests/Feature/Admin/User/ShowTest.php`, `tests/Feature/Auth/Login/StoreTest.php`.
+- Console commands: `tests/Feature/Console/PruneDeletedUsersTest.php`.
+- Each test file sets `uses()->group('prefix.resource.action')` (e.g., `account.bookmark.index`, `admin.user-role.update`).
+- Test descriptions read as behavioral assertions: `test('user can list their bookmarks')`, `test('unauthenticated user cannot list bookmarks')`.
