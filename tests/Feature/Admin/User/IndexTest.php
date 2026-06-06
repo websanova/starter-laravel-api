@@ -212,7 +212,7 @@ test('users can be sorted by last_active_at', function () {
     $admin = User::factory()->create(['last_active_at' => now()->subDays(3)]);
     $admin->assignRole(UserRole::Admin);
 
-    $recent = User::factory()->create(['first_name' => 'Recent', 'last_active_at' => now()]);
+    $recent = User::factory()->create(['first_name' => 'Recent', 'last_active_at' => now()->addDay()]);
     $stale = User::factory()->create(['first_name' => 'Stale', 'last_active_at' => now()->subWeek()]);
 
     $response = $this->actingAs($admin)->getJson('/admin/users?sort_by=last_active_at&sort_dir=desc');
