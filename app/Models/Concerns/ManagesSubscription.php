@@ -6,6 +6,7 @@ use App\Enums\PlanFeature;
 use App\Enums\PlanInterval;
 use App\Enums\SubscriptionMode;
 use App\Models\Plan;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Cashier\Subscription;
 
 trait ManagesSubscription
@@ -55,6 +56,62 @@ trait ManagesSubscription
         $this->subscription()->resume();
 
         return $this->subscription();
+    }
+
+    /**
+     * Whether the user has an active subscription.
+     */
+    protected function isSubscribed(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $this->ensureSubscriptionsLoaded();
+
+                return $this->subscribed();
+            },
+        );
+    }
+
+    /**
+     * Whether the user is currently on a trial.
+     */
+    protected function isOnTrial(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $this->ensureSubscriptionsLoaded();
+
+                return $this->onTrial();
+            },
+        );
+    }
+
+    /**
+     * Whether the user has cancelled but is still within the grace period.
+     */
+    protected function isOnGracePeriod(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $this->ensureSubscriptionsLoaded();
+
+                $subscription = $this->subscription();
+
+                return $subscription && $subscription->onGracePeriod();
+            },
+        );
+    }
+
+    /**
+     * Ensure the subscriptions relation is eager loaded.
+     *
+     * @throws \LogicException
+     */
+    protected function ensureSubscriptionsLoaded(): void
+    {
+        if (!$this->relationLoaded('subscriptions')) {
+            throw new \LogicException('The subscriptions relation must be eager loaded before accessing subscription status attributes.');
+        }
     }
 
     /**

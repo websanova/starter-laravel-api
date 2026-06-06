@@ -19,6 +19,7 @@ class UserController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $users = User::query()
+            ->with('subscriptions')
             ->forSearch($request->validated('search'))
             ->forRole($request->validated('role'))
             ->forTrashed($request->validated('trashed'))
@@ -34,7 +35,7 @@ class UserController extends Controller
     public function show(ShowRequest $request, User $user): JsonResponse
     {
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->load('subscriptions')),
         ]);
     }
 
