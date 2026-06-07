@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
         return [
             'plan' => SubscriptionRules::plan(),
             'interval' => SubscriptionRules::interval(),
+            'promotion_code' => SubscriptionRules::promotionCode(),
         ];
     }
 

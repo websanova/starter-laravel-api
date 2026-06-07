@@ -14,12 +14,16 @@ trait ManagesSubscription
     /**
      * Subscribe to a plan.
      */
-    public function subscribeToPlan(Plan $plan, PlanInterval $interval): Subscription
+    public function subscribeToPlan(Plan $plan, PlanInterval $interval, ?string $promotionCodeId = null): Subscription
     {
         $subscription = $this->newSubscription('default', $plan->priceId($interval));
 
         if (config('subscription.mode') === SubscriptionMode::Trial && !$this->subscribed()) {
             $subscription->trialDays(config('subscription.trial_days'));
+        }
+
+        if ($promotionCodeId) {
+            $subscription->withPromotionCode($promotionCodeId);
         }
 
         $subscription->create($this->defaultPaymentMethod()?->id);

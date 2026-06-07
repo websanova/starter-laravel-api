@@ -40,6 +40,7 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
         Route::patch('/subscription', [App\Http\Controllers\Account\SubscriptionController::class, 'update']);
         Route::delete('/subscription', [App\Http\Controllers\Account\SubscriptionController::class, 'destroy']);
         Route::patch('/subscription/resume', [App\Http\Controllers\Account\SubscriptionController::class, 'resume']);
+        Route::get('/subscription/coupon/{code}', [App\Http\Controllers\Account\SubscriptionCouponController::class, 'show']);
 
         Route::middleware('subscribed')->group(function () {
             Route::get('/categories', [App\Http\Controllers\Account\CategoryController::class, 'index']);
@@ -76,6 +77,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::patch('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'update']);
     Route::delete('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'destroy']);
     Route::patch('/users/{user}/subscription/resume', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'resume']);
+    Route::post('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'store']);
+    Route::delete('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'destroy']);
 
     Route::get('/users/{user}/bookmarks', [App\Http\Controllers\Admin\UserBookmarkController::class, 'index']);
     Route::delete('/users/{user}/bookmarks/{bookmark}', [App\Http\Controllers\Admin\UserBookmarkController::class, 'destroy'])->scopeBindings();

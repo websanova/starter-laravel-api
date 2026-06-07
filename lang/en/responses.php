@@ -43,6 +43,8 @@ return [
     'admin.user.subscription_updated' => 'User subscription updated successfully.',
     'admin.user.subscription_cancelled' => 'User subscription cancelled successfully.',
     'admin.user.subscription_resumed' => 'User subscription resumed successfully.',
+    'admin.user.subscription_coupon_applied' => 'Coupon applied to user subscription successfully.',
+    'admin.user.subscription_coupon_removed' => 'Coupon removed from user subscription successfully.',
 
     'category.created' => 'Category created successfully.',
     'category.updated' => 'Category updated successfully.',
