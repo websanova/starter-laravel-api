@@ -78,6 +78,10 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - Image processing via Intervention
   - `StoragePath` enum for centralized path management
 
+- **Backups (Spatie)**
+  - Database-only daily backups via `spatie/laravel-backup`
+  - Scheduled cleanup of old backups
+
 - **Dev Environment**
   - Dockerized (PHP-FPM + MySQL)
   - `./dev` script for container commands
