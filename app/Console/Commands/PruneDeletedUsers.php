@@ -31,24 +31,26 @@ class PruneDeletedUsers extends Command
         $strategy = config('auth.delete.prune_strategy');
         $cutoff = now()->subDays($gracePeriod);
 
-        $users = User::onlyTrashed()
+        $count = 0;
+
+        User::onlyTrashed()
             ->where('deleted_at', '<=', $cutoff)
-            ->get();
+            ->chunkById(100, function ($users) use ($strategy, &$count) {
+                foreach ($users as $user) {
+                    match ($strategy) {
+                        AccountPruneStrategy::Delete => $user->purge(),
+                        AccountPruneStrategy::Anonymize => $user->anonymize(),
+                    };
 
-        if ($users->isEmpty()) {
+                    $count++;
+                }
+            });
+
+        if ($count === 0) {
             $this->info('No users to prune.');
-
-            return self::SUCCESS;
+        } else {
+            $this->info("Pruned {$count} user(s) using '{$strategy->value}' strategy.");
         }
-
-        foreach ($users as $user) {
-            match ($strategy) {
-                AccountPruneStrategy::Delete => $user->purge(),
-                AccountPruneStrategy::Anonymize => $user->anonymize(),
-            };
-        }
-
-        $this->info("Pruned {$users->count()} user(s) using '{$strategy->value}' strategy.");
 
         return self::SUCCESS;
     }
