@@ -63,6 +63,38 @@ trait ManagesSubscription
     }
 
     /**
+     * Assign a plan without Stripe billing, cancelling any active subscription.
+     */
+    public function assignComplimentaryPlan(Plan $plan): void
+    {
+        $subscription = $this->subscription();
+
+        if ($subscription && !$subscription->ended()) {
+            $subscription->cancelNow();
+        }
+
+        $this->update(['plan_id' => $plan->id]);
+    }
+
+    /**
+     * Whether the user is on a complimentary plan.
+     */
+    public function onComplimentary(): bool
+    {
+        return $this->plan->is_complimentary;
+    }
+
+    /**
+     * Whether the user is on a complimentary plan.
+     */
+    protected function isComplimentary(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->plan->is_complimentary,
+        );
+    }
+
+    /**
      * Whether the user has an active subscription.
      */
     protected function isSubscribed(): Attribute

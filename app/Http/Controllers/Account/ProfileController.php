@@ -17,7 +17,7 @@ class ProfileController extends Controller
     public function show(ShowRequest $request): JsonResponse
     {
         return response()->json([
-            'data' => new UserResource($request->user()->load('subscriptions')),
+            'data' => new UserResource($request->user()),
         ]);
     }
 

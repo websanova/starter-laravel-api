@@ -24,6 +24,7 @@ class UserResource extends JsonResource
                 'slug' => $this->plan->slug,
                 'features' => $this->plan->features,
             ],
+            'is_complimentary' => $this->is_complimentary,
             'is_subscribed' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_subscribed),
             'is_on_trial' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_trial),
             'is_on_grace_period' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_grace_period),

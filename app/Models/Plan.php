@@ -7,6 +7,7 @@ use App\Enums\PlanSort;
 use App\Enums\PlanTier;
 use App\Enums\SortDirection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -144,11 +145,24 @@ class Plan extends Model
     }
 
     /**
-     * Check if this is a free plan (no Stripe prices).
+     * Whether this plan has no Stripe prices.
      */
-    public function isFree(): bool
+    protected function hasNoPrice(): Attribute
     {
-        return is_null($this->stripe_monthly_price_id)
-            && is_null($this->stripe_yearly_price_id);
+        return Attribute::make(
+            get: fn () => is_null($this->stripe_monthly_price_id)
+                && is_null($this->stripe_yearly_price_id),
+        );
+    }
+
+    /**
+     * Whether this plan is a complimentary (non-free, no price) plan.
+     */
+    protected function isComplimentary(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->has_no_price
+                && $this->slug !== PlanTier::Free->value,
+        );
     }
 }

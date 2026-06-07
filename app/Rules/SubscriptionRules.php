@@ -33,4 +33,12 @@ class SubscriptionRules
     {
         return ['required', 'string', Rule::enum(PlanInterval::class)];
     }
+
+    /**
+     * Validation rules for the billing interval field when optional.
+     */
+    public static function intervalOptional(): array
+    {
+        return ['sometimes', 'nullable', 'string', Rule::enum(PlanInterval::class)];
+    }
 }

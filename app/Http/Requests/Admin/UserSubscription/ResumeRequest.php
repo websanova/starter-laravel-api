@@ -11,7 +11,13 @@ class ResumeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('user'));
+        $target = $this->route('user');
+        $subscription = $target->subscription();
+
+        return $this->user()->can('update', $target)
+            && $subscription
+            && $subscription->onGracePeriod()
+            && !$target->onComplimentary();
     }
 
     /**

@@ -23,7 +23,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'plan' => SubscriptionRules::plan(),
-            'interval' => SubscriptionRules::interval(),
+            'interval' => SubscriptionRules::intervalOptional(),
         ];
     }
 

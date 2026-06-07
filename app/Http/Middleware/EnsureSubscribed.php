@@ -15,12 +15,13 @@ class EnsureSubscribed
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
+        $user->loadMissing(['subscriptions', 'plan']);
         $mode = config('subscription.mode');
 
         $hasAccess = match ($mode) {
             SubscriptionMode::Freemium => true,
-            SubscriptionMode::Trial => $user->onTrial() || $user->subscribed(),
-            SubscriptionMode::Required => $user->subscribed(),
+            SubscriptionMode::Trial => $user->is_complimentary || $user->is_on_trial || $user->is_subscribed,
+            SubscriptionMode::Required => $user->is_complimentary || $user->is_subscribed,
         };
 
         if (!$hasAccess) {

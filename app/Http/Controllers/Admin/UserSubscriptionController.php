@@ -6,14 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSubscription\DestroyRequest;
 use App\Http\Requests\Admin\UserSubscription\ResumeRequest;
 use App\Http\Requests\Admin\UserSubscription\ShowRequest;
-use App\Http\Requests\Admin\UserSubscription\StoreRequest;
 use App\Http\Requests\Admin\UserSubscription\UpdateRequest;
 use App\Http\Resources\Admin\SubscriptionResource;
 use App\Models\Plan;
 use App\Models\User;
-use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 
 class UserSubscriptionController extends Controller
 {
@@ -34,42 +31,25 @@ class UserSubscriptionController extends Controller
     }
 
     /**
-     * Subscribe a user to a plan.
-     */
-    public function store(StoreRequest $request, User $user, PromotionCodeService $promotionCodeService): JsonResponse
-    {
-        $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
-
-        $promotionCodeId = null;
-
-        if ($request->validated('promotion_code')) {
-            $result = $promotionCodeService->resolve($request->validated('promotion_code'));
-
-            if (!$result->success) {
-                throw ValidationException::withMessages([
-                    'promotion_code' => [__("validation.{$result->error}")],
-                ]);
-            }
-
-            $promotionCodeId = $result->data->id;
-        }
-
-        $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);
-
-        return response()->json([
-            'data' => new SubscriptionResource($subscription),
-            'message' => __('responses.admin.user.subscription_created'),
-        ], 201);
-    }
-
-    /**
-     * Swap a user's plan.
+     * Create or swap a user's subscription, or assign a complimentary plan.
      */
     public function update(UpdateRequest $request, User $user): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $subscription = $user->swapPlan($plan, $request->validated('interval'));
+        if ($plan->is_complimentary) {
+            $user->assignComplimentaryPlan($plan);
+
+            return response()->json([
+                'message' => __('responses.admin.user.subscription_updated'),
+            ]);
+        }
+
+        if ($user->subscribed()) {
+            $subscription = $user->swapPlan($plan, $request->validated('interval'));
+        } else {
+            $subscription = $user->subscribeToPlan($plan, $request->validated('interval'));
+        }
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),

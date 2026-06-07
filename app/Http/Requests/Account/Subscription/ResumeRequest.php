@@ -11,9 +11,12 @@ class ResumeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $subscription = $this->user()->subscription();
+        $user = $this->user();
+        $subscription = $user->subscription();
 
-        return $subscription && $subscription->onGracePeriod();
+        return $subscription
+            && $subscription->onGracePeriod()
+            && !$user->onComplimentary();
     }
 
     /**
