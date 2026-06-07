@@ -68,6 +68,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - Plan model with features JSON (countable limits and boolean flags)
   - Three subscription modes: freemium, trial, required
   - Subscribe, swap, cancel, resume flows for both account and admin
+  - 3D Secure (SCA) support with client_secret passback for client-side confirmation
   - Complimentary plans for admin-assigned access without Stripe billing
   - Plan feature limits enforced in request authorization
   - Plans cached with auto-invalidation on mutation
