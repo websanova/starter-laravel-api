@@ -5,5 +5,8 @@ paths:
 
 # Services
 
-- Used when business logic spans multiple models or has complex orchestration that doesn't belong in a single model (e.g., `VerificationService` coordinates codes, hashing, notifications, throttling; `EmailChangeService` coordinates tokens, notifications, email swaps).
+- Used when business logic spans multiple models, has complex orchestration, or interacts with external APIs (e.g., `VerificationService` coordinates codes, hashing, notifications, throttling; `EmailChangeService` coordinates tokens, notifications, email swaps; `PromotionCodeService` resolves promotion codes against Stripe).
 - Not used for simple CRUD that a model or controller can handle directly.
+- Services never throw `ValidationException` or any HTTP-layer exception. Return `ServiceResult` instead so services stay reusable outside HTTP context (queues, CLI).
+- `ServiceResult` (`app/Support/ServiceResult.php`) is the standard return type for service methods that can fail. `ServiceResult::success($data)` for success, `ServiceResult::error('fragment.key')` for failure. The error string is a lang key fragment; the controller decides the prefix and throws `ValidationException`.
+- Controllers check `$result->success`, access `$result->data` on success, and translate `$result->error` into `ValidationException::withMessages()` on failure.

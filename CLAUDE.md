@@ -125,7 +125,7 @@ Detailed conventions are in `.claude/rules/` and load automatically when touchin
 - Model scopes use `for*` prefix, accept nullable, no-op on null. Every listable model has a `scopeSortBy` with typed enum params and defaults.
 - Account requests check ownership inline in `authorize()`. Admin requests delegate to policies.
 - Validation rules centralized in `app/Rules/` - one class per resource plus `SharedRules`.
-- Services for multi-model orchestration only. Simple CRUD stays in models/controllers.
+- Services for multi-model orchestration or external API interaction. Simple CRUD stays in models/controllers. Services return `ServiceResult` (`app/Support/`) instead of throwing exceptions; controllers translate errors into HTTP responses.
 - All emails through notifications (not `Mail::send()`), extensible to SMS via `$channelMap`.
 - Migrations use `cascadeOnDelete()` for owned resources, `nullOnDelete()` for optional relationships.
 - Plan model uses `rememberForever()` cache with auto-invalidation. Feature limits are JSON with null meaning unlimited.
