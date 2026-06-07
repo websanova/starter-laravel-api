@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Support\ServiceResult;
+use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
-use Stripe\StripeClient;
 
 class PromotionCodeService
 {
@@ -14,9 +14,7 @@ class PromotionCodeService
     public function resolve(string $code): ServiceResult
     {
         try {
-            $stripe = new StripeClient(config('cashier.secret'));
-
-            $promotionCodes = $stripe->promotionCodes->all([
+            $promotionCodes = Cashier::stripe()->promotionCodes->all([
                 'code' => $code,
                 'active' => true,
                 'limit' => 1,
