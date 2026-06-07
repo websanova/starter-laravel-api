@@ -10,7 +10,7 @@ test('regular user cannot subscribe another user', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->actingAs($user)->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -21,7 +21,7 @@ test('regular user cannot subscribe another user', function () {
 test('unauthenticated user cannot subscribe a user', function () {
     $target = User::factory()->create();
 
-    $response = $this->postJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -36,7 +36,7 @@ test('admin cannot subscribe a super user', function () {
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
 
-    $response = $this->actingAs($admin)->postJson("/admin/users/{$super->id}/subscription", [
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$super->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -50,7 +50,7 @@ test('plan slug is required', function () {
 
     $target = User::factory()->create();
 
-    $response = $this->actingAs($admin)->postJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$target->id}/subscription", [
         'interval' => 'monthly',
     ]);
 
@@ -58,18 +58,17 @@ test('plan slug is required', function () {
         ->assertJsonValidationErrors('plan');
 });
 
-test('interval is required', function () {
+test('interval is optional', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
 
-    $response = $this->actingAs($admin)->postJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
     ]);
 
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors('interval');
+    $response->assertJsonMissingValidationErrors('interval');
 });
 
 test('plan must exist', function () {
@@ -78,7 +77,7 @@ test('plan must exist', function () {
 
     $target = User::factory()->create();
 
-    $response = $this->actingAs($admin)->postJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'nonexistent',
         'interval' => 'monthly',
     ]);

@@ -98,3 +98,32 @@ test('is_on_grace_period returns false when subscriptions loaded but none exist'
 
     expect($user->is_on_grace_period)->toBeFalse();
 });
+
+test('assignComplimentaryPlan sets plan without stripe', function () {
+    $plan = Plan::factory()->complimentary()->create();
+    $user = User::factory()->create();
+
+    $user->assignComplimentaryPlan($plan);
+
+    expect($user->fresh()->plan_id)->toBe($plan->id);
+});
+
+test('onComplimentary returns true for complimentary plan', function () {
+    $plan = Plan::factory()->complimentary()->create();
+    $user = User::factory()->create(['plan_id' => $plan->id]);
+
+    expect($user->onComplimentary())->toBeTrue();
+});
+
+test('onComplimentary returns false for paid plan', function () {
+    $plan = Plan::factory()->paid()->create();
+    $user = User::factory()->create(['plan_id' => $plan->id]);
+
+    expect($user->onComplimentary())->toBeFalse();
+});
+
+test('onComplimentary returns false for free plan', function () {
+    $user = User::factory()->create(['plan_id' => null]);
+
+    expect($user->onComplimentary())->toBeFalse();
+});

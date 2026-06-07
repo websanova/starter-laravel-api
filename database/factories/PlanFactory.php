@@ -50,6 +50,19 @@ class PlanFactory extends Factory
     }
 
     /**
+     * Indicate that the plan is a complimentary plan (non-free, no prices).
+     */
+    public function complimentary(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_monthly_price_id' => null,
+            'stripe_yearly_price_id' => null,
+            'monthly_price' => 0,
+            'yearly_price' => 0,
+        ]);
+    }
+
+    /**
      * Indicate that the plan is a paid plan.
      */
     public function paid(): static

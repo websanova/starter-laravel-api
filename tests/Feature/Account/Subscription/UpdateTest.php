@@ -6,7 +6,7 @@ use App\Models\Plan;
 use App\Models\User;
 
 test('unauthenticated user cannot update subscription', function () {
-    $response = $this->patchJson('/account/subscription', [
+    $response = $this->putJson('/account/subscription', [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -14,13 +14,15 @@ test('unauthenticated user cannot update subscription', function () {
     $response->assertStatus(401);
 });
 
-test('user without subscription cannot swap plans', function () {
+test('plan must be public with stripe prices', function () {
+    $plan = Plan::factory()->private()->create();
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->patchJson('/account/subscription', [
-        'plan' => 'pro',
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
+        'plan' => $plan->slug,
         'interval' => 'monthly',
     ]);
 
-    $response->assertStatus(403);
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('plan');
 });

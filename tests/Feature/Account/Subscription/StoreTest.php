@@ -6,7 +6,7 @@ use App\Models\Plan;
 use App\Models\User;
 
 test('unauthenticated user cannot subscribe', function () {
-    $response = $this->postJson('/account/subscription', [
+    $response = $this->putJson('/account/subscription', [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -17,7 +17,7 @@ test('unauthenticated user cannot subscribe', function () {
 test('plan slug is required', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/account/subscription', [
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
         'interval' => 'monthly',
     ]);
 
@@ -28,7 +28,7 @@ test('plan slug is required', function () {
 test('interval is required', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/account/subscription', [
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
         'plan' => 'pro',
     ]);
 
@@ -39,7 +39,7 @@ test('interval is required', function () {
 test('plan must exist', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/account/subscription', [
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
         'plan' => 'nonexistent',
         'interval' => 'monthly',
     ]);
@@ -51,11 +51,24 @@ test('plan must exist', function () {
 test('interval must be valid', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson('/account/subscription', [
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
         'plan' => 'pro',
         'interval' => 'weekly',
     ]);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors('interval');
+});
+
+test('complimentary plan is rejected', function () {
+    $plan = Plan::factory()->complimentary()->create();
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->putJson('/account/subscription', [
+        'plan' => $plan->slug,
+        'interval' => 'monthly',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('plan');
 });

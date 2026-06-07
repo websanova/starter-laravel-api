@@ -3,6 +3,7 @@
 uses()->group('admin.user-subscription.resume');
 
 use App\Enums\UserRole;
+use App\Models\Plan;
 use App\Models\User;
 
 test('regular user cannot resume a user subscription', function () {
@@ -30,6 +31,18 @@ test('admin cannot resume a super user subscription', function () {
     $super->assignRole(UserRole::Super);
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/subscription/resume");
+
+    $response->assertStatus(403);
+});
+
+test('admin cannot resume complimentary user', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $plan = Plan::factory()->complimentary()->create();
+    $target = User::factory()->create(['plan_id' => $plan->id]);
+
+    $response = $this->actingAs($admin)->patchJson("/admin/users/{$target->id}/subscription/resume");
 
     $response->assertStatus(403);
 });

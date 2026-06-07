@@ -10,7 +10,7 @@ test('regular user cannot update a user subscription', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
-    $response = $this->actingAs($user)->patchJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->actingAs($user)->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -21,7 +21,7 @@ test('regular user cannot update a user subscription', function () {
 test('unauthenticated user cannot update a user subscription', function () {
     $target = User::factory()->create();
 
-    $response = $this->patchJson("/admin/users/{$target->id}/subscription", [
+    $response = $this->putJson("/admin/users/{$target->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
@@ -36,10 +36,27 @@ test('admin cannot update a super user subscription', function () {
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
 
-    $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/subscription", [
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$super->id}/subscription", [
         'plan' => 'pro',
         'interval' => 'monthly',
     ]);
 
     $response->assertStatus(403);
+});
+
+test('admin can assign complimentary plan without interval', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $plan = Plan::factory()->complimentary()->create();
+    $target = User::factory()->create();
+
+    $response = $this->actingAs($admin)->putJson("/admin/users/{$target->id}/subscription", [
+        'plan' => $plan->slug,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('message', __('responses.admin.user.subscription_updated'));
+
+    expect($target->fresh()->plan_id)->toBe($plan->id);
 });

@@ -16,6 +16,7 @@ test('super can create a plan', function () {
         'monthly_price' => 4999,
         'yearly_price' => 49990,
         'features' => ['bookmarks' => null, 'categories' => null],
+        'is_active' => true,
         'sort_order' => 3,
     ]);
 

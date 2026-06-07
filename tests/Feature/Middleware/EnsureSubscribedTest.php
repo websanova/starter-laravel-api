@@ -30,8 +30,7 @@ test('freemium mode allows user without a plan', function () {
 test('required mode blocks user without subscription', function () {
     config(['subscription.mode' => \App\Enums\SubscriptionMode::Required]);
 
-    $plan = Plan::factory()->create();
-    $user = User::factory()->create(['plan_id' => $plan->id]);
+    $user = User::factory()->create(['plan_id' => null]);
 
     $response = $this->actingAs($user)->getJson('/account/bookmarks');
 
@@ -72,6 +71,28 @@ test('trial mode blocks user with expired trial', function () {
     $response = $this->actingAs($user)->getJson('/account/bookmarks');
 
     $response->assertStatus(403);
+});
+
+test('required mode allows complimentary user', function () {
+    config(['subscription.mode' => \App\Enums\SubscriptionMode::Required]);
+
+    $plan = Plan::factory()->complimentary()->create();
+    $user = User::factory()->create(['plan_id' => $plan->id]);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+
+    $response->assertStatus(200);
+});
+
+test('trial mode allows complimentary user', function () {
+    config(['subscription.mode' => \App\Enums\SubscriptionMode::Trial]);
+
+    $plan = Plan::factory()->complimentary()->create();
+    $user = User::factory()->create(['plan_id' => $plan->id]);
+
+    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+
+    $response->assertStatus(200);
 });
 
 test('subscription middleware does not block profile routes', function () {
