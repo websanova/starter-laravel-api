@@ -21,7 +21,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'promotion_code' => SubscriptionRules::promotionCodeRequired(),
+            'promotion_code' => SubscriptionRules::promotionCode(required: true),
         ];
     }
 }

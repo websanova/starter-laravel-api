@@ -7,7 +7,7 @@ use App\Http\Requests\Admin\UserSubscriptionCoupon\DestroyRequest;
 use App\Http\Requests\Admin\UserSubscriptionCoupon\StoreRequest;
 use App\Http\Resources\Admin\SubscriptionResource;
 use App\Models\User;
-use App\Rules\ValidPromotionCode;
+use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
 
 class UserSubscriptionCouponController extends Controller
@@ -15,9 +15,9 @@ class UserSubscriptionCouponController extends Controller
     /**
      * Apply a promotion code to a user's existing subscription.
      */
-    public function store(StoreRequest $request, User $user): JsonResponse
+    public function store(StoreRequest $request, User $user, PromotionCodeService $promotionCodeService): JsonResponse
     {
-        $promotionCodeId = ValidPromotionCode::resolved()->id;
+        $promotionCodeId = $promotionCodeService->resolve($request->validated('promotion_code'))->id;
 
         $user->subscription()->applyPromotionCode($promotionCodeId);
 

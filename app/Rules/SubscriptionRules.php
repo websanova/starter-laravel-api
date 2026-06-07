@@ -3,25 +3,19 @@
 namespace App\Rules;
 
 use App\Enums\PlanInterval;
-use App\Rules\ValidPromotionCode;
 use Illuminate\Validation\Rule;
 
 class SubscriptionRules
 {
     /**
-     * Validation rules for the optional promotion code field.
+     * Validation rules for the promotion code field.
      */
-    public static function promotionCode(): array
+    public static function promotionCode(bool $required = false): array
     {
-        return ['sometimes', 'nullable', 'string', new ValidPromotionCode];
-    }
-
-    /**
-     * Validation rules for the required promotion code field.
-     */
-    public static function promotionCodeRequired(): array
-    {
-        return ['required', 'string', new ValidPromotionCode];
+        return array_merge(
+            $required ? ['required'] : ['sometimes', 'nullable'],
+            ['string', 'alpha_dash', 'max:50'],
+        );
     }
 
     /**

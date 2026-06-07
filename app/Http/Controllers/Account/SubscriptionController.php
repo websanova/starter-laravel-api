@@ -9,7 +9,7 @@ use App\Http\Requests\Account\Subscription\StoreRequest;
 use App\Http\Requests\Account\Subscription\UpdateRequest;
 use App\Http\Resources\Account\SubscriptionResource;
 use App\Models\Plan;
-use App\Rules\ValidPromotionCode;
+use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionController extends Controller
@@ -33,12 +33,16 @@ class SubscriptionController extends Controller
     /**
      * Subscribe to a plan.
      */
-    public function store(StoreRequest $request): JsonResponse
+    public function store(StoreRequest $request, PromotionCodeService $promotionCodeService): JsonResponse
     {
         $user = $request->user();
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $promotionCodeId = ValidPromotionCode::resolved()?->id;
+        $promotionCodeId = null;
+
+        if ($request->validated('promotion_code')) {
+            $promotionCodeId = $promotionCodeService->resolve($request->validated('promotion_code'))->id;
+        }
 
         $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);
 
