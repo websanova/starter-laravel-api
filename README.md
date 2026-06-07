@@ -2,6 +2,14 @@
 
 A Laravel API starter with a full auth system, account management, and production-ready integrations out of the box. No frontend, no Blade, no Vite. Just a clean JSON API.
 
+## Docs
+
+Full documentation at [websanova.com/docs/starter-api](https://websanova.com/docs/starter-api).
+
+- [Docker Setup](docs/docker-setup.md)
+- [Stripe Setup](docs/stripe-setup.md)
+- [Dev Commands](docs/dev-commands.md)
+
 ## Features
 
 - **Token Auth (Sanctum)**
@@ -72,42 +80,3 @@ A Laravel API starter with a full auth system, account management, and productio
   - Dockerized (PHP-FPM + MySQL)
   - `./dev` script for container commands
   - Pest test suite
-
-## Setup
-
-Build and start the containers.
-
-```bash
-docker compose up -d --build
-```
-
-The container boots but won't serve the app yet. Dependencies aren't installed automatically to avoid modifying `composer.lock` without your say-so. Install them and restart.
-
-```bash
-./dev composer install
-docker compose restart php
-./dev artisan migrate
-./dev artisan db:seed
-```
-
-Migration creates roles, permissions, and a super user (`super@starter.com` / `initinit`). The super account requires a password change on first login. Seeding adds dev users (`admin@starter.com`, `user@starter.com`, both `testtest`).
-
-On subsequent runs, just start the containers. The entrypoint detects `vendor/` and serves automatically.
-
-```bash
-docker compose up -d
-```
-
-App runs at `http://localhost:8000`.
-
-## Dev Commands
-
-```bash
-./dev artisan migrate
-./dev artisan make:model Foo -m
-./dev composer install
-./dev composer require foo/bar
-./dev php -v
-docker compose down
-docker compose logs php
-```
