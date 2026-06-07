@@ -39,6 +39,7 @@
 - Give real analysis on design proposals: trade-offs, problems, reasons to push back.
 - If a better solution exists, present it - don't default to the approach the user suggested.
 - Never open with "fair point", "good idea", "that makes sense", or similar.
+- Do not dismiss a pattern because the current codebase is small. Evaluate patterns on their own merit, not relative to project size.
 
 ## Accuracy and Speculation Control
 - Never speculate about code, files, or APIs you have not read.
@@ -103,6 +104,8 @@
 
 ## Project
 - Starter/boilerplate project. Code should be clean, minimal, and well-structured as a reference for new projects.
+- This is a reference codebase. Patterns established here will be copied into production projects. Prioritize correct, scalable patterns over "good enough for the current size." Do not use project size as a reason to skip a pattern that would be standard in a larger Laravel app.
+- When multiple approaches exist, prefer the one aligned with Laravel convention and industry standard practice. If the simpler approach deviates from convention, mention the conventional approach and the tradeoff.
 - Stack: Laravel, PHP, MySQL
 - Testing: Pest
 - This is a dedicated API (no frontend). No /api/ prefix needed in routes. No Vite, no npm, no Blade views.
