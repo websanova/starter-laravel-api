@@ -58,10 +58,16 @@ class SubscriptionController extends Controller
             $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);
         }
 
-        return response()->json([
+        $response = [
             'data' => new SubscriptionResource($subscription),
             'message' => __('responses.subscription.updated'),
-        ]);
+        ];
+
+        if ($subscription->stripe_status === 'incomplete') {
+            $response['client_secret'] = $subscription->latestPayment()->asStripePaymentIntent()->client_secret;
+        }
+
+        return response()->json($response);
     }
 
     /**
