@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --from=mysql:8.0 /usr/bin/mysqldump /usr/bin/mysqldump
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN git config --global --add safe.directory /var/www/html
