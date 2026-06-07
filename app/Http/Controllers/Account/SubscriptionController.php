@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Subscription\DestroyRequest;
 use App\Http\Requests\Account\Subscription\ResumeRequest;
-use App\Http\Requests\Account\Subscription\StoreRequest;
 use App\Http\Requests\Account\Subscription\UpdateRequest;
 use App\Http\Resources\Account\SubscriptionResource;
 use App\Models\Plan;
@@ -32,44 +31,32 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Subscribe to a plan.
+     * Create or swap a subscription.
      */
-    public function store(StoreRequest $request, PromotionCodeService $promotionCodeService): JsonResponse
+    public function update(UpdateRequest $request, PromotionCodeService $promotionCodeService): JsonResponse
     {
         $user = $request->user();
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $promotionCodeId = null;
+        if ($user->subscribed()) {
+            $subscription = $user->swapPlan($plan, $request->validated('interval'));
+        } else {
+            $promotionCodeId = null;
 
-        if ($request->validated('promotion_code')) {
-            $result = $promotionCodeService->resolve($request->validated('promotion_code'));
+            if ($request->validated('promotion_code')) {
+                $result = $promotionCodeService->resolve($request->validated('promotion_code'));
 
-            if (!$result->success) {
-                throw ValidationException::withMessages([
-                    'promotion_code' => [__("validation.{$result->error}")],
-                ]);
+                if (!$result->success) {
+                    throw ValidationException::withMessages([
+                        'promotion_code' => [__("validation.{$result->error}")],
+                    ]);
+                }
+
+                $promotionCodeId = $result->data->id;
             }
 
-            $promotionCodeId = $result->data->id;
+            $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);
         }
-
-        $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);
-
-        return response()->json([
-            'data' => new SubscriptionResource($subscription),
-            'message' => __('responses.subscription.created'),
-        ], 201);
-    }
-
-    /**
-     * Swap to a different plan.
-     */
-    public function update(UpdateRequest $request): JsonResponse
-    {
-        $user = $request->user();
-        $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
-
-        $subscription = $user->swapPlan($plan, $request->validated('interval'));
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),
