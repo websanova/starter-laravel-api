@@ -63,8 +63,10 @@ A Laravel API starter with a full auth system, account management, and productio
   - Plan feature limits enforced in request authorization
   - Plans cached with auto-invalidation on mutation
 
-- **Integrations**
-  - S3-compatible file storage
+- **File Storage (S3)**
+  - Off-server storage, AWS and DigitalOcean Spaces ready
+  - Image processing via Intervention
+  - `StoragePath` enum for centralized path management
 
 - **Dev Environment**
   - Dockerized (PHP-FPM + MySQL)
