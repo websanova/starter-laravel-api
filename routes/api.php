@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
+Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
+
 Route::prefix('auth')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'store']);
