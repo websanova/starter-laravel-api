@@ -10,34 +10,15 @@ use Illuminate\Validation\Rules\Password;
 class UserRules
 {
     /**
-     * Validation rules for the sort_by field.
+     * Validation rules for the avatar field.
      */
-    public static function sortBy(): array
-    {
-        return ['sometimes', 'string', Rule::enum(UserSort::class)];
-    }
-
-    /**
-     * Validation rules for the first_name field.
-     */
-    public static function firstName(bool $required = true): array
+    public static function avatar(): array
     {
         return [
-            $required ? 'required' : 'sometimes',
-            'string',
-            'max:255',
-        ];
-    }
-
-    /**
-     * Validation rules for the last_name field.
-     */
-    public static function lastName(bool $required = true): array
-    {
-        return [
-            $required ? 'required' : 'sometimes',
-            'string',
-            'max:255',
+            'required',
+            'image',
+            'mimes:jpeg,png,webp',
+            'max:2048',
         ];
     }
 
@@ -70,6 +51,30 @@ class UserRules
     }
 
     /**
+     * Validation rules for the first_name field.
+     */
+    public static function firstName(bool $required = true): array
+    {
+        return [
+            $required ? 'required' : 'sometimes',
+            'string',
+            'max:255',
+        ];
+    }
+
+    /**
+     * Validation rules for the last_name field.
+     */
+    public static function lastName(bool $required = true): array
+    {
+        return [
+            $required ? 'required' : 'sometimes',
+            'string',
+            'max:255',
+        ];
+    }
+
+    /**
      * Validation rules for the password field.
      */
     public static function password(): array
@@ -77,6 +82,18 @@ class UserRules
         return [
             'required',
             'string',
+        ];
+    }
+
+    /**
+     * Validation rules for the current_password field.
+     */
+    public static function passwordCurrent(): array
+    {
+        return [
+            'required',
+            'string',
+            'current_password',
         ];
     }
 
@@ -90,18 +107,6 @@ class UserRules
             'string',
             'confirmed',
             Password::defaults(),
-        ];
-    }
-
-    /**
-     * Validation rules for the current_password field.
-     */
-    public static function passwordCurrent(): array
-    {
-        return [
-            'required',
-            'string',
-            'current_password',
         ];
     }
 
@@ -122,15 +127,10 @@ class UserRules
     }
 
     /**
-     * Validation rules for the avatar field.
+     * Validation rules for the sort_by field.
      */
-    public static function avatar(): array
+    public static function sortBy(): array
     {
-        return [
-            'required',
-            'image',
-            'mimes:jpeg,png,webp',
-            'max:2048',
-        ];
+        return ['sometimes', 'string', Rule::enum(UserSort::class)];
     }
 }

@@ -8,14 +8,6 @@ use Illuminate\Validation\Rule;
 class CategoryRules
 {
     /**
-     * Validation rules for the sort_by field.
-     */
-    public static function sortBy(): array
-    {
-        return ['sometimes', 'string', Rule::enum(CategorySort::class)];
-    }
-
-    /**
      * Validation rules for the name field.
      */
     public static function name(bool $required = true): array
@@ -25,5 +17,13 @@ class CategoryRules
             'string',
             'max:255',
         ];
+    }
+
+    /**
+     * Validation rules for the sort_by field.
+     */
+    public static function sortBy(): array
+    {
+        return ['sometimes', 'string', Rule::enum(CategorySort::class)];
     }
 }

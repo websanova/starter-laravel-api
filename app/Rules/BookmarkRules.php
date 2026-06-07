@@ -19,13 +19,16 @@ class BookmarkRules
         ];
     }
 
-
     /**
-     * Validation rules for the sort_by field.
+     * Validation rules for the description field.
      */
-    public static function sortBy(): array
+    public static function description(): array
     {
-        return ['sometimes', 'string', Rule::enum(BookmarkSort::class)];
+        return [
+            'nullable',
+            'string',
+            'max:1000',
+        ];
     }
 
     /**
@@ -37,16 +40,11 @@ class BookmarkRules
     }
 
     /**
-     * Validation rules for the url field.
+     * Validation rules for the sort_by field.
      */
-    public static function url(bool $required = true): array
+    public static function sortBy(): array
     {
-        return [
-            $required ? 'required' : 'sometimes',
-            'string',
-            'url',
-            'max:2048',
-        ];
+        return ['sometimes', 'string', Rule::enum(BookmarkSort::class)];
     }
 
     /**
@@ -62,14 +60,15 @@ class BookmarkRules
     }
 
     /**
-     * Validation rules for the description field.
+     * Validation rules for the url field.
      */
-    public static function description(): array
+    public static function url(bool $required = true): array
     {
         return [
-            'nullable',
+            $required ? 'required' : 'sometimes',
             'string',
-            'max:1000',
+            'url',
+            'max:2048',
         ];
     }
 }

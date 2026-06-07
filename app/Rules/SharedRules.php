@@ -25,19 +25,19 @@ class SharedRules
     }
 
     /**
-     * Validation rules for the sort_dir field.
-     */
-    public static function sortDir(): array
-    {
-        return ['sometimes', 'string', Rule::enum(SortDirection::class)];
-    }
-
-    /**
      * Validation rules for the search field.
      */
     public static function search(): array
     {
         return ['sometimes', 'string', 'max:255'];
+    }
+
+    /**
+     * Validation rules for the sort_dir field.
+     */
+    public static function sortDir(): array
+    {
+        return ['sometimes', 'string', Rule::enum(SortDirection::class)];
     }
 
     /**

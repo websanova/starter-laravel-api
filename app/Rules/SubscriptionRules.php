@@ -8,14 +8,31 @@ use Illuminate\Validation\Rule;
 class SubscriptionRules
 {
     /**
-     * Validation rules for the promotion code field.
+     * Validation rules for the billing interval field.
      */
-    public static function promotionCode(bool $required = false): array
+    public static function interval(): array
     {
-        return array_merge(
-            $required ? ['required'] : ['sometimes', 'nullable'],
-            ['string', 'alpha_dash', 'max:50'],
-        );
+        return ['required', 'string', Rule::enum(PlanInterval::class)];
+    }
+
+    /**
+     * Validation rules for the billing interval field when optional.
+     */
+    public static function intervalOptional(): array
+    {
+        return ['sometimes', 'nullable', 'string', Rule::enum(PlanInterval::class)];
+    }
+
+    /**
+     * Validation rules for the plan slug field (admin side).
+     */
+    public static function planAdmin(): array
+    {
+        return [
+            'required',
+            'string',
+            Rule::exists('plans', 'slug')->where('is_active', true),
+        ];
     }
 
     /**
@@ -34,30 +51,13 @@ class SubscriptionRules
     }
 
     /**
-     * Validation rules for the plan slug field (admin side).
+     * Validation rules for the promotion code field.
      */
-    public static function planAdmin(): array
+    public static function promotionCode(bool $required = false): array
     {
-        return [
-            'required',
-            'string',
-            Rule::exists('plans', 'slug')->where('is_active', true),
-        ];
-    }
-
-    /**
-     * Validation rules for the billing interval field.
-     */
-    public static function interval(): array
-    {
-        return ['required', 'string', Rule::enum(PlanInterval::class)];
-    }
-
-    /**
-     * Validation rules for the billing interval field when optional.
-     */
-    public static function intervalOptional(): array
-    {
-        return ['sometimes', 'nullable', 'string', Rule::enum(PlanInterval::class)];
+        return array_merge(
+            $required ? ['required'] : ['sometimes', 'nullable'],
+            ['string', 'alpha_dash', 'max:50'],
+        );
     }
 }
