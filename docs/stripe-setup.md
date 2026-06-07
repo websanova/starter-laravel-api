@@ -1,24 +1,35 @@
 # Stripe Setup
 
-Subscriptions require a Stripe account with products and prices configured.
-
-1. Create a product in the Stripe dashboard (e.g. "Pro")
-2. Add two prices: one monthly recurring, one yearly recurring
-3. Copy the price IDs (`price_xxx`) into your `.env`:
+Billing is handled through Laravel Cashier with Stripe. Add your Stripe API keys to `.env`:
 
 ```env
 STRIPE_KEY=pk_test_xxx
 STRIPE_SECRET=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
 
+## Subscriptions
+
+Create a product in the Stripe dashboard (e.g. "Pro") with two recurring prices, one monthly and one yearly. Copy the price IDs into your `.env`:
+
+```env
 STRIPE_PRICE_PRO_MONTHLY=price_xxx
 STRIPE_PRICE_PRO_YEARLY=price_xxx
 ```
 
-4. Run the plan seeder to create the plan records with the Stripe price IDs:
+Then run the plan seeder to create the local plan records:
 
 ```bash
 ./dev artisan db:seed --class=PlanSeeder
 ```
 
-Coupons and promotion codes are optional. If you want discount support, create them in the Stripe dashboard under Products > Coupons. The API validates promotion codes against Stripe on the fly, so no local configuration is needed beyond having a valid `STRIPE_SECRET`.
+## Coupons
+
+Coupons and promotion codes are optional. Create them in the Stripe dashboard under Products > Coupons. The API validates promotion codes against Stripe on the fly, so no local configuration is needed beyond having a valid `STRIPE_SECRET`.
+
+## Webhooks
+
+Webhooks keep local subscription data in sync when changes happen directly in Stripe (cancellations, payment failures, trial expirations, etc.). The API registers a webhook endpoint at `POST /stripe/webhook`. You'll need to create a matching webhook endpoint in the Stripe dashboard, point it at that URL, and copy the signing secret into your `.env`:
+
+```env
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
