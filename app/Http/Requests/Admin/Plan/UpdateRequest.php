@@ -30,6 +30,7 @@ class UpdateRequest extends FormRequest
             'features' => PlanRules::features(),
             'features.*' => PlanRules::featureValue(),
             'is_active' => PlanRules::isActive(),
+            'is_public' => PlanRules::isPublic(),
             'sort_order' => PlanRules::sortOrder(),
         ];
     }

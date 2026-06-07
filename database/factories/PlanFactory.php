@@ -24,6 +24,7 @@ class PlanFactory extends Factory
             'yearly_price' => 0,
             'features' => [],
             'is_active' => true,
+            'is_public' => true,
             'sort_order' => 0,
         ];
     }
@@ -35,6 +36,16 @@ class PlanFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Indicate that the plan is not public.
+     */
+    public function private(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_public' => false,
         ]);
     }
 

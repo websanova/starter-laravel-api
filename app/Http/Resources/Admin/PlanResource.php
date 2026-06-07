@@ -22,6 +22,8 @@ class PlanResource extends JsonResource
             'yearly_price' => $this->yearly_price,
             'features' => $this->features,
             'is_active' => $this->is_active,
+            'is_public' => $this->is_public,
+            'is_complimentary' => $this->is_complimentary,
             'sort_order' => $this->sort_order,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -19,11 +19,30 @@ class SubscriptionRules
     }
 
     /**
-     * Validation rules for the plan slug field.
+     * Validation rules for the plan slug field (account side).
      */
-    public static function plan(): array
+    public static function planPublic(): array
     {
-        return ['required', 'string', 'exists:plans,slug'];
+        return [
+            'required',
+            'string',
+            Rule::exists('plans', 'slug')
+                ->where('is_active', true)
+                ->where('is_public', true)
+                ->whereNotNull('stripe_monthly_price_id'),
+        ];
+    }
+
+    /**
+     * Validation rules for the plan slug field (admin side).
+     */
+    public static function planAdmin(): array
+    {
+        return [
+            'required',
+            'string',
+            Rule::exists('plans', 'slug')->where('is_active', true),
+        ];
     }
 
     /**

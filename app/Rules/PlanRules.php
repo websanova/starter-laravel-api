@@ -85,6 +85,14 @@ class PlanRules
     }
 
     /**
+     * Validation rules for the is_public field.
+     */
+    public static function isPublic(): array
+    {
+        return ['sometimes', 'boolean'];
+    }
+
+    /**
      * Validation rules for the sort_order field.
      */
     public static function sortOrder(): array

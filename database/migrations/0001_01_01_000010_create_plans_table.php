@@ -20,7 +20,8 @@ return new class extends Migration
             $table->unsignedInteger('monthly_price')->default(0);
             $table->unsignedInteger('yearly_price')->default(0);
             $table->json('features')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
+            $table->boolean('is_public')->default(false);
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
 

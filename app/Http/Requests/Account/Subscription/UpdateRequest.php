@@ -14,7 +14,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'plan' => SubscriptionRules::plan(),
+            'plan' => SubscriptionRules::planPublic(),
             'interval' => SubscriptionRules::interval(),
             'promotion_code' => SubscriptionRules::promotionCode(),
         ];

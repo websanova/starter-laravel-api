@@ -29,7 +29,8 @@ class Plan extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
-        'is_active' => true,
+        'is_active' => false,
+        'is_public' => false,
     ];
 
     /**
@@ -46,6 +47,7 @@ class Plan extends Model
         'yearly_price',
         'features',
         'is_active',
+        'is_public',
         'sort_order',
     ];
 
@@ -61,6 +63,7 @@ class Plan extends Model
             'monthly_price' => 'integer',
             'yearly_price' => 'integer',
             'is_active' => 'boolean',
+            'is_public' => 'boolean',
             'sort_order' => 'integer',
         ];
     }
@@ -123,6 +126,18 @@ class Plan extends Model
         }
 
         $query->where('is_active', $active);
+    }
+
+    /**
+     * Filter by public visibility.
+     */
+    public function scopeForPublic(Builder $query, ?bool $public): void
+    {
+        if (is_null($public)) {
+            return;
+        }
+
+        $query->where('is_public', $public);
     }
 
     /**
