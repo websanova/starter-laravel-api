@@ -5,9 +5,9 @@ namespace App\Services;
 use App\Models\EmailChangeToken;
 use App\Models\User;
 use App\Notifications\EmailChangeNotification;
+use App\Support\ServiceResult;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class EmailChangeService
 {
@@ -33,16 +33,14 @@ class EmailChangeService
     /**
      * Confirm the email change using the token.
      */
-    public function confirm(string $email, string $token): void
+    public function confirm(string $email, string $token): ServiceResult
     {
         $record = EmailChangeToken::where('email', $email)
             ->where('created_at', '>', now()->subMinutes(config('auth.email_change.expire', 60)))
             ->first();
 
         if (!$record || !Hash::check($token, $record->token)) {
-            throw ValidationException::withMessages([
-                'token' => [__('responses.email_change.invalid_token')],
-            ]);
+            return ServiceResult::error('email_change.invalid_token');
         }
 
         $record->user->update([
@@ -51,6 +49,8 @@ class EmailChangeService
         ]);
 
         $this->deleteExistingTokens($record->user);
+
+        return ServiceResult::success();
     }
 
     /**

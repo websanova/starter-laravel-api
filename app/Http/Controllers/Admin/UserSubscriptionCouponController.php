@@ -9,6 +9,7 @@ use App\Http\Resources\Admin\SubscriptionResource;
 use App\Models\User;
 use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class UserSubscriptionCouponController extends Controller
 {
@@ -17,9 +18,15 @@ class UserSubscriptionCouponController extends Controller
      */
     public function store(StoreRequest $request, User $user, PromotionCodeService $promotionCodeService): JsonResponse
     {
-        $promotionCodeId = $promotionCodeService->resolve($request->validated('promotion_code'))->id;
+        $result = $promotionCodeService->resolve($request->validated('promotion_code'));
 
-        $user->subscription()->applyPromotionCode($promotionCodeId);
+        if (!$result->success) {
+            throw ValidationException::withMessages([
+                'promotion_code' => [__("validation.{$result->error}")],
+            ]);
+        }
+
+        $user->subscription()->applyPromotionCode($result->data->id);
 
         return response()->json([
             'data' => new SubscriptionResource($user->subscription()),

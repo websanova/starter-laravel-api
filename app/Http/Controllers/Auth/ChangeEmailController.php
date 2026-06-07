@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangeEmail\StoreRequest;
 use App\Services\EmailChangeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class ChangeEmailController extends Controller
 {
@@ -18,10 +19,16 @@ class ChangeEmailController extends Controller
      */
     public function store(StoreRequest $request): JsonResponse
     {
-        $this->emailChangeService->confirm(
+        $result = $this->emailChangeService->confirm(
             $request->validated('email'),
             $request->validated('token')
         );
+
+        if (!$result->success) {
+            throw ValidationException::withMessages([
+                'token' => [__("responses.{$result->error}")],
+            ]);
+        }
 
         return response()->json(['message' => __('responses.email_change.confirmed')]);
     }

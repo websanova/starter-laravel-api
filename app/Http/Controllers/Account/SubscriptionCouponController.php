@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Account\PromotionCodeResource;
 use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class SubscriptionCouponController extends Controller
 {
@@ -14,10 +15,16 @@ class SubscriptionCouponController extends Controller
      */
     public function show(string $code, PromotionCodeService $promotionCodeService): JsonResponse
     {
-        $promotionCode = $promotionCodeService->resolve($code);
+        $result = $promotionCodeService->resolve($code);
+
+        if (!$result->success) {
+            throw ValidationException::withMessages([
+                'promotion_code' => [__("validation.{$result->error}")],
+            ]);
+        }
 
         return response()->json([
-            'data' => new PromotionCodeResource($promotionCode),
+            'data' => new PromotionCodeResource($result->data),
         ]);
     }
 }

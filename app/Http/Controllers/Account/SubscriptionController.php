@@ -11,6 +11,7 @@ use App\Http\Resources\Account\SubscriptionResource;
 use App\Models\Plan;
 use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class SubscriptionController extends Controller
 {
@@ -41,7 +42,15 @@ class SubscriptionController extends Controller
         $promotionCodeId = null;
 
         if ($request->validated('promotion_code')) {
-            $promotionCodeId = $promotionCodeService->resolve($request->validated('promotion_code'))->id;
+            $result = $promotionCodeService->resolve($request->validated('promotion_code'));
+
+            if (!$result->success) {
+                throw ValidationException::withMessages([
+                    'promotion_code' => [__("validation.{$result->error}")],
+                ]);
+            }
+
+            $promotionCodeId = $result->data->id;
         }
 
         $subscription = $user->subscribeToPlan($plan, $request->validated('interval'), $promotionCodeId);

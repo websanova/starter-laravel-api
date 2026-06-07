@@ -7,8 +7,8 @@ use App\Models\User;
 use App\Models\VerificationCode;
 use App\Notifications\VerificationCodeNotification;
 use App\Notifications\WelcomeNotification;
+use App\Support\ServiceResult;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class VerificationService
 {
@@ -35,7 +35,7 @@ class VerificationService
     /**
      * Verify the code for the given user.
      */
-    public function verify(User $user, string $code): void
+    public function verify(User $user, string $code): ServiceResult
     {
         $record = VerificationCode::where('user_id', $user->id)
             ->whereNull('verified_at')
@@ -45,22 +45,20 @@ class VerificationService
             ->first();
 
         if (!$record) {
-            throw ValidationException::withMessages([
-                'code' => [__('responses.verification.no_valid_code')],
-            ]);
+            return ServiceResult::error('verification.no_valid_code');
         }
 
         if (!Hash::check($code, $record->code)) {
             $record->increment('attempts');
 
-            throw ValidationException::withMessages([
-                'code' => [__('responses.verification.invalid_code')],
-            ]);
+            return ServiceResult::error('verification.invalid_code');
         }
 
         $record->update(['verified_at' => now()]);
         $user->update(['email_verified_at' => now()]);
         $user->notify(new WelcomeNotification());
+
+        return ServiceResult::success();
     }
 
     /**

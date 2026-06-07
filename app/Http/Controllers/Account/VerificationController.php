@@ -7,6 +7,7 @@ use App\Http\Requests\Account\Verification\ResendRequest;
 use App\Http\Requests\Account\Verification\VerifyRequest;
 use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 class VerificationController extends Controller
@@ -20,7 +21,13 @@ class VerificationController extends Controller
      */
     public function verify(VerifyRequest $request): JsonResponse
     {
-        $this->verificationService->verify($request->user(), $request->code);
+        $result = $this->verificationService->verify($request->user(), $request->code);
+
+        if (!$result->success) {
+            throw ValidationException::withMessages([
+                'code' => [__("responses.{$result->error}")],
+            ]);
+        }
 
         return response()->json(['message' => __('responses.verification.verified')]);
     }
