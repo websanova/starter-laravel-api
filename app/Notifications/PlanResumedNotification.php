@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WelcomeNotification extends Notification
+class PlanResumedNotification extends Notification
 {
     use Queueable;
 
@@ -24,9 +24,8 @@ class WelcomeNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(__('notifications.welcome.subject'))
-            ->line(__('notifications.welcome.line1'))
-            ->line(__('notifications.welcome.line2'));
+            ->subject(__('notifications.plan_resumed.subject'))
+            ->line(__('notifications.plan_resumed.line1'));
     }
 
     /**
@@ -35,8 +34,8 @@ class WelcomeNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => __('notifications.welcome.subject'),
-            'body' => __('notifications.welcome.line1'),
+            'title' => __('notifications.plan_resumed.subject'),
+            'body' => __('notifications.plan_resumed.line1'),
         ];
     }
 }

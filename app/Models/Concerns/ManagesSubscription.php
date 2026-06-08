@@ -6,6 +6,10 @@ use App\Enums\PlanFeature;
 use App\Enums\PlanInterval;
 use App\Enums\SubscriptionMode;
 use App\Models\Plan;
+use App\Notifications\PlanCancelledNotification;
+use App\Notifications\PlanChangedNotification;
+use App\Notifications\PlanResumedNotification;
+use App\Notifications\PlanSubscribedNotification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Cashier\Subscription;
 
@@ -30,6 +34,8 @@ trait ManagesSubscription
 
         $this->update(['plan_id' => $plan->id]);
 
+        $this->notify(new PlanSubscribedNotification($plan));
+
         return $this->subscription();
     }
 
@@ -41,6 +47,8 @@ trait ManagesSubscription
         $this->subscription()->swap($plan->priceId($interval));
         $this->update(['plan_id' => $plan->id]);
 
+        $this->notify(new PlanChangedNotification($plan));
+
         return $this->subscription();
     }
 
@@ -50,6 +58,8 @@ trait ManagesSubscription
     public function cancelPlan(): void
     {
         $this->subscription()->cancel();
+
+        $this->notify(new PlanCancelledNotification);
     }
 
     /**
@@ -58,6 +68,8 @@ trait ManagesSubscription
     public function resumePlan(): Subscription
     {
         $this->subscription()->resume();
+
+        $this->notify(new PlanResumedNotification);
 
         return $this->subscription();
     }
@@ -74,6 +86,8 @@ trait ManagesSubscription
         }
 
         $this->update(['plan_id' => $plan->id]);
+
+        $this->notify(new PlanChangedNotification($plan));
     }
 
     /**

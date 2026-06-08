@@ -31,4 +31,16 @@ return [
     'welcome.line1' => 'Your account has been created successfully.',
     'welcome.line2' => 'You are all set to get started.',
 
+    'plan_subscribed.subject' => 'Thanks for Subscribing!',
+    'plan_subscribed.line1' => 'You have successfully subscribed to the :plan plan.',
+
+    'plan_changed.subject' => 'Plan Updated',
+    'plan_changed.line1' => 'Your plan has been changed to :plan.',
+
+    'plan_cancelled.subject' => 'Plan Cancelled',
+    'plan_cancelled.line1' => 'Your plan has been cancelled and will remain active until the end of your billing period.',
+
+    'plan_resumed.subject' => 'Plan Resumed',
+    'plan_resumed.line1' => 'Your plan cancellation has been reversed. Your subscription will continue as normal.',
+
 ];
