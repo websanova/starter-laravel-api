@@ -73,6 +73,12 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - Plan feature limits enforced in request authorization
   - Plans cached with auto-invalidation on mutation
 
+- **Notifications**
+  - Laravel's database notification channel for in-app notifications (bell icon)
+  - Email + database delivery for plan lifecycle events (subscribe, change, cancel, resume)
+  - List, filter by read/unread, mark individual read/unread, bulk mark all read
+  - Consistent payload shape across all notification types
+
 - **File Storage (S3)**
   - Off-server storage, AWS and DigitalOcean Spaces ready
   - Image processing via Intervention
