@@ -30,6 +30,10 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
     });
 
     Route::middleware(['verified', 'password-updated'])->group(function () {
+        Route::get('/notifications', [App\Http\Controllers\Account\NotificationController::class, 'index']);
+        Route::post('/notifications/read', [App\Http\Controllers\Account\NotificationReadController::class, 'store']);
+        Route::patch('/notifications/{notification}', [App\Http\Controllers\Account\NotificationController::class, 'update']);
+
         Route::get('/profile', [App\Http\Controllers\Account\ProfileController::class, 'show']);
         Route::patch('/profile', [App\Http\Controllers\Account\ProfileController::class, 'update']);
         Route::delete('/profile', [App\Http\Controllers\Account\ProfileController::class, 'destroy']);
