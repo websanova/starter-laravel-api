@@ -79,6 +79,12 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - List, filter by read/unread, mark individual read/unread, bulk mark all read
   - Consistent payload shape across all notification types
 
+- **Mail (Resend)**
+  - Resend as the default mail transport (free tier, community Laravel driver)
+  - Zero-cost email for a starter project, easily swappable to Mailgun, Postmark, or SES
+  - For inbound forwarding, consider Cloudflare Email Routing (free, unlimited)
+  - For "send as" replies from a custom address, Gmail supports Resend's SMTP credentials
+
 - **File Storage (S3)**
   - Off-server storage, AWS and DigitalOcean Spaces ready
   - Image processing via Intervention
