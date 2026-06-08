@@ -78,6 +78,12 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - Image processing via Intervention
   - `StoragePath` enum for centralized path management
 
+- **Stats**
+  - Scheduled stat calculation with date range breakdowns (all, today, yesterday, day before)
+  - Grouped by resource type (subscriptions, bookmarks, categories, tags)
+  - Subscription stats per plan and billing interval
+  - Admin endpoint to retrieve stats with optional group filter
+
 - **Backups (Spatie)**
   - Database-only daily backups via `spatie/laravel-backup`
   - Scheduled cleanup of old backups
