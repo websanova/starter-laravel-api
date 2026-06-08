@@ -17,3 +17,5 @@ paths:
 - Stack order on `/account`: `auth:sanctum`, `track-active`, then `verified` and `password-updated` on inner routes. Gated resources (bookmarks, categories, tags) add `subscribed` middleware.
 - Stack order on `/admin`: `auth:sanctum`, `track-active`, `verified`, `password-updated`, `admin`.
 - Subscription routes: `/account/subscription` (CRUD + resume) for self-management, `/admin/users/{user}/subscription` (CRUD + resume) for admin management. `/admin/plans` for plan CRUD.
+- Notification routes: `GET /account/notifications` (list, filterable by `read`), `PATCH /account/notifications/{notification}` (mark read/unread), `POST /account/notifications/read` (mark all read).
+- Non-CRUD actions use `POST` with a descriptive sub-path (e.g., `/notifications/read`) routed to a single-action controller.

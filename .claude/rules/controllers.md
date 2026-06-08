@@ -13,3 +13,4 @@ paths:
 - `/auth` routes use `Auth/` namespace: `Controllers/Auth/LoginController`.
 - `/account` routes use `Account/` namespace: `Controllers/Account/ProfileController`.
 - `/admin` routes use `Admin/` namespace: `Controllers/Admin/UserController`.
+- Non-CRUD operations use single-action controllers with a standard method name (`store`, `update`, `destroy`): `NotificationReadController@store`, `UserRestoreController@update`, `UserForceDeleteController@destroy`.
