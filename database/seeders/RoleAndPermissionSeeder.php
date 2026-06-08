@@ -20,6 +20,7 @@ class RoleAndPermissionSeeder extends Seeder
             'users.manage',
             'users.assign-role',
             'plans.manage',
+            'stats.view',
         ];
 
         foreach ($permissions as $permission) {

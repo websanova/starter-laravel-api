@@ -94,4 +94,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::get('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'show']);
     Route::patch('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'update']);
     Route::delete('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'destroy']);
+
+    Route::get('/stats', [App\Http\Controllers\Admin\StatController::class, 'index']);
 });
