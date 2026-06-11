@@ -25,6 +25,18 @@ return new class extends Migration
             $table->index('sort_order');
         });
 
+        Schema::create('prices', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('plan_id')->constrained()->cascadeOnDelete();
+            $table->string('interval');
+            $table->string('stripe_product_id')->nullable();
+            $table->string('stripe_price_id')->nullable();
+            $table->unsignedInteger('amount')->default(0);
+            $table->timestamps();
+
+            $table->unique(['plan_id', 'interval']);
+        });
+
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('plan_id')->nullable()->after('is_password_reset_required')->constrained()->nullOnDelete();
         });
@@ -40,6 +52,7 @@ return new class extends Migration
             $table->dropColumn('plan_id');
         });
 
+        Schema::dropIfExists('prices');
         Schema::dropIfExists('plans');
     }
 };
