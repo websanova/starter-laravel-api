@@ -57,17 +57,14 @@ class StatsService
         foreach (Plan::cached() as $plan) {
             $queries['subscriptions']["signups_{$plan->slug}"] = User::query()->where('plan_id', $plan->id);
 
-            if ($plan->stripe_monthly_price_id) {
-                $queries['subscriptions']["{$plan->slug}_monthly"] = User::query()
-                    ->whereHas('subscriptions', fn ($q) => $q
-                        ->where('stripe_price', $plan->stripe_monthly_price_id)
-                        ->where('stripe_status', 'active'));
-            }
+            foreach ($plan->prices as $price) {
+                if (!$price->stripe_price_id) {
+                    continue;
+                }
 
-            if ($plan->stripe_yearly_price_id) {
-                $queries['subscriptions']["{$plan->slug}_yearly"] = User::query()
+                $queries['subscriptions']["{$plan->slug}_{$price->interval->value}"] = User::query()
                     ->whereHas('subscriptions', fn ($q) => $q
-                        ->where('stripe_price', $plan->stripe_yearly_price_id)
+                        ->where('stripe_price', $price->stripe_price_id)
                         ->where('stripe_status', 'active'));
             }
 

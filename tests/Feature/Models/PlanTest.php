@@ -4,6 +4,7 @@ uses()->group('model.plan');
 
 use App\Enums\PlanInterval;
 use App\Models\Plan;
+use App\Models\Price;
 
 test('cached returns all plans ordered by sort_order', function () {
     Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 20]);
@@ -55,9 +56,15 @@ test('free returns null when no free plan exists', function () {
 });
 
 test('priceId returns the correct stripe price id', function () {
-    $plan = Plan::factory()->create([
-        'stripe_monthly_price_id' => 'price_monthly_abc',
-        'stripe_yearly_price_id' => 'price_yearly_abc',
+    $plan = Plan::factory()->create();
+
+    Price::factory()->for($plan)->create([
+        'interval' => PlanInterval::Monthly,
+        'stripe_price_id' => 'price_monthly_abc',
+    ]);
+    Price::factory()->for($plan)->create([
+        'interval' => PlanInterval::Yearly,
+        'stripe_price_id' => 'price_yearly_abc',
     ]);
 
     expect($plan->priceId(PlanInterval::Monthly))->toBe('price_monthly_abc');
@@ -65,10 +72,7 @@ test('priceId returns the correct stripe price id', function () {
 });
 
 test('has_no_price returns true when no stripe prices are set', function () {
-    $plan = Plan::factory()->create([
-        'stripe_monthly_price_id' => null,
-        'stripe_yearly_price_id' => null,
-    ]);
+    $plan = Plan::factory()->create();
 
     expect($plan->has_no_price)->toBeTrue();
 });
@@ -79,12 +83,17 @@ test('has_no_price returns false when stripe prices are set', function () {
     expect($plan->has_no_price)->toBeFalse();
 });
 
+test('sync succeeds when no prices have a product', function () {
+    $plan = Plan::factory()->create();
+    Price::factory()->for($plan)->create(['stripe_product_id' => null]);
+
+    $result = $plan->sync();
+
+    expect($result->success)->toBeTrue();
+});
+
 test('is_complimentary returns true for non-free plan with no prices', function () {
-    $plan = Plan::factory()->create([
-        'slug' => 'pro-comp',
-        'stripe_monthly_price_id' => null,
-        'stripe_yearly_price_id' => null,
-    ]);
+    $plan = Plan::factory()->create(['slug' => 'pro-comp']);
 
     expect($plan->is_complimentary)->toBeTrue();
 });

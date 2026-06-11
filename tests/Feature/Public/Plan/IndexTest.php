@@ -11,7 +11,7 @@ test('guest can list active public plans', function () {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data' => [['id', 'name', 'slug', 'monthly_price', 'yearly_price', 'features']],
+            'data' => [['id', 'name', 'slug', 'prices', 'features']],
         ])
         ->assertJsonCount(4, 'data');
 });

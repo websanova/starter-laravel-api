@@ -68,6 +68,7 @@ return [
     'admin.plan.created' => 'Plan created successfully.',
     'admin.plan.updated' => 'Plan updated successfully.',
     'admin.plan.deleted' => 'Plan deleted successfully.',
+    'admin.plan.price_synced' => 'Plan price synced successfully.',
 
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 

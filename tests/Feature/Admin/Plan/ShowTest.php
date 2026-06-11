@@ -16,7 +16,7 @@ test('super can view a plan', function () {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data' => ['id', 'name', 'slug', 'stripe_monthly_price_id', 'stripe_yearly_price_id', 'monthly_price', 'yearly_price', 'features', 'is_active', 'sort_order', 'created_at', 'updated_at'],
+            'data' => ['id', 'name', 'slug', 'prices', 'features', 'is_active', 'sort_order', 'created_at', 'updated_at'],
         ]);
 });
 

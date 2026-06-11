@@ -13,8 +13,6 @@ test('super can create a plan', function () {
     $response = $this->actingAs($super)->postJson('/admin/plans', [
         'name' => 'Enterprise',
         'slug' => 'enterprise',
-        'monthly_price' => 4999,
-        'yearly_price' => 49990,
         'features' => ['bookmarks' => null, 'categories' => null],
         'is_active' => true,
         'sort_order' => 3,
@@ -23,8 +21,6 @@ test('super can create a plan', function () {
     $response->assertStatus(201)
         ->assertJsonPath('data.name', 'Enterprise')
         ->assertJsonPath('data.slug', 'enterprise')
-        ->assertJsonPath('data.monthly_price', 4999)
-        ->assertJsonPath('data.yearly_price', 49990)
         ->assertJsonPath('data.features.bookmarks', null)
         ->assertJsonPath('data.is_active', true);
 
@@ -100,20 +96,4 @@ test('slug must be unique', function () {
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors('slug');
-});
-
-test('can create a plan with stripe price ids', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole(UserRole::Admin);
-
-    $response = $this->actingAs($admin)->postJson('/admin/plans', [
-        'name' => 'Business',
-        'slug' => 'business',
-        'stripe_monthly_price_id' => 'price_monthly_abc123',
-        'stripe_yearly_price_id' => 'price_yearly_abc123',
-    ]);
-
-    $response->assertStatus(201)
-        ->assertJsonPath('data.stripe_monthly_price_id', 'price_monthly_abc123')
-        ->assertJsonPath('data.stripe_yearly_price_id', 'price_yearly_abc123');
 });

@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\PlanInterval;
 use App\Models\Plan;
+use App\Models\Price;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +22,6 @@ class PlanFactory extends Factory
         return [
             'name' => fake()->unique()->word(),
             'slug' => fake()->unique()->slug(2),
-            'monthly_price' => 0,
-            'yearly_price' => 0,
             'features' => [],
             'is_active' => true,
             'is_public' => true,
@@ -54,24 +54,24 @@ class PlanFactory extends Factory
      */
     public function complimentary(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'stripe_monthly_price_id' => null,
-            'stripe_yearly_price_id' => null,
-            'monthly_price' => 0,
-            'yearly_price' => 0,
-        ]);
+        return $this->state(fn (array $attributes) => []);
     }
 
     /**
-     * Indicate that the plan is a paid plan.
+     * Indicate that the plan is a paid plan with monthly and yearly prices.
      */
     public function paid(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'stripe_monthly_price_id' => 'price_monthly_' . fake()->unique()->bothify('##??##'),
-            'stripe_yearly_price_id' => 'price_yearly_' . fake()->unique()->bothify('##??##'),
-            'monthly_price' => 999,
-            'yearly_price' => 9990,
-        ]);
+        return $this->afterCreating(function (Plan $plan) {
+            Price::factory()->for($plan)->create([
+                'interval' => PlanInterval::Monthly,
+                'amount' => 999,
+            ]);
+
+            Price::factory()->for($plan)->create([
+                'interval' => PlanInterval::Yearly,
+                'amount' => 9990,
+            ]);
+        });
     }
 }

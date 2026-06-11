@@ -46,7 +46,10 @@ class SubscriptionRules
             Rule::exists('plans', 'slug')
                 ->where('is_active', true)
                 ->where('is_public', true)
-                ->whereNotNull('stripe_monthly_price_id'),
+                ->where(fn ($query) => $query->whereExists(fn ($sub) => $sub
+                    ->from('prices')
+                    ->whereColumn('prices.plan_id', 'plans.id')
+                    ->whereNotNull('stripe_price_id'))),
         ];
     }
 

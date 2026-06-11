@@ -20,6 +20,7 @@ class PlanController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $plans = Plan::query()
+            ->with('prices')
             ->forActive($request->validated('active'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));

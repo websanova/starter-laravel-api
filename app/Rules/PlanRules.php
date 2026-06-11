@@ -52,14 +52,6 @@ class PlanRules
     }
 
     /**
-     * Validation rules for price fields (in cents).
-     */
-    public static function price(): array
-    {
-        return ['sometimes', 'integer', 'min:0'];
-    }
-
-    /**
      * Validation rules for the slug field.
      */
     public static function slug(bool $required = true, ?int $ignore = null): array
@@ -90,13 +82,5 @@ class PlanRules
     public static function sortOrder(): array
     {
         return ['sometimes', 'integer', 'min:0'];
-    }
-
-    /**
-     * Validation rules for Stripe price ID fields.
-     */
-    public static function stripePriceId(): array
-    {
-        return ['nullable', 'string', 'max:255'];
     }
 }

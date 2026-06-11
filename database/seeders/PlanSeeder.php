@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PlanInterval;
 use App\Enums\PlanTier;
 use App\Models\Plan;
 use Illuminate\Database\Seeder;
@@ -13,12 +14,10 @@ class PlanSeeder extends Seeder
      */
     public function run(): void
     {
-        $defaults = [
-            PlanTier::Free->value => [
+        Plan::firstOrCreate(
+            ['slug' => PlanTier::Free->value],
+            [
                 'name' => 'Free',
-                'slug' => PlanTier::Free->value,
-                'monthly_price' => 0,
-                'yearly_price' => 0,
                 'features' => [
                     'bookmarks' => 10,
                     'categories' => 3,
@@ -28,13 +27,12 @@ class PlanSeeder extends Seeder
                 'is_public' => true,
                 'sort_order' => 0,
             ],
-            PlanTier::Pro->value => [
+        );
+
+        $pro = Plan::firstOrCreate(
+            ['slug' => PlanTier::Pro->value],
+            [
                 'name' => 'Pro',
-                'slug' => PlanTier::Pro->value,
-                'stripe_monthly_price_id' => env('STRIPE_PRICE_PRO_MONTHLY'),
-                'stripe_yearly_price_id' => env('STRIPE_PRICE_PRO_YEARLY'),
-                'monthly_price' => 999,
-                'yearly_price' => 9990,
                 'features' => [
                     'bookmarks' => null,
                     'categories' => null,
@@ -44,13 +42,16 @@ class PlanSeeder extends Seeder
                 'is_public' => true,
                 'sort_order' => 1,
             ],
-        ];
+        );
 
-        foreach ($defaults as $plan) {
-            Plan::firstOrCreate(
-                ['slug' => $plan['slug']],
-                $plan,
-            );
-        }
+        $pro->prices()->firstOrCreate(
+            ['interval' => PlanInterval::Monthly->value],
+            ['stripe_product_id' => env('STRIPE_PRODUCT_PRO_MONTHLY')],
+        );
+
+        $pro->prices()->firstOrCreate(
+            ['interval' => PlanInterval::Yearly->value],
+            ['stripe_product_id' => env('STRIPE_PRODUCT_PRO_YEARLY')],
+        );
     }
 }

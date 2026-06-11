@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('stripe_monthly_price_id')->nullable();
-            $table->string('stripe_yearly_price_id')->nullable();
-            $table->unsignedInteger('monthly_price')->default(0);
-            $table->unsignedInteger('yearly_price')->default(0);
             $table->json('features')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('is_public')->default(false);

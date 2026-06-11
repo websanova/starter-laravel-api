@@ -6,6 +6,7 @@ use App\Enums\PlanInterval;
 use App\Enums\PlanSort;
 use App\Enums\PlanTier;
 use App\Enums\SortDirection;
+use App\Support\ServiceResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,10 +42,6 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'slug',
-        'stripe_monthly_price_id',
-        'stripe_yearly_price_id',
-        'monthly_price',
-        'yearly_price',
         'features',
         'is_active',
         'is_public',
@@ -60,8 +57,6 @@ class Plan extends Model
     {
         return [
             'features' => 'array',
-            'monthly_price' => 'integer',
-            'yearly_price' => 'integer',
             'is_active' => 'boolean',
             'is_public' => 'boolean',
             'sort_order' => 'integer',
@@ -106,6 +101,14 @@ class Plan extends Model
     }
 
     /**
+     * Get the prices for this plan.
+     */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(Price::class);
+    }
+
+    /**
      * Sort by the given column and direction.
      */
     public function scopeSortBy(Builder $query, ?PlanSort $column = null, ?SortDirection $direction = null): void
@@ -145,10 +148,28 @@ class Plan extends Model
      */
     public function priceId(PlanInterval $interval): ?string
     {
-        return match ($interval) {
-            PlanInterval::Monthly => $this->stripe_monthly_price_id,
-            PlanInterval::Yearly => $this->stripe_yearly_price_id,
-        };
+        return $this->prices->firstWhere('interval', $interval)?->stripe_price_id;
+    }
+
+    /**
+     * Sync prices from Stripe, optionally limited to a single interval.
+     */
+    public function sync(?PlanInterval $interval = null): ServiceResult
+    {
+        $prices = $this->prices()
+            ->whereNotNull('stripe_product_id')
+            ->when($interval, fn ($query) => $query->where('interval', $interval->value))
+            ->get();
+
+        foreach ($prices as $price) {
+            $result = $price->sync();
+
+            if (!$result->success) {
+                return $result;
+            }
+        }
+
+        return ServiceResult::success($this);
     }
 
     /**
@@ -165,8 +186,7 @@ class Plan extends Model
     protected function hasNoPrice(): Attribute
     {
         return Attribute::make(
-            get: fn () => is_null($this->stripe_monthly_price_id)
-                && is_null($this->stripe_yearly_price_id),
+            get: fn () => $this->prices->whereNotNull('stripe_price_id')->isEmpty(),
         );
     }
 

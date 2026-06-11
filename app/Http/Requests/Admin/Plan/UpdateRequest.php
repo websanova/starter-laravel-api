@@ -23,10 +23,6 @@ class UpdateRequest extends FormRequest
         return [
             'name' => PlanRules::name(required: false),
             'slug' => PlanRules::slug(required: false, ignore: $this->route('plan')->id),
-            'stripe_monthly_price_id' => PlanRules::stripePriceId(),
-            'stripe_yearly_price_id' => PlanRules::stripePriceId(),
-            'monthly_price' => PlanRules::price(),
-            'yearly_price' => PlanRules::price(),
             'features' => PlanRules::features(),
             'features.*' => PlanRules::featureValue(),
             'is_active' => PlanRules::isActive(),
