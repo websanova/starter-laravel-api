@@ -12,7 +12,7 @@ class SyncPlans extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:plans';
+    protected $signature = 'plans:sync';
 
     /**
      * The console command description.
