@@ -5,6 +5,7 @@ paths:
 
 # Config
 
+- `env()` is only ever called inside `config/*.php`. Once `config:cache` runs (production deploys run `php artisan optimize`), `.env` is no longer loaded and `env()` returns null everywhere else. Map every env var to a config key here, then read it via `config()` in app code.
 - `config/verification.php` - verification mode (`disabled`/`auto`/`required`), channels, grace period, code length/expiry, resend throttle, max attempts. All env-driven.
 - `config/auth.php` custom sections:
   - `auth.delete` - account deletion grace period (days) and prune strategy (`delete`/`anonymize`).
