@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Services\StatsService;
 use Illuminate\Console\Command;
 
-class CalculateStats extends Command
+class StatsCalculate extends Command
 {
     /**
      * The name and signature of the console command.

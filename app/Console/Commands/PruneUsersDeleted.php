@@ -6,14 +6,14 @@ use App\Enums\AccountPruneStrategy;
 use App\Models\User;
 use Illuminate\Console\Command;
 
-class PruneDeletedUsers extends Command
+class PruneUsersDeleted extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'users:prune-deleted';
+    protected $signature = 'prune:users-deleted';
 
     /**
      * The console command description.
