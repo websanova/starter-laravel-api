@@ -6,6 +6,8 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
 Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
 
+Route::get('/plans', [App\Http\Controllers\Public\PlanController::class, 'index']);
+
 Route::prefix('auth')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'store']);
