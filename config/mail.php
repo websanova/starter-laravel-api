@@ -37,6 +37,10 @@ return [
 
     'mailers' => [
 
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -113,6 +117,23 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Global "To" Address
+    |--------------------------------------------------------------------------
+    |
+    | Useful for local testing. When this address is set, all outgoing mail
+    | is redirected to it while the original recipients are preserved in the
+    | message headers. Leave it unset in production so mail is delivered to
+    | its intended recipients.
+    |
+    */
+
+    'to' => [
+        'address' => env('MAIL_TO_ADDRESS'),
+        'name' => env('MAIL_TO_NAME'),
     ],
 
 ];
