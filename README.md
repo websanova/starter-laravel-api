@@ -65,13 +65,14 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
   - Seeded super user on first migrate
 
 - **Plans & Subscriptions (Cashier/Stripe)**
-  - Plan model with features JSON (countable limits and boolean flags)
+  - Flexible plans with usage limits and feature flags
+  - Multiple billing intervals per plan (monthly, yearly)
+  - Prices kept in sync with Stripe, no hardcoded amounts
   - Three subscription modes: freemium, trial, required
-  - Subscribe, swap, cancel, resume flows for both account and admin
-  - 3D Secure (SCA) support with client_secret passback for client-side confirmation
-  - Complimentary plans for admin-assigned access without Stripe billing
-  - Plan feature limits enforced in request authorization
-  - Plans cached with auto-invalidation on mutation
+  - Subscribe, swap, cancel, resume for both users and admins
+  - 3D Secure (SCA) handled for client-side payment confirmation
+  - Complimentary plans for granting access without billing
+  - Feature limits enforced automatically
 
 - **Notifications**
   - Laravel's database notification channel for in-app notifications (bell icon)
