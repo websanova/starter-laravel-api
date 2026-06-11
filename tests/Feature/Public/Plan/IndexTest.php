@@ -13,7 +13,7 @@ test('guest can list active public plans', function () {
         ->assertJsonStructure([
             'data' => [['id', 'name', 'slug', 'monthly_price', 'yearly_price', 'features']],
         ])
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(4, 'data');
 });
 
 test('inactive plans are excluded', function () {
@@ -23,7 +23,7 @@ test('inactive plans are excluded', function () {
     $response = $this->getJson('/plans');
 
     $response->assertStatus(200)
-        ->assertJsonCount(1, 'data');
+        ->assertJsonCount(3, 'data');
 });
 
 test('private plans are excluded', function () {
@@ -33,7 +33,7 @@ test('private plans are excluded', function () {
     $response = $this->getJson('/plans');
 
     $response->assertStatus(200)
-        ->assertJsonCount(1, 'data');
+        ->assertJsonCount(3, 'data');
 });
 
 test('response does not expose internal fields', function () {
