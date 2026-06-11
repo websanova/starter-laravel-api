@@ -181,12 +181,12 @@ class Plan extends Model
     }
 
     /**
-     * Whether this plan has no Stripe prices.
+     * Whether this plan has Stripe prices.
      */
-    protected function hasNoPrice(): Attribute
+    protected function isBillable(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->prices->whereNotNull('stripe_price_id')->isEmpty(),
+            get: fn () => $this->prices->whereNotNull('stripe_price_id')->isNotEmpty(),
         );
     }
 
@@ -196,7 +196,7 @@ class Plan extends Model
     protected function isComplimentary(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->has_no_price
+            get: fn () => !$this->is_billable
                 && $this->slug !== PlanTier::Free->value,
         );
     }

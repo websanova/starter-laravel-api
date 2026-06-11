@@ -132,7 +132,7 @@ Detailed conventions are in `.claude/rules/` and load automatically when touchin
 - Services for multi-model orchestration or external API interaction. Simple CRUD stays in models/controllers. Services return `ServiceResult` (`app/Support/`) instead of throwing exceptions; controllers translate errors into HTTP responses.
 - All emails through notifications (not `Mail::send()`), extensible to SMS via `$channelMap`.
 - Migrations use `cascadeOnDelete()` for owned resources, `nullOnDelete()` for optional relationships.
-- Plan model uses `rememberForever()` cache with auto-invalidation. Feature limits are JSON with null meaning unlimited. `has_no_price` and `is_complimentary` (non-free + no Stripe prices) computed accessors.
+- Plan model uses `rememberForever()` cache with auto-invalidation. Feature limits are JSON with null meaning unlimited. `is_billable` (has Stripe prices) and `is_complimentary` (non-free + no Stripe prices) computed accessors.
 - Subscription logic in `ManagesSubscription` trait on User. Three modes via `config/subscription.php`: freemium, trial, required. Complimentary plans bypass subscription checks in trial and required modes. `assignComplimentaryPlan()` sets plan without Stripe, `onComplimentary()` / `is_complimentary` check status. Subscribe/swap responses include `client_secret` when payment requires 3D Secure (SCA) confirmation.
 - Plan feature limits checked in account store requests via `canUsePlanFeature()` in `authorize()`.
 - Tests mirror route group structure, use Pest with `RefreshDatabase`, group tags like `account.bookmark.index`.

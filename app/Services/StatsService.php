@@ -68,7 +68,7 @@ class StatsService
                         ->where('stripe_status', 'active'));
             }
 
-            if ($plan->is_complimentary || $plan->has_no_price) {
+            if (!$plan->is_billable) {
                 $queries['subscriptions']["{$plan->slug}_complimentary"] = User::query()
                     ->where('plan_id', $plan->id)
                     ->whereDoesntHave('subscriptions', fn ($q) => $q

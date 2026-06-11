@@ -71,16 +71,16 @@ test('priceId returns the correct stripe price id', function () {
     expect($plan->priceId(PlanInterval::Yearly))->toBe('price_yearly_abc');
 });
 
-test('has_no_price returns true when no stripe prices are set', function () {
+test('is_billable returns false when no stripe prices are set', function () {
     $plan = Plan::factory()->create();
 
-    expect($plan->has_no_price)->toBeTrue();
+    expect($plan->is_billable)->toBeFalse();
 });
 
-test('has_no_price returns false when stripe prices are set', function () {
+test('is_billable returns true when stripe prices are set', function () {
     $plan = Plan::factory()->paid()->create();
 
-    expect($plan->has_no_price)->toBeFalse();
+    expect($plan->is_billable)->toBeTrue();
 });
 
 test('sync succeeds when no prices have a product', function () {
