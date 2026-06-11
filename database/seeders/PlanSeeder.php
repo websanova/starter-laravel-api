@@ -46,12 +46,12 @@ class PlanSeeder extends Seeder
 
         $pro->prices()->firstOrCreate(
             ['interval' => PlanInterval::Monthly->value],
-            ['stripe_product_id' => env('STRIPE_PRODUCT_PRO_MONTHLY')],
+            ['stripe_product_id' => config('subscription.stripe_products.pro.monthly')],
         );
 
         $pro->prices()->firstOrCreate(
             ['interval' => PlanInterval::Yearly->value],
-            ['stripe_product_id' => env('STRIPE_PRODUCT_PRO_YEARLY')],
+            ['stripe_product_id' => config('subscription.stripe_products.pro.yearly')],
         );
     }
 }

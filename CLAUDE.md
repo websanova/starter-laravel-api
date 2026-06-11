@@ -116,6 +116,7 @@
 - Billing via `laravel/cashier` (Stripe).
 - All user-facing strings must use lang files (`lang/en/*.php`). Never hardcode messages in controllers, services, or middleware.
 - All requests return JSON. `ForceJsonResponse` middleware handles this globally.
+- Never call `env()` outside `config/*.php`. It returns null once `config:cache` runs in production. Define a config key that reads the env var, then use `config()` everywhere else (seeders, controllers, services, models, commands).
 - No version prefix (v1, v2) unless a breaking v2 becomes necessary.
 
 ## Conventions
