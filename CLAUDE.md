@@ -94,21 +94,6 @@
 ## Override Rule
 - User instructions always override this file.
 
-## Commands
-
-- These are strict behavioral commands. Follow them exactly. Do not anticipate the next command. Do not perform any action not explicitly commanded.
-- `:process` / `:pr` - THINK ONLY. Read files yourself as needed for context, never ask the user what is in a file. Give thoughts and suggestions only. ABSOLUTELY NO writing, NO file changes, NO commands that modify anything.
-- `:summarize` / `:su` - SUMMARIZE ONLY. List the changes required based on current discussion. ABSOLUTELY NO coding, NO file changes, NO terminal commands.
-- `:execute` / `:ex` - CODE ONLY. Implement exactly what was discussed. NO commits, NO terminal commands beyond what is needed to make the changes. The `:ex` command only authorizes changes that were fully agreed upon in a previous message, not proposals made in the same response.
-- `:commsg` / `:cm` - Generate a commit message for the changes just made. One-liner only. No body, no `Co-Authored-By`, no extras. NOTHING ELSE.
-- `:commit` / `:co` - Commit staged changes using the commit message just generated. NOTHING ELSE.
-- If no command is given, default to `:pr` behavior - respond only, do not touch files.
-- When in doubt, STOP and ask. Never assume the next step.
-- NEVER write or edit any file unless the user's most recent message contains an explicit `:ex` command. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write - default to `:pr` and respond only.
-- NEVER run tests yourself. Do not execute `php artisan test`, `pest`, or any test runner. The user runs tests. You may write and edit test files, just never run them.
-- NEVER touch the git repo (except via `:co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind.
-- "Can you", "could you", "would you", and any question form is NOT a command. It is a request for a description.
-
 ## Project
 - Starter/boilerplate project. Code should be clean, minimal, and well-structured as a reference for new projects.
 - This is a reference codebase. Patterns established here will be copied into production projects. Prioritize correct, scalable patterns over "good enough for the current size." Do not use project size as a reason to skip a pattern that would be standard in a larger Laravel app.
