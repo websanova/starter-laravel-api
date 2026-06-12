@@ -6,7 +6,6 @@ use App\Enums\PlanInterval;
 use App\Enums\PlanSort;
 use App\Enums\PlanTier;
 use App\Enums\SortDirection;
-use App\Support\ServiceResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -149,27 +148,6 @@ class Plan extends Model
     public function priceId(PlanInterval $interval): ?string
     {
         return $this->prices->firstWhere('interval', $interval)?->stripe_price_id;
-    }
-
-    /**
-     * Sync prices from Stripe, optionally limited to a single interval.
-     */
-    public function sync(?PlanInterval $interval = null): ServiceResult
-    {
-        $prices = $this->prices()
-            ->whereNotNull('stripe_product_id')
-            ->when($interval, fn ($query) => $query->where('interval', $interval->value))
-            ->get();
-
-        foreach ($prices as $price) {
-            $result = $price->sync();
-
-            if (!$result->success) {
-                return $result;
-            }
-        }
-
-        return ServiceResult::success($this);
     }
 
     /**

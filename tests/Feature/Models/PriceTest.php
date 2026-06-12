@@ -18,12 +18,3 @@ test('interval is cast to the enum', function () {
 
     expect($price->interval)->toBe(PlanInterval::Monthly);
 });
-
-test('sync returns an error when no product id is set', function () {
-    $price = Price::factory()->create(['stripe_product_id' => null]);
-
-    $result = $price->sync();
-
-    expect($result->success)->toBeFalse();
-    expect($result->error)->toBe('price.missing_product');
-});

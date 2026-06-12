@@ -83,15 +83,6 @@ test('is_billable returns true when stripe prices are set', function () {
     expect($plan->is_billable)->toBeTrue();
 });
 
-test('sync succeeds when no prices have a product', function () {
-    $plan = Plan::factory()->create();
-    Price::factory()->for($plan)->create(['stripe_product_id' => null]);
-
-    $result = $plan->sync();
-
-    expect($result->success)->toBeTrue();
-});
-
 test('is_complimentary returns true for non-free plan with no prices', function () {
     $plan = Plan::factory()->create(['slug' => 'pro-comp']);
 

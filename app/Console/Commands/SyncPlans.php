@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Plan;
+use App\Services\PlanSyncService;
 use Illuminate\Console\Command;
 
 class SyncPlans extends Command
@@ -24,13 +25,13 @@ class SyncPlans extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(PlanSyncService $service): int
     {
         $synced = 0;
         $failed = 0;
 
         foreach (Plan::all() as $plan) {
-            $result = $plan->sync();
+            $result = $service->sync($plan);
 
             if ($result->success) {
                 $synced++;
