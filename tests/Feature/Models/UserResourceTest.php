@@ -30,6 +30,7 @@ test('plan data always included in user resource', function () {
     $plan = Plan::where('slug', 'pro')->first();
     $plan->update(['features' => ['bookmarks' => 100]]);
     $user = User::factory()->create(['plan_id' => $plan->id]);
+    $user->load('plan');
 
     $resource = (new UserResource($user))->toArray(request());
 

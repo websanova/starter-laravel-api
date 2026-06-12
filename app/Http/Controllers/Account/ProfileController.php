@@ -17,7 +17,7 @@ class ProfileController extends Controller
     public function show(ShowRequest $request): JsonResponse
     {
         return response()->json([
-            'data' => new UserResource($request->user()),
+            'data' => new UserResource($request->user()->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 
@@ -30,7 +30,7 @@ class ProfileController extends Controller
         $user->update($request->validated());
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 

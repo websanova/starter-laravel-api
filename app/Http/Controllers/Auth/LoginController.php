@@ -44,7 +44,7 @@ class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }
@@ -60,7 +60,7 @@ class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }

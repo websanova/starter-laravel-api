@@ -79,7 +79,7 @@ class Plan extends Model
     public static function cached(): Collection
     {
         return Cache::rememberForever(static::$cacheKey, function () {
-            return static::orderBy('sort_order')->get();
+            return static::with('prices')->orderBy('sort_order')->get();
         });
     }
 

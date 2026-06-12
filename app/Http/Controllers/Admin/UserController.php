@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $users = User::query()
-            ->with('subscriptions')
+            ->with(['plan.prices', 'roles', 'subscriptions'])
             ->forSearch($request->validated('search'))
             ->forRole($request->validated('role'))
             ->forTrashed($request->validated('trashed'))
@@ -35,7 +35,7 @@ class UserController extends Controller
     public function show(ShowRequest $request, User $user): JsonResponse
     {
         return response()->json([
-            'data' => new UserResource($user->load('subscriptions')),
+            'data' => new UserResource($user->load(['plan.prices', 'roles', 'subscriptions'])),
         ]);
     }
 
@@ -47,7 +47,7 @@ class UserController extends Controller
         $user->update($request->validated());
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->load('roles')),
         ]);
     }
 

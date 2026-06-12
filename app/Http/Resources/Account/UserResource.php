@@ -18,13 +18,13 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'avatar_url' => $this->avatar_url,
-            'plan' => [
+            'plan' => $this->when($this->relationLoaded('plan'), fn () => [
                 'id' => $this->plan->id,
                 'name' => $this->plan->name,
                 'slug' => $this->plan->slug,
                 'features' => $this->plan->features,
-            ],
-            'is_complimentary' => $this->is_complimentary,
+            ]),
+            'is_complimentary' => $this->when($this->relationLoaded('plan'), fn () => $this->is_complimentary),
             'is_subscribed' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_subscribed),
             'is_on_trial' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_trial),
             'is_on_grace_period' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_grace_period),
