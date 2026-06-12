@@ -111,9 +111,7 @@
 - No version prefix (v1, v2) unless a breaking v2 becomes necessary.
 
 ## Conventions
-
-Detailed conventions are in `.claude/rules/` and load automatically when touching matching files. This summary provides general awareness for architecture questions.
-
+- Detailed conventions are in `.claude/rules/` and load automatically when touching matching files. This summary provides general awareness for architecture questions.
 - Three route prefixes: `/auth` (authentication), `/account` (user self-management), `/admin` (admin managing resources). Everything namespaced accordingly (`Auth/`, `Account/`, `Admin/`) across controllers, requests, resources, and tests.
 - REST convention: nested resources for direct ownership (`/admin/users/{user}/bookmarks`), flat endpoints only when a filter view is needed.
 - Thin controllers. Filtering/sorting in model scopes. Authorization in requests. Responses via API Resources.
