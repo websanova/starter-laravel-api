@@ -1,11 +1,11 @@
 # Dev Commands
 
 ```bash
-./dev artisan migrate
-./dev artisan make:model Foo -m
-./dev composer install
-./dev composer require foo/bar
-./dev php -v
+./run artisan migrate
+./run artisan make:model Foo -m
+./run composer install
+./run composer require foo/bar
+./run php -v
 docker compose down
 docker compose logs php
 ```
