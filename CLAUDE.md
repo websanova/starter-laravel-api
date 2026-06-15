@@ -64,10 +64,7 @@
 - No docstrings or comments on code that was not changed.
 - Inline comments only where logic is non-obvious.
 - Read the file before modifying it. Never edit blind.
-- Always use 4 spaces for indenting (PSR-12).
 - Do not delete comments.
-- Doc blocks must always use multi-line `/** */` format, never single-line above any function, variable, or type.
-- Doc block prose must read as plain sentences. No dashes of any kind (em, en, or double hyphen) as punctuation.
 - Never reformat, reindent, or rearrange existing code that is not directly related to the change being made.
 - Never align variable assignments or object properties with extra spaces. One space on each side of `=` and `:`.
 
@@ -109,6 +106,9 @@
 - All requests return JSON. `ForceJsonResponse` middleware handles this globally.
 - Never call `env()` outside `config/*.php`. It returns null once `config:cache` runs in production. Define a config key that reads the env var, then use `config()` everywhere else (seeders, controllers, services, models, commands).
 - No version prefix (v1, v2) unless a breaking v2 becomes necessary.
+- Always use 4 spaces for indenting (PSR-12).
+- Doc blocks must always use multi-line `/** */` format, never single-line above any function, variable, or type.
+- Doc block prose must read as plain sentences. No dashes of any kind (em, en, or double hyphen) as punctuation.
 
 ## Conventions
 - Detailed conventions are in `.claude/rules/` and load automatically when touching matching files. This summary provides general awareness for architecture questions.
