@@ -1,8 +1,0 @@
-#!/bin/bash
-
-case "$1" in
-    php|composer)  docker compose exec php "$@" ;;
-    artisan)       docker compose exec php php "$@" ;;
-    mysql)                docker compose exec mysql "$@" ;;
-    *)                    echo "Usage: ./run {php|composer|artisan|mysql} [args]" ;;
-esac

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+case "$1" in
+    install) docker compose exec php composer install ;;
+    update) docker compose exec php composer update ;;
+    dump) docker compose exec php composer dump-autoload ;;
+    php|composer) docker compose exec php "$@" ;;
+    artisan) docker compose exec php php "$@" ;;
+    mysql) docker compose exec mysql "$@" ;;
+    sh) shift; docker compose exec "$1" sh ;;
+    up) docker compose up -d --force-recreate ;;
+    down) docker compose down ;;
+    restart) docker compose down && docker compose up -d --force-recreate ;;
+    logs) shift; docker compose logs -f "$@" ;;
+    *) echo "Usage: ./dev {php|composer|artisan|mysql} [args]" ;;
+esac
