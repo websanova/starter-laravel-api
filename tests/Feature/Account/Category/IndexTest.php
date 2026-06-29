@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.category.index');
 
@@ -50,3 +50,4 @@ test('unauthenticated user cannot list categories', function () {
 
     $response->assertStatus(401);
 });
+

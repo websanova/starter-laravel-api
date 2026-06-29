@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.subscription.resume');
 
@@ -27,3 +27,4 @@ test('complimentary user cannot resume', function () {
 
     $response->assertStatus(403);
 });
+

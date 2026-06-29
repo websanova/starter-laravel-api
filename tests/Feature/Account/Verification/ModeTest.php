@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.verification.mode');
 
@@ -12,7 +12,7 @@ test('required mode sends verification on register', function () {
     Notification::fake();
     config(['verification.mode' => VerificationMode::Required]);
 
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
@@ -31,7 +31,7 @@ test('auto mode verifies user immediately on register', function () {
     Notification::fake();
     config(['verification.mode' => VerificationMode::Auto]);
 
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
@@ -51,7 +51,7 @@ test('disabled mode skips verification on register', function () {
     Notification::fake();
     config(['verification.mode' => VerificationMode::Disabled]);
 
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
@@ -140,3 +140,4 @@ test('no grace period blocks unverified user immediately', function () {
 
     $response->assertStatus(403);
 });
+

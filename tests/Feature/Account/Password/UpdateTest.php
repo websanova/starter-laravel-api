@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.password.update');
 
@@ -101,3 +101,4 @@ test('update fails when unverified', function () {
 
     $response->assertStatus(403);
 });
+

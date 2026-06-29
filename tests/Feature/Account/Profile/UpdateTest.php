@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.profile.update');
 
@@ -42,3 +42,4 @@ test('unauthenticated user cannot update profile', function () {
 
     $response->assertStatus(401);
 });
+

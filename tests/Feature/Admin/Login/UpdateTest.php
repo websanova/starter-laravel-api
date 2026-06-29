@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('admin.login.update');
 
@@ -11,7 +11,7 @@ test('admin can refresh their token', function () {
     $oldToken = $user->createToken('auth');
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $oldToken->plainTextToken)
-        ->postJson('/admin/auth/refresh');
+        ->postJson('/admin/refresh');
 
     $response->assertStatus(200)
         ->assertJsonStructure(['token']);
@@ -26,13 +26,14 @@ test('refresh returns a different token', function () {
     $oldToken = $user->createToken('auth');
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $oldToken->plainTextToken)
-        ->postJson('/admin/auth/refresh');
+        ->postJson('/admin/refresh');
 
     expect($response->json('token'))->not->toBe($oldToken->plainTextToken);
 });
 
 test('unauthenticated user cannot refresh', function () {
-    $response = $this->postJson('/admin/auth/refresh');
+    $response = $this->postJson('/admin/refresh');
 
     $response->assertStatus(401);
 });
+

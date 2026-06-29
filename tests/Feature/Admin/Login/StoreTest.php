@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('admin.login.store');
 
@@ -13,7 +13,7 @@ test('admin can login with valid credentials', function () {
     ]);
     $user->assignRole(UserRole::Admin);
 
-    $response = $this->postJson('/admin/auth/login', [
+    $response = $this->postJson('/admin/login', [
         'email' => 'admin@example.com',
         'password' => 'password123',
     ]);
@@ -32,7 +32,7 @@ test('super can login with valid credentials', function () {
     ]);
     $user->assignRole(UserRole::Super);
 
-    $response = $this->postJson('/admin/auth/login', [
+    $response = $this->postJson('/admin/login', [
         'email' => 'super@example.com',
         'password' => 'password123',
     ]);
@@ -47,7 +47,7 @@ test('regular user cannot login via admin endpoint', function () {
         'password' => Hash::make('password123'),
     ]);
 
-    $response = $this->postJson('/admin/auth/login', [
+    $response = $this->postJson('/admin/login', [
         'email' => 'user@example.com',
         'password' => 'password123',
     ]);
@@ -63,7 +63,7 @@ test('login fails with invalid password', function () {
     ]);
     $user->assignRole(UserRole::Admin);
 
-    $response = $this->postJson('/admin/auth/login', [
+    $response = $this->postJson('/admin/login', [
         'email' => 'admin@example.com',
         'password' => 'wrongpassword',
     ]);
@@ -73,8 +73,9 @@ test('login fails with invalid password', function () {
 });
 
 test('login fails with missing fields', function () {
-    $response = $this->postJson('/admin/auth/login', []);
+    $response = $this->postJson('/admin/login', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['email', 'password']);
 });
+

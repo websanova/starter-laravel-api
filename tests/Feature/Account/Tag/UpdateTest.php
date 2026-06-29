@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.tag.update');
 
@@ -63,3 +63,4 @@ test('unauthenticated user cannot update a tag', function () {
 
     $response->assertStatus(401);
 });
+

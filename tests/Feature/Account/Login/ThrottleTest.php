@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.login.throttle');
 
@@ -14,13 +14,13 @@ beforeEach(function () {
 
 test('login is throttled after too many attempts', function () {
     for ($i = 0; $i < 5; $i++) {
-        $this->postJson('/auth/login', [
+        $this->postJson('/account/login', [
             'email' => 'test@example.com',
             'password' => 'wrongpassword',
         ])->assertStatus(422);
     }
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'wrongpassword',
     ]);
@@ -31,21 +31,22 @@ test('login is throttled after too many attempts', function () {
 
 test('throttle resets after decay period', function () {
     for ($i = 0; $i < 5; $i++) {
-        $this->postJson('/auth/login', [
+        $this->postJson('/account/login', [
             'email' => 'test@example.com',
             'password' => 'wrongpassword',
         ]);
     }
 
-    $this->postJson('/auth/login', [
+    $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'wrongpassword',
     ])->assertStatus(429);
 
     $this->travel(1)->minutes();
 
-    $this->postJson('/auth/login', [
+    $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'password123',
     ])->assertStatus(200);
 });
+

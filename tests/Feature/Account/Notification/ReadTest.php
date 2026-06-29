@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.notification.read');
 
@@ -57,3 +57,4 @@ test('unauthenticated user cannot mark all as read', function () {
 
     $response->assertStatus(401);
 });
+

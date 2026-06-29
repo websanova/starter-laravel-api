@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 
 uses()->group('account.register.store');
 
 use App\Models\User;
 
 test('user can register with valid data', function () {
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
@@ -27,7 +27,7 @@ test('user can register with valid data', function () {
 test('registration fails with duplicate email', function () {
     User::factory()->create(['email' => 'taken@example.com']);
 
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'taken@example.com',
@@ -40,14 +40,14 @@ test('registration fails with duplicate email', function () {
 });
 
 test('registration fails with missing fields', function () {
-    $response = $this->postJson('/auth/register', []);
+    $response = $this->postJson('/account/register', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['first_name', 'last_name', 'email', 'password']);
 });
 
 test('registration fails with mismatched password confirmation', function () {
-    $response = $this->postJson('/auth/register', [
+    $response = $this->postJson('/account/register', [
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
@@ -58,3 +58,4 @@ test('registration fails with mismatched password confirmation', function () {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['password']);
 });
+

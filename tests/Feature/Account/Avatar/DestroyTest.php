@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.avatar.destroy');
 
@@ -50,3 +50,4 @@ test('delete fails when unverified', function () {
 
     $response->assertStatus(403);
 });
+

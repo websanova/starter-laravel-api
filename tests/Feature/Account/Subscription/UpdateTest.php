@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.subscription.update');
 
@@ -26,3 +26,4 @@ test('plan must be public with stripe prices', function () {
     $response->assertStatus(422)
         ->assertJsonValidationErrors('plan');
 });
+

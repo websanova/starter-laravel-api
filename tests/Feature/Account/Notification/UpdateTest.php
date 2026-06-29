@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.notification.update');
 
@@ -95,3 +95,4 @@ test('unauthenticated user cannot update notification', function () {
 
     $response->assertStatus(401);
 });
+

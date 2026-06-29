@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.login.store');
 
@@ -11,7 +11,7 @@ test('user can login with valid credentials', function () {
         'password' => Hash::make('password123'),
     ]);
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'password123',
     ]);
@@ -29,7 +29,7 @@ test('login fails with invalid password', function () {
         'password' => Hash::make('password123'),
     ]);
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'wrongpassword',
     ]);
@@ -39,7 +39,7 @@ test('login fails with invalid password', function () {
 });
 
 test('login fails with nonexistent email', function () {
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'nobody@example.com',
         'password' => 'password123',
     ]);
@@ -49,8 +49,9 @@ test('login fails with nonexistent email', function () {
 });
 
 test('login fails with missing fields', function () {
-    $response = $this->postJson('/auth/login', []);
+    $response = $this->postJson('/account/login', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['email', 'password']);
 });
+

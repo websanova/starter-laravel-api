@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.forgot-password.store');
 
@@ -11,7 +11,7 @@ test('forgot password sends reset link for existing user', function () {
 
     $user = User::factory()->create(['email' => 'test@example.com']);
 
-    $response = $this->postJson('/auth/forgot-password', [
+    $response = $this->postJson('/account/forgot-password', [
         'email' => 'test@example.com',
     ]);
 
@@ -24,7 +24,7 @@ test('forgot password sends reset link for existing user', function () {
 test('forgot password returns same response for nonexistent email', function () {
     Notification::fake();
 
-    $response = $this->postJson('/auth/forgot-password', [
+    $response = $this->postJson('/account/forgot-password', [
         'email' => 'nobody@example.com',
     ]);
 
@@ -35,17 +35,18 @@ test('forgot password returns same response for nonexistent email', function () 
 });
 
 test('forgot password fails with missing email', function () {
-    $response = $this->postJson('/auth/forgot-password', []);
+    $response = $this->postJson('/account/forgot-password', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['email']);
 });
 
 test('forgot password fails with invalid email', function () {
-    $response = $this->postJson('/auth/forgot-password', [
+    $response = $this->postJson('/account/forgot-password', [
         'email' => 'not-an-email',
     ]);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['email']);
 });
+

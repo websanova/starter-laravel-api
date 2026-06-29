@@ -8,7 +8,7 @@ Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookControl
 
 Route::get('/plans', [App\Http\Controllers\Public\PlanController::class, 'index']);
 
-Route::prefix('auth')->group(function () {
+Route::prefix('account')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/register', [App\Http\Controllers\Account\RegisterController::class, 'store']);
         Route::post('/login', [App\Http\Controllers\Account\LoginController::class, 'store']);
@@ -20,17 +20,6 @@ Route::prefix('auth')->group(function () {
     Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/logout', [App\Http\Controllers\Account\LoginController::class, 'destroy']);
         Route::post('/refresh', [App\Http\Controllers\Account\LoginController::class, 'update']);
-    });
-});
-
-Route::prefix('admin/auth')->group(function () {
-    Route::middleware('throttle:auth')->group(function () {
-        Route::post('/login', [App\Http\Controllers\Admin\LoginController::class, 'store']);
-    });
-
-    Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
-        Route::post('/logout', [App\Http\Controllers\Admin\LoginController::class, 'destroy']);
-        Route::post('/refresh', [App\Http\Controllers\Admin\LoginController::class, 'update']);
     });
 });
 
@@ -76,6 +65,17 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
             Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\Account\BookmarkController::class, 'update']);
             Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\Account\BookmarkController::class, 'destroy']);
         });
+    });
+});
+
+Route::prefix('admin')->group(function () {
+    Route::middleware('throttle:auth')->group(function () {
+        Route::post('/login', [App\Http\Controllers\Admin\LoginController::class, 'store']);
+    });
+
+    Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
+        Route::post('/logout', [App\Http\Controllers\Admin\LoginController::class, 'destroy']);
+        Route::post('/refresh', [App\Http\Controllers\Admin\LoginController::class, 'update']);
     });
 });
 

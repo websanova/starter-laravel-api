@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.bookmark.store');
 
@@ -152,3 +152,4 @@ test('unauthenticated user cannot create a bookmark', function () {
 
     $response->assertStatus(401);
 });
+

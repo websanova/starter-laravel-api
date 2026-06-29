@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.tag.store');
 
@@ -124,3 +124,4 @@ test('unauthenticated user cannot create a tag', function () {
 
     $response->assertStatus(401);
 });
+

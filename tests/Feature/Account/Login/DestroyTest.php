@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.login.destroy');
 
@@ -9,14 +9,15 @@ test('user can logout and token is revoked', function () {
     $token = $user->createToken('auth')->plainTextToken;
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-        ->postJson('/auth/logout');
+        ->postJson('/account/logout');
 
     $response->assertStatus(204);
     expect($user->tokens()->count())->toBe(0);
 });
 
 test('unauthenticated user cannot logout', function () {
-    $response = $this->postJson('/auth/logout');
+    $response = $this->postJson('/account/logout');
 
     $response->assertStatus(401);
 });
+

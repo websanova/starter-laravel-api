@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.subscription.store');
 
@@ -72,3 +72,4 @@ test('complimentary plan is rejected', function () {
     $response->assertStatus(422)
         ->assertJsonValidationErrors('plan');
 });
+

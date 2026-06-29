@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.avatar.store');
 
@@ -103,3 +103,4 @@ test('upload fails when unverified', function () {
 
     $response->assertStatus(403);
 });
+

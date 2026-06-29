@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.tag.destroy');
 
@@ -33,3 +33,4 @@ test('unauthenticated user cannot delete a tag', function () {
 
     $response->assertStatus(401);
 });
+

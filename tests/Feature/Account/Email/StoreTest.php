@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.email.store');
 
@@ -114,3 +114,4 @@ test('request email change fails when unverified', function () {
 
     $response->assertStatus(403);
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.profile.show');
 
@@ -20,3 +20,4 @@ test('unauthenticated user cannot view profile', function () {
 
     $response->assertStatus(401);
 });
+

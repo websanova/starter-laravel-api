@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.change-email.store');
 
@@ -17,7 +17,7 @@ test('user can confirm email change with valid token', function () {
         'created_at' => now(),
     ]);
 
-    $response = $this->postJson('/auth/change-email', [
+    $response = $this->postJson('/account/change-email', [
         'email' => 'new@example.com',
         'token' => $token,
     ]);
@@ -41,7 +41,7 @@ test('confirm email change deletes tokens', function () {
         'created_at' => now(),
     ]);
 
-    $this->postJson('/auth/change-email', [
+    $this->postJson('/account/change-email', [
         'email' => 'new@example.com',
         'token' => $token,
     ]);
@@ -59,7 +59,7 @@ test('confirm email change fails with invalid token', function () {
         'created_at' => now(),
     ]);
 
-    $response = $this->postJson('/auth/change-email', [
+    $response = $this->postJson('/account/change-email', [
         'email' => 'new@example.com',
         'token' => 'wrong-token',
     ]);
@@ -79,7 +79,7 @@ test('confirm email change fails with expired token', function () {
         'created_at' => now()->subMinutes(61),
     ]);
 
-    $response = $this->postJson('/auth/change-email', [
+    $response = $this->postJson('/account/change-email', [
         'email' => 'new@example.com',
         'token' => $token,
     ]);
@@ -99,7 +99,7 @@ test('confirm email change fails with mismatched email', function () {
         'created_at' => now(),
     ]);
 
-    $response = $this->postJson('/auth/change-email', [
+    $response = $this->postJson('/account/change-email', [
         'email' => 'other@example.com',
         'token' => $token,
     ]);
@@ -109,8 +109,9 @@ test('confirm email change fails with mismatched email', function () {
 });
 
 test('confirm email change fails with missing fields', function () {
-    $response = $this->postJson('/auth/change-email', []);
+    $response = $this->postJson('/account/change-email', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['token', 'email']);
 });
+

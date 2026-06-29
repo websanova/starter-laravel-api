@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.subscription.destroy');
 
@@ -17,3 +17,4 @@ test('user without subscription cannot cancel', function () {
 
     $response->assertStatus(403);
 });
+

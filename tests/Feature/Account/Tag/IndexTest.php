@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.tag.index');
 
@@ -36,3 +36,4 @@ test('unauthenticated user cannot list tags', function () {
 
     $response->assertStatus(401);
 });
+

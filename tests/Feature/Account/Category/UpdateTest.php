@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.category.update');
 
@@ -50,3 +50,4 @@ test('unauthenticated user cannot update a category', function () {
 
     $response->assertStatus(401);
 });
+

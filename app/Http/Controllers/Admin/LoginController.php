@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Login\DestroyRequest;
 use App\Http\Requests\Account\Login\StoreRequest;
 use App\Http\Requests\Account\Login\UpdateRequest;
-use App\Http\Resources\Admin\UserResource;
+use App\Http\Resources\Admin\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -36,7 +36,7 @@ class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new ProfileResource($user),
             'token' => $token,
         ]);
     }

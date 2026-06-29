@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.category.destroy');
 
@@ -49,3 +49,4 @@ test('unauthenticated user cannot delete a category', function () {
 
     $response->assertStatus(401);
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.bookmark.destroy');
 
@@ -32,3 +32,4 @@ test('unauthenticated user cannot delete a bookmark', function () {
 
     $response->assertStatus(401);
 });
+

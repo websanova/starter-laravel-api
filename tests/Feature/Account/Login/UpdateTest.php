@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.login.update');
 
@@ -9,7 +9,7 @@ test('user can refresh their token', function () {
     $oldToken = $user->createToken('auth');
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $oldToken->plainTextToken)
-        ->postJson('/auth/refresh');
+        ->postJson('/account/refresh');
 
     $response->assertStatus(200)
         ->assertJsonStructure(['token']);
@@ -26,14 +26,15 @@ test('refresh returns a different token', function () {
     $oldToken = $user->createToken('auth');
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $oldToken->plainTextToken)
-        ->postJson('/auth/refresh');
+        ->postJson('/account/refresh');
 
     $newToken = $response->json('token');
     expect($newToken)->not->toBe($oldToken->plainTextToken);
 });
 
 test('unauthenticated user cannot refresh', function () {
-    $response = $this->postJson('/auth/refresh');
+    $response = $this->postJson('/account/refresh');
 
     $response->assertStatus(401);
 });
+

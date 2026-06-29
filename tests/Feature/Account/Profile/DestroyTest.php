@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.profile.destroy');
 
@@ -27,3 +27,4 @@ test('unauthenticated user cannot delete account', function () {
 
     $response->assertStatus(401);
 });
+

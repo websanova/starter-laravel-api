@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.category.store');
 
@@ -53,3 +53,4 @@ test('unauthenticated user cannot create a category', function () {
 
     $response->assertStatus(401);
 });
+

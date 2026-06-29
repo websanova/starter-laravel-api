@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.subscription.show');
 
@@ -18,3 +18,4 @@ test('unauthenticated user cannot view subscription status', function () {
 
     $response->assertStatus(401);
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.notification.index');
 
@@ -115,3 +115,4 @@ test('unauthenticated user cannot list notifications', function () {
 
     $response->assertStatus(401);
 });
+

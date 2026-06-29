@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.verification.resend');
 
@@ -81,3 +81,4 @@ test('resend does nothing when mode is disabled', function () {
     $response->assertStatus(200);
     Notification::assertNothingSent();
 });
+

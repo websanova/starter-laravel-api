@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.login.restore');
 
@@ -15,7 +15,7 @@ test('soft-deleted user within grace period is restored on login', function () {
 
     $user->delete();
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'password123',
     ]);
@@ -37,7 +37,7 @@ test('soft-deleted user past grace period is rejected', function () {
     $user->delete();
     $user->forceFill(['deleted_at' => now()->subDays(31)])->save();
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'password123',
     ]);
@@ -58,7 +58,7 @@ test('soft-deleted user with zero grace period is rejected', function () {
 
     $user->delete();
 
-    $response = $this->postJson('/auth/login', [
+    $response = $this->postJson('/account/login', [
         'email' => 'test@example.com',
         'password' => 'password123',
     ]);
@@ -68,3 +68,4 @@ test('soft-deleted user with zero grace period is rejected', function () {
 
     expect($user->fresh()->deleted_at)->not->toBeNull();
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.bookmark.index');
 
@@ -147,3 +147,4 @@ test('unauthenticated user cannot list bookmarks', function () {
 
     $response->assertStatus(401);
 });
+

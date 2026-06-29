@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('admin.login.destroy');
 
@@ -11,14 +11,15 @@ test('admin can logout and token is revoked', function () {
     $token = $user->createToken('auth')->plainTextToken;
 
     $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-        ->postJson('/admin/auth/logout');
+        ->postJson('/admin/logout');
 
     $response->assertStatus(204);
     expect($user->tokens()->count())->toBe(0);
 });
 
 test('unauthenticated user cannot logout', function () {
-    $response = $this->postJson('/admin/auth/logout');
+    $response = $this->postJson('/admin/logout');
 
     $response->assertStatus(401);
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.reset-password.store');
 
@@ -10,7 +10,7 @@ test('user can reset password with valid token', function () {
     $user = User::factory()->create(['email' => 'test@example.com']);
     $token = Password::createToken($user);
 
-    $response = $this->postJson('/auth/reset-password', [
+    $response = $this->postJson('/account/reset-password', [
         'token' => $token,
         'email' => 'test@example.com',
         'password' => 'newpassword123',
@@ -29,7 +29,7 @@ test('reset password revokes existing tokens', function () {
     $user->createToken('auth');
     $token = Password::createToken($user);
 
-    $this->postJson('/auth/reset-password', [
+    $this->postJson('/account/reset-password', [
         'token' => $token,
         'email' => 'test@example.com',
         'password' => 'newpassword123',
@@ -42,7 +42,7 @@ test('reset password revokes existing tokens', function () {
 test('reset password fails with invalid token', function () {
     User::factory()->create(['email' => 'test@example.com']);
 
-    $response = $this->postJson('/auth/reset-password', [
+    $response = $this->postJson('/account/reset-password', [
         'token' => 'invalid-token',
         'email' => 'test@example.com',
         'password' => 'newpassword123',
@@ -57,7 +57,7 @@ test('reset password fails with mismatched confirmation', function () {
     $user = User::factory()->create(['email' => 'test@example.com']);
     $token = Password::createToken($user);
 
-    $response = $this->postJson('/auth/reset-password', [
+    $response = $this->postJson('/account/reset-password', [
         'token' => $token,
         'email' => 'test@example.com',
         'password' => 'newpassword123',
@@ -69,8 +69,9 @@ test('reset password fails with mismatched confirmation', function () {
 });
 
 test('reset password fails with missing fields', function () {
-    $response = $this->postJson('/auth/reset-password', []);
+    $response = $this->postJson('/account/reset-password', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['token', 'email', 'password']);
 });
+

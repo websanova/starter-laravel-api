@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.verification.verify');
 
@@ -135,3 +135,4 @@ test('validation fails with wrong length code', function () {
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['code']);
 });
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 uses()->group('account.bookmark.update');
 
@@ -135,3 +135,4 @@ test('unauthenticated user cannot update a bookmark', function () {
 
     $response->assertStatus(401);
 });
+
