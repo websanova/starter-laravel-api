@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('model.notification.dispatch');
+uses()->group('notification.dispatch');
 
 use App\Models\Plan;
 use App\Models\User;

@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('model.profile.resource');
+uses()->group('resource.account.profile');
 
 use App\Http\Resources\Account\ProfileResource;
 use App\Models\Plan;
