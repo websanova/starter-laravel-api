@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
-class AuthLoginController extends Controller
+class LoginController extends Controller
 {
     /**
      * Authenticate an admin user and return a Sanctum token.
@@ -52,7 +52,6 @@ class AuthLoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
             'token' => $token,
         ]);
     }

@@ -25,12 +25,12 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('admin/auth')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
-        Route::post('/login', [App\Http\Controllers\Admin\AuthLoginController::class, 'store']);
+        Route::post('/login', [App\Http\Controllers\Admin\LoginController::class, 'store']);
     });
 
     Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
-        Route::post('/logout', [App\Http\Controllers\Admin\AuthLoginController::class, 'destroy']);
-        Route::post('/refresh', [App\Http\Controllers\Admin\AuthLoginController::class, 'update']);
+        Route::post('/logout', [App\Http\Controllers\Admin\LoginController::class, 'destroy']);
+        Route::post('/refresh', [App\Http\Controllers\Admin\LoginController::class, 'update']);
     });
 });
 
