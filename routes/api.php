@@ -6,64 +6,62 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
 Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
 
-Route::prefix('account')->group(function () {
-    Route::get('/plans', [App\Http\Controllers\Account\PlanController::class, 'index']);
+Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 
-    Route::middleware('throttle:auth')->group(function () {
-        Route::post('/register', [App\Http\Controllers\Account\RegisterController::class, 'store']);
-        Route::post('/login', [App\Http\Controllers\Account\LoginController::class, 'store']);
-        Route::post('/forgot-password', [App\Http\Controllers\Account\ForgotPasswordController::class, 'store']);
-        Route::post('/reset-password', [App\Http\Controllers\Account\ResetPasswordController::class, 'store']);
-        Route::post('/change-email', [App\Http\Controllers\Account\ChangeEmailController::class, 'store']);
-    });
-
-    Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
-        Route::post('/logout', [App\Http\Controllers\Account\LoginController::class, 'destroy']);
-        Route::post('/refresh', [App\Http\Controllers\Account\LoginController::class, 'update']);
-    });
+Route::middleware('throttle:auth')->group(function () {
+    Route::post('/register', [App\Http\Controllers\App\RegisterController::class, 'store']);
+    Route::post('/login', [App\Http\Controllers\App\LoginController::class, 'store']);
+    Route::post('/forgot-password', [App\Http\Controllers\App\ForgotPasswordController::class, 'store']);
+    Route::post('/reset-password', [App\Http\Controllers\App\ResetPasswordController::class, 'store']);
+    Route::post('/change-email', [App\Http\Controllers\App\ChangeEmailController::class, 'store']);
 });
 
-Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(function () {
-    Route::post('/verify', [App\Http\Controllers\Account\VerificationController::class, 'verify']);
-    Route::post('/verify/resend', [App\Http\Controllers\Account\VerificationController::class, 'resend']);
+Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
+    Route::post('/logout', [App\Http\Controllers\App\LoginController::class, 'destroy']);
+    Route::post('/refresh', [App\Http\Controllers\App\LoginController::class, 'update']);
+});
+
+Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
+    Route::post('/verify', [App\Http\Controllers\App\VerificationController::class, 'verify']);
+    Route::post('/verify/resend', [App\Http\Controllers\App\VerificationController::class, 'resend']);
 
     Route::middleware('verified')->group(function () {
-        Route::patch('/password', [App\Http\Controllers\Account\PasswordController::class, 'update']);
+        Route::patch('/password', [App\Http\Controllers\App\PasswordController::class, 'update']);
     });
 
     Route::middleware(['verified', 'password-updated'])->group(function () {
-        Route::get('/notifications', [App\Http\Controllers\Account\NotificationController::class, 'index']);
-        Route::post('/notifications/read', [App\Http\Controllers\Account\NotificationReadController::class, 'store']);
-        Route::patch('/notifications/{notification}', [App\Http\Controllers\Account\NotificationController::class, 'update']);
+        Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
+        Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
+        Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
 
-        Route::get('/profile', [App\Http\Controllers\Account\ProfileController::class, 'show']);
-        Route::patch('/profile', [App\Http\Controllers\Account\ProfileController::class, 'update']);
-        Route::delete('/profile', [App\Http\Controllers\Account\ProfileController::class, 'destroy']);
-        Route::post('/email', [App\Http\Controllers\Account\EmailController::class, 'store']);
-        Route::post('/avatar', [App\Http\Controllers\Account\AvatarController::class, 'store']);
-        Route::delete('/avatar', [App\Http\Controllers\Account\AvatarController::class, 'destroy']);
+        Route::get('/profile', [App\Http\Controllers\App\ProfileController::class, 'show']);
+        Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
+        Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
+        Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
+        Route::post('/avatar', [App\Http\Controllers\App\AvatarController::class, 'store']);
+        Route::delete('/avatar', [App\Http\Controllers\App\AvatarController::class, 'destroy']);
 
-        Route::get('/subscription', [App\Http\Controllers\Account\SubscriptionController::class, 'show']);
-        Route::put('/subscription', [App\Http\Controllers\Account\SubscriptionController::class, 'update']);
-        Route::delete('/subscription', [App\Http\Controllers\Account\SubscriptionController::class, 'destroy']);
-        Route::patch('/subscription/resume', [App\Http\Controllers\Account\SubscriptionController::class, 'resume']);
-        Route::get('/subscription/coupon/{code}', [App\Http\Controllers\Account\SubscriptionCouponController::class, 'show']);
+        Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
+        Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
+        Route::delete('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'destroy']);
+        Route::patch('/subscription/resume', [App\Http\Controllers\App\SubscriptionController::class, 'resume']);
+        Route::get('/subscription/coupon/{code}', [App\Http\Controllers\App\SubscriptionCouponController::class, 'show']);
 
         Route::middleware('subscribed')->group(function () {
-            Route::get('/categories', [App\Http\Controllers\Account\CategoryController::class, 'index']);
-            Route::post('/categories', [App\Http\Controllers\Account\CategoryController::class, 'store']);
-            Route::put('/categories/{category}', [App\Http\Controllers\Account\CategoryController::class, 'update']);
-            Route::delete('/categories/{category}', [App\Http\Controllers\Account\CategoryController::class, 'destroy']);
+            Route::get('/categories', [App\Http\Controllers\App\CategoryController::class, 'index']);
+            Route::post('/categories', [App\Http\Controllers\App\CategoryController::class, 'store']);
+            Route::put('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'update']);
+            Route::delete('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'destroy']);
 
-            Route::get('/tags', [App\Http\Controllers\Account\TagController::class, 'index']);
-            Route::post('/tags', [App\Http\Controllers\Account\TagController::class, 'store']);
-            Route::put('/tags/{tag}', [App\Http\Controllers\Account\TagController::class, 'update']);
-            Route::delete('/tags/{tag}', [App\Http\Controllers\Account\TagController::class, 'destroy']);
+            Route::get('/tags', [App\Http\Controllers\App\TagController::class, 'index']);
+            Route::post('/tags', [App\Http\Controllers\App\TagController::class, 'store']);
+            Route::put('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'update']);
+            Route::delete('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'destroy']);
 
-            Route::get('/bookmarks', [App\Http\Controllers\Account\BookmarkController::class, 'index']);
-            Route::post('/bookmarks', [App\Http\Controllers\Account\BookmarkController::class, 'store']);
-            Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\Account\BookmarkController::class, 'update']);
-            Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\Account\BookmarkController::class, 'destroy']);
+            Route::get('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'index']);
+            Route::post('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'store']);
+            Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
+            Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'destroy']);
         });
     });
 });

@@ -14,7 +14,7 @@ test('user within bookmark limit can create a bookmark', function () {
     $plan = Plan::factory()->create(['features' => ['bookmarks' => 5]]);
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
     ]);
@@ -30,7 +30,7 @@ test('user at bookmark limit cannot create a bookmark', function () {
 
     Bookmark::factory()->count(2)->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
     ]);
@@ -46,7 +46,7 @@ test('user with unlimited bookmarks can always create', function () {
 
     Bookmark::factory()->count(100)->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
     ]);
@@ -62,7 +62,7 @@ test('user at category limit cannot create a category', function () {
 
     Category::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/categories', [
+    $response = $this->actingAs($user)->postJson('/categories', [
         'name' => 'New Category',
     ]);
 
@@ -77,7 +77,7 @@ test('user at tag limit cannot create a tag', function () {
 
     Tag::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/tags', [
+    $response = $this->actingAs($user)->postJson('/tags', [
         'name' => 'newtag',
     ]);
 
@@ -90,7 +90,7 @@ test('user without a plan feature defined gets no limit', function () {
     $plan = Plan::factory()->create(['features' => []]);
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
     ]);
@@ -108,10 +108,11 @@ test('user without a plan gets free plan limits', function () {
 
     Bookmark::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->postJson('/account/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
     ]);
 
     $response->assertStatus(403);
 });
+

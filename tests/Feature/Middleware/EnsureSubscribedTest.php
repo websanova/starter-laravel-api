@@ -12,7 +12,7 @@ test('freemium mode allows user with a plan', function () {
     $plan = Plan::factory()->create();
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(200);
 });
@@ -22,7 +22,7 @@ test('freemium mode allows user without a plan', function () {
 
     $user = User::factory()->create(['plan_id' => null]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(200);
 });
@@ -32,7 +32,7 @@ test('required mode blocks user without subscription', function () {
 
     $user = User::factory()->create(['plan_id' => null]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(403);
 });
@@ -42,7 +42,7 @@ test('trial mode blocks user without trial or subscription', function () {
 
     $user = User::factory()->create(['plan_id' => null, 'trial_ends_at' => null]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(403);
 });
@@ -55,7 +55,7 @@ test('trial mode allows user within trial period', function () {
         'trial_ends_at' => now()->addDays(7),
     ]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(200);
 });
@@ -68,7 +68,7 @@ test('trial mode blocks user with expired trial', function () {
         'trial_ends_at' => now()->subDay(),
     ]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(403);
 });
@@ -79,7 +79,7 @@ test('required mode allows complimentary user', function () {
     $plan = Plan::factory()->complimentary()->create();
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(200);
 });
@@ -90,7 +90,7 @@ test('trial mode allows complimentary user', function () {
     $plan = Plan::factory()->complimentary()->create();
     $user = User::factory()->create(['plan_id' => $plan->id]);
 
-    $response = $this->actingAs($user)->getJson('/account/bookmarks');
+    $response = $this->actingAs($user)->getJson('/bookmarks');
 
     $response->assertStatus(200);
 });
@@ -100,7 +100,7 @@ test('subscription middleware does not block profile routes', function () {
 
     $user = User::factory()->create(['plan_id' => null]);
 
-    $response = $this->actingAs($user)->getJson('/account/profile');
+    $response = $this->actingAs($user)->getJson('/profile');
 
     $response->assertStatus(200);
 });
@@ -110,7 +110,8 @@ test('subscription middleware does not block subscription routes', function () {
 
     $user = User::factory()->create(['plan_id' => null]);
 
-    $response = $this->actingAs($user)->getJson('/account/subscription');
+    $response = $this->actingAs($user)->getJson('/subscription');
 
     $response->assertStatus(200);
 });
+
