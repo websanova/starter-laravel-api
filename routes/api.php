@@ -10,16 +10,16 @@ Route::get('/plans', [App\Http\Controllers\Public\PlanController::class, 'index'
 
 Route::prefix('auth')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
-        Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'store']);
-        Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'store']);
-        Route::post('/forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'store']);
-        Route::post('/reset-password', [App\Http\Controllers\Auth\ResetPasswordController::class, 'store']);
-        Route::post('/change-email', [App\Http\Controllers\Auth\ChangeEmailController::class, 'store']);
+        Route::post('/register', [App\Http\Controllers\Account\RegisterController::class, 'store']);
+        Route::post('/login', [App\Http\Controllers\Account\LoginController::class, 'store']);
+        Route::post('/forgot-password', [App\Http\Controllers\Account\ForgotPasswordController::class, 'store']);
+        Route::post('/reset-password', [App\Http\Controllers\Account\ResetPasswordController::class, 'store']);
+        Route::post('/change-email', [App\Http\Controllers\Account\ChangeEmailController::class, 'store']);
     });
 
     Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
-        Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'destroy']);
-        Route::post('/refresh', [App\Http\Controllers\Auth\LoginController::class, 'update']);
+        Route::post('/logout', [App\Http\Controllers\Account\LoginController::class, 'destroy']);
+        Route::post('/refresh', [App\Http\Controllers\Account\LoginController::class, 'update']);
     });
 });
 

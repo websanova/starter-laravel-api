@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Login\DestroyRequest;
 use App\Http\Requests\Account\Login\StoreRequest;
 use App\Http\Requests\Account\Login\UpdateRequest;
-use App\Http\Resources\Admin\UserResource;
+use App\Http\Resources\Account\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
-class AuthLoginController extends Controller
+class LoginController extends Controller
 {
     /**
-     * Authenticate an admin user and return a Sanctum token.
+     * Authenticate a user and return a Sanctum token.
      */
     public function store(StoreRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::withTrashed()->where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -27,16 +28,23 @@ class AuthLoginController extends Controller
             ]);
         }
 
-        if (! $user->hasRole(['super', 'admin'])) {
-            throw ValidationException::withMessages([
-                'email' => [__('responses.auth.failed')],
-            ]);
+        if ($user->trashed()) {
+            $gracePeriod = config('auth.delete.grace_period');
+            $deadline = $user->deleted_at->addDays($gracePeriod);
+
+            if ($gracePeriod === 0 || Carbon::now()->greaterThan($deadline)) {
+                throw ValidationException::withMessages([
+                    'email' => [__('responses.auth.deleted')],
+                ]);
+            }
+
+            $user->restore();
         }
 
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }
@@ -52,7 +60,7 @@ class AuthLoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }
