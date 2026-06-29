@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Avatar\DestroyRequest;
 use App\Http\Requests\Account\Avatar\StoreRequest;
-use App\Http\Resources\Account\UserResource;
+use App\Http\Resources\Account\ProfileResource;
 use Illuminate\Http\JsonResponse;
 
 class AvatarController extends Controller
@@ -19,7 +19,7 @@ class AvatarController extends Controller
         $user->storeAvatar($request->file('avatar'));
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new ProfileResource($user->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 
@@ -32,7 +32,7 @@ class AvatarController extends Controller
         $user->deleteAvatar();
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new ProfileResource($user->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 }

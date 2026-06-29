@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Profile\DestroyRequest;
 use App\Http\Requests\Account\Profile\ShowRequest;
 use App\Http\Requests\Account\Profile\UpdateRequest;
-use App\Http\Resources\Account\UserResource;
+use App\Http\Resources\Account\ProfileResource;
 use Illuminate\Http\JsonResponse;
 
 class ProfileController extends Controller
@@ -17,7 +17,7 @@ class ProfileController extends Controller
     public function show(ShowRequest $request): JsonResponse
     {
         return response()->json([
-            'data' => new UserResource($request->user()->loadMissing(['plan.prices', 'subscriptions'])),
+            'data' => new ProfileResource($request->user()->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 
@@ -30,7 +30,7 @@ class ProfileController extends Controller
         $user->update($request->validated());
 
         return response()->json([
-            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
+            'data' => new ProfileResource($user->loadMissing(['plan.prices', 'subscriptions'])),
         ]);
     }
 

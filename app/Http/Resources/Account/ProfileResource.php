@@ -5,7 +5,7 @@ namespace App\Http\Resources\Account;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class ProfileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,16 +18,16 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'avatar_url' => $this->avatar_url,
-            'plan' => $this->when($this->relationLoaded('plan'), fn () => [
+            'plan' => [
                 'id' => $this->plan->id,
                 'name' => $this->plan->name,
                 'slug' => $this->plan->slug,
                 'features' => $this->plan->features,
-            ]),
-            'is_complimentary' => $this->when($this->relationLoaded('plan'), fn () => $this->is_complimentary),
-            'is_subscribed' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_subscribed),
-            'is_on_trial' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_trial),
-            'is_on_grace_period' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_grace_period),
+            ],
+            'is_complimentary' => $this->is_complimentary,
+            'is_subscribed' => $this->is_subscribed,
+            'is_on_trial' => $this->is_on_trial,
+            'is_on_grace_period' => $this->is_on_grace_period,
             'trial_ends_at' => $this->trial_ends_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

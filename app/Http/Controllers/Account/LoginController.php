@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Login\DestroyRequest;
 use App\Http\Requests\Account\Login\StoreRequest;
 use App\Http\Requests\Account\Login\UpdateRequest;
-use App\Http\Resources\Account\UserResource;
+use App\Http\Resources\Account\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -44,7 +44,7 @@ class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
+            'data' => new ProfileResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }
@@ -60,7 +60,6 @@ class LoginController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ]);
     }

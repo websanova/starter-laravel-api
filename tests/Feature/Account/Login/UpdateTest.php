@@ -12,10 +12,7 @@ test('user can refresh their token', function () {
         ->postJson('/auth/refresh');
 
     $response->assertStatus(200)
-        ->assertJsonStructure([
-            'data' => ['id', 'first_name', 'last_name', 'email', 'created_at', 'updated_at'],
-            'token',
-        ]);
+        ->assertJsonStructure(['token']);
 
     // Old token should be deleted
     expect($user->tokens()->where('id', $oldToken->accessToken->id)->count())->toBe(0);

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Account;
 use App\Enums\VerificationMode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\Register\StoreRequest;
-use App\Http\Resources\Account\UserResource;
+use App\Http\Resources\Account\ProfileResource;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
 use App\Services\VerificationService;
@@ -45,7 +45,7 @@ class RegisterController extends Controller
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
-            'data' => new UserResource($user->loadMissing(['plan.prices', 'subscriptions'])),
+            'data' => new ProfileResource($user->loadMissing(['plan.prices', 'subscriptions'])),
             'token' => $token,
         ], 201);
     }
