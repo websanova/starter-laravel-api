@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: '',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
         $middleware->append(\App\Http\Middleware\ForceJsonResponse::class);
         $middleware->api(prepend: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
