@@ -19,7 +19,18 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'destroy']);
-        Route::post('/token/refresh', [App\Http\Controllers\Auth\LoginController::class, 'update']);
+        Route::post('/refresh', [App\Http\Controllers\Auth\LoginController::class, 'update']);
+    });
+});
+
+Route::prefix('admin/auth')->group(function () {
+    Route::middleware('throttle:auth')->group(function () {
+        Route::post('/login', [App\Http\Controllers\Admin\AuthLoginController::class, 'store']);
+    });
+
+    Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
+        Route::post('/logout', [App\Http\Controllers\Admin\AuthLoginController::class, 'destroy']);
+        Route::post('/refresh', [App\Http\Controllers\Admin\AuthLoginController::class, 'update']);
     });
 });
 
@@ -69,6 +80,8 @@ Route::prefix('account')->middleware(['auth:sanctum', 'track-active'])->group(fu
 });
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 'password-updated', 'admin'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'show']);
+
     Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index']);
     Route::get('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'show']);
     Route::patch('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update']);
