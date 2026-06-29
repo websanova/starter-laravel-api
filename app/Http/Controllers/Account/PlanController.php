@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Public;
+namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Public\PlanResource;
+use App\Http\Resources\Account\PlanResource;
 use App\Models\Plan;
 use Illuminate\Http\JsonResponse;
 
