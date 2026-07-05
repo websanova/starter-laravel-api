@@ -88,6 +88,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | The locales the application provides translations for. Used to resolve
+    | the closest match from the client's Accept-Language header.
+    |
+    */
+
+    'supported_locales' => explode(',', env('APP_SUPPORTED_LOCALES', 'en')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |
