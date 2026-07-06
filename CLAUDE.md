@@ -112,17 +112,17 @@
 
 ## Conventions
 - Detailed conventions are in `.claude/rules/` and load automatically when touching matching files. This summary provides general awareness for architecture questions.
-- Three route prefixes: `/auth` (authentication), `/account` (user self-management), `/admin` (admin managing resources). Everything namespaced accordingly (`Auth/`, `Account/`, `Admin/`) across controllers, requests, resources, and tests.
+- Two namespaces: `App/` (default, no prefix - handles authentication and user self-management) and `Admin/` (`/admin` prefix - admin managing resources). Everything namespaced accordingly across controllers, requests, resources, and tests. Public unauthenticated routes (health check, Stripe webhook, plan listing) sit at root.
 - REST convention: nested resources for direct ownership (`/admin/users/{user}/bookmarks`), flat endpoints only when a filter view is needed.
 - Thin controllers. Filtering/sorting in model scopes. Authorization in requests. Responses via API Resources.
 - All defined option sets use enums (`app/Enums/`). Sort columns, directions, roles, config modes, storage paths.
 - Model scopes use `for*` prefix, accept nullable, no-op on null. Every listable model has a `scopeSortBy` with typed enum params and defaults.
-- Account requests check ownership inline in `authorize()`. Admin requests delegate to policies.
+- App requests check ownership inline in `authorize()`. Admin requests delegate to policies.
 - Validation rules centralized in `app/Rules/` - one class per resource plus `SharedRules`.
 - Services for multi-model orchestration or external API interaction. Simple CRUD stays in models/controllers. Services return `ServiceResult` (`app/Support/`) instead of throwing exceptions; controllers translate errors into HTTP responses.
 - All emails through notifications (not `Mail::send()`), extensible to SMS via `$channelMap`.
 - Migrations use `cascadeOnDelete()` for owned resources, `nullOnDelete()` for optional relationships.
 - Plan model uses `rememberForever()` cache with auto-invalidation. Feature limits are JSON with null meaning unlimited. `is_billable` (has Stripe prices) and `is_complimentary` (non-free + no Stripe prices) computed accessors. Prices live in a separate `prices` table (one row per billing interval), synced from Stripe product default prices via the `plans:sync` command.
 - Subscription logic in `ManagesSubscription` trait on User. Three modes via `config/subscription.php`: freemium, trial, required. Complimentary plans bypass subscription checks in trial and required modes. `assignComplimentaryPlan()` sets plan without Stripe, `onComplimentary()` / `is_complimentary` check status. Subscribe/swap responses include `client_secret` when payment requires 3D Secure (SCA) confirmation.
-- Plan feature limits checked in account store requests via `canUsePlanFeature()` in `authorize()`.
-- Tests mirror route group structure, use Pest with `RefreshDatabase`, group tags like `account.bookmark.index`.
+- Plan feature limits checked in App store requests via `canUsePlanFeature()` in `authorize()`.
+- Tests mirror route group structure, use Pest with `RefreshDatabase`, group tags like `app.bookmark.index`.
