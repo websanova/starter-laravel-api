@@ -8,6 +8,8 @@ Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookControl
 
 Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 
+Route::get('/settings', [App\Http\Controllers\App\SettingsController::class, 'show']);
+
 Route::middleware('throttle:auth')->group(function () {
     Route::post('/register', [App\Http\Controllers\App\RegisterController::class, 'store']);
     Route::post('/login', [App\Http\Controllers\App\LoginController::class, 'store']);
@@ -67,6 +69,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
+    Route::get('/settings', [App\Http\Controllers\App\SettingsController::class, 'show']);
+
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/login', [App\Http\Controllers\Admin\LoginController::class, 'store']);
     });
