@@ -39,7 +39,7 @@ return [
     */
 
     'guards' => [
-        'api' => [
+        'sanctum' => [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
