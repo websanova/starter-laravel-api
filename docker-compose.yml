@@ -1,6 +1,10 @@
 services:
     php:
-        build: ./docker/php
+        build:
+            context: ./docker/php
+            args:
+                USER_ID: ${USER_ID:-1000}
+                GROUP_ID: ${GROUP_ID:-1000}
         ports:
             - "8000:8000"
         volumes:

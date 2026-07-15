@@ -21,9 +21,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN git config --global --add safe.directory /var/www/html
 
+ARG USER_ID
+ARG GROUP_ID
+RUN groupadd -g ${GROUP_ID} app && useradd -u ${USER_ID} -g ${GROUP_ID} -m app
+
 WORKDIR /var/www/html
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+USER app
 
 CMD ["/usr/local/bin/entrypoint.sh"]
