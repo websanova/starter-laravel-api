@@ -142,7 +142,7 @@ class User extends Authenticatable
     {
         return Attribute::make(
             get: fn () => $this->avatar
-                ? Storage::disk('s3')->url($this->avatar)
+                ? Storage::url($this->avatar)
                 : null,
         );
     }
@@ -211,7 +211,7 @@ class User extends Authenticatable
 
         $path = StoragePath::UserAvatar->value . '/' . Str::random(40) . '.png';
 
-        Storage::disk('s3')->put($path, (string) $image);
+        Storage::put($path, (string) $image);
         $this->update(['avatar' => $path]);
 
         return $path;
@@ -223,7 +223,7 @@ class User extends Authenticatable
     public function deleteAvatar(): void
     {
         if ($this->avatar) {
-            Storage::disk('s3')->delete($this->avatar);
+            Storage::delete($this->avatar);
             $this->update(['avatar' => null]);
         }
     }
