@@ -100,6 +100,22 @@ test('unauthenticated user cannot update a user', function () {
     $response->assertStatus(401);
 });
 
+test('admin can update a user locale and timezone', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $target = User::factory()->create();
+
+    $response = $this->actingAs($admin)->patchJson("/admin/users/{$target->id}", [
+        'locale' => 'en',
+        'timezone' => 'Europe/London',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.locale', 'en')
+        ->assertJsonPath('data.timezone', 'Europe/London');
+});
+
 test('update ignores email field', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);

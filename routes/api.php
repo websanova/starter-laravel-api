@@ -10,7 +10,7 @@ Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 
 Route::get('/settings', [App\Http\Controllers\App\SettingController::class, 'show']);
 
-Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'show']);
+Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'index']);
 
 Route::middleware('throttle:auth')->group(function () {
     Route::post('/register', [App\Http\Controllers\App\RegisterController::class, 'store']);
@@ -73,7 +73,7 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 Route::prefix('admin')->group(function () {
     Route::get('/settings', [App\Http\Controllers\App\SettingController::class, 'show']);
 
-    Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'show']);
+    Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'index']);
 
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/login', [App\Http\Controllers\Admin\LoginController::class, 'store']);

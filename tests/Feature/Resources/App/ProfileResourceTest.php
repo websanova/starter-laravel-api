@@ -39,6 +39,26 @@ test('plan data included when user has a plan', function () {
     expect($resource['plan']['features'])->toBe(['bookmarks' => 100]);
 });
 
+test('locale and timezone returned as stored when set', function () {
+    $user = User::factory()->create(['locale' => 'en', 'timezone' => 'Europe/London']);
+    $user->load(['plan.prices', 'subscriptions']);
+
+    $resource = (new ProfileResource($user))->toArray(request());
+
+    expect($resource['locale'])->toBe('en');
+    expect($resource['timezone'])->toBe('Europe/London');
+});
+
+test('locale and timezone fall back to config defaults when null', function () {
+    $user = User::factory()->create(['locale' => null, 'timezone' => null]);
+    $user->load(['plan.prices', 'subscriptions']);
+
+    $resource = (new ProfileResource($user))->toArray(request());
+
+    expect($resource['locale'])->toBe(config('auth.user.default_locale'));
+    expect($resource['timezone'])->toBe(config('auth.user.default_timezone'));
+});
+
 test('trial_ends_at always included', function () {
     $trialEnd = now()->addDays(7);
     $user = User::factory()->create(['trial_ends_at' => $trialEnd]);

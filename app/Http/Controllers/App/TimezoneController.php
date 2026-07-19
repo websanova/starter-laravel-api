@@ -12,7 +12,7 @@ class TimezoneController extends Controller
     /**
      * Return the list of supported IANA timezone identifiers.
      */
-    public function show(): JsonResponse
+    public function index(): JsonResponse
     {
         return response()->json([
             'data' => Cache::rememberForever('timezones', fn () => DateTimeZone::listIdentifiers()),
