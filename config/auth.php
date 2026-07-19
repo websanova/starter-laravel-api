@@ -147,4 +147,20 @@ return [
 
     'activity_throttle' => env('AUTH_ACTIVITY_THROTTLE', 60),
 
+    /*
+    |--------------------------------------------------------------------------
+    | User Defaults
+    |--------------------------------------------------------------------------
+    |
+    | Default locale and timezone applied when a user has not set their own.
+    | The columns stay null in the database and these values are returned by
+    | the model accessors as fallbacks. Timezone is an IANA identifier.
+    |
+    */
+
+    'user' => [
+        'default_locale' => env('USER_DEFAULT_LOCALE', 'en_US'),
+        'default_timezone' => env('USER_DEFAULT_TIMEZONE', 'America/New_York'),
+    ],
+
 ];

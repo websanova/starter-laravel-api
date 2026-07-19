@@ -58,6 +58,8 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'locale',
+        'timezone',
         'email',
         'email_verified_at',
         'password',
@@ -133,6 +135,26 @@ class User extends Authenticatable
     public function notifications(): MorphMany
     {
         return $this->morphMany(Notification::class, 'notifiable')->latest();
+    }
+
+    /**
+     * Get the user's locale, falling back to the configured default.
+     */
+    protected function locale(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ?? config('auth.user.default_locale'),
+        );
+    }
+
+    /**
+     * Get the user's timezone, falling back to the configured default.
+     */
+    protected function timezone(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ?? config('auth.user.default_timezone'),
+        );
     }
 
     /**
