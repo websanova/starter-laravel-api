@@ -43,7 +43,8 @@ test('registration fails with missing fields', function () {
     $response = $this->postJson('/register', []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['first_name', 'last_name', 'email', 'password']);
+        ->assertJsonValidationErrors(['email', 'password'])
+        ->assertJsonMissingValidationErrors(['first_name', 'last_name']);
 });
 
 test('registration fails with mismatched password confirmation', function () {

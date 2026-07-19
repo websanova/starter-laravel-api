@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'mode' => VerificationMode::from(env('VERIFICATION_MODE', 'disabled')),
+    'mode' => VerificationMode::from(env('VERIFICATION_MODE', 'required')),
 
     /*
     |--------------------------------------------------------------------------
