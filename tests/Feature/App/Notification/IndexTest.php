@@ -19,8 +19,7 @@ test('user can list their notifications', function () {
         ->assertJsonCount(2, 'data')
         ->assertJsonStructure([
             'data' => [['id', 'type', 'data', 'read_at', 'created_at']],
-            'meta',
-            'links',
+            'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
 

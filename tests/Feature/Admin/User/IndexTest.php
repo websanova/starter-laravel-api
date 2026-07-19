@@ -16,8 +16,7 @@ test('super can list users', function () {
     $response->assertStatus(200)
         ->assertJsonStructure([
             'data' => [['id', 'first_name', 'last_name', 'email', 'role']],
-            'meta',
-            'links',
+            'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
 

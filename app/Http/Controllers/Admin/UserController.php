@@ -26,7 +26,7 @@ class UserController extends Controller
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 
-        return response()->json(UserResource::collection($users)->response()->getData(true));
+        return response()->json(UserResource::paginated($users));
     }
 
     /**

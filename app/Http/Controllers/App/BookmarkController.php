@@ -25,7 +25,7 @@ class BookmarkController extends Controller
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 
-        return response()->json(BookmarkResource::collection($bookmarks)->response()->getData(true));
+        return response()->json(BookmarkResource::paginated($bookmarks));
     }
 
     /**

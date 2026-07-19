@@ -17,8 +17,7 @@ test('super can list plans', function () {
     $response->assertStatus(200)
         ->assertJsonStructure([
             'data' => [['id', 'name', 'slug', 'prices', 'features', 'is_active', 'sort_order']],
-            'meta',
-            'links',
+            'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
 

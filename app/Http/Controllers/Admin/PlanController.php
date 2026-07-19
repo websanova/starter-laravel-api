@@ -25,7 +25,7 @@ class PlanController extends Controller
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 
-        return response()->json(PlanResource::collection($plans)->response()->getData(true));
+        return response()->json(PlanResource::paginated($plans));
     }
 
     /**

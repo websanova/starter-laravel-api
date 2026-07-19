@@ -20,7 +20,7 @@ class NotificationController extends Controller
             ->forRead($request->validated('read'))
             ->paginate($request->validated('per_page', 15));
 
-        return response()->json(NotificationResource::collection($notifications)->response()->getData(true));
+        return response()->json(NotificationResource::paginated($notifications));
     }
 
     /**
