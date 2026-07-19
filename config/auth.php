@@ -159,7 +159,7 @@ return [
     */
 
     'user' => [
-        'default_locale' => env('USER_DEFAULT_LOCALE', 'en_US'),
+        'default_locale' => env('USER_DEFAULT_LOCALE', 'en'),
         'default_timezone' => env('USER_DEFAULT_TIMEZONE', 'America/New_York'),
     ],
 

@@ -15,6 +15,8 @@ class UpdateRequest extends FormRequest
         return [
             'first_name' => UserRules::firstName(required: false),
             'last_name' => UserRules::lastName(required: false),
+            'locale' => UserRules::locale(),
+            'timezone' => UserRules::timezone(),
         ];
     }
 }

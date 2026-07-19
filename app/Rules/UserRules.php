@@ -75,6 +75,22 @@ class UserRules
     }
 
     /**
+     * Validation rules for the locale field.
+     */
+    public static function locale(): array
+    {
+        return ['sometimes', 'nullable', 'string', Rule::in(config('app.supported_locales'))];
+    }
+
+    /**
+     * Validation rules for the timezone field.
+     */
+    public static function timezone(): array
+    {
+        return ['sometimes', 'nullable', 'timezone'];
+    }
+
+    /**
      * Validation rules for the password field.
      */
     public static function password(): array
