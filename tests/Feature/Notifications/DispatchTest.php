@@ -75,7 +75,7 @@ test('plan resumed notification sends via mail and database', function () {
 
 test('plan subscribed notification includes plan name in data', function () {
     $plan = Plan::factory()->paid()->create(['name' => 'Pro']);
-    $user = User::factory()->create();
+    $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanSubscribedNotification($plan));
 
@@ -87,7 +87,7 @@ test('plan subscribed notification includes plan name in data', function () {
 
 test('plan changed notification includes plan name in data', function () {
     $plan = Plan::factory()->paid()->create(['name' => 'Enterprise']);
-    $user = User::factory()->create();
+    $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanChangedNotification($plan));
 
@@ -98,7 +98,7 @@ test('plan changed notification includes plan name in data', function () {
 });
 
 test('plan cancelled notification data', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanCancelledNotification);
 
@@ -108,7 +108,7 @@ test('plan cancelled notification data', function () {
 });
 
 test('plan resumed notification data', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanResumedNotification);
 
@@ -117,8 +117,18 @@ test('plan resumed notification data', function () {
     expect($notification->data['title'])->toBe('Plan Resumed');
 });
 
+test('notification renders in the user preferred locale', function () {
+    $user = User::factory()->create(['locale' => 'fr-CA']);
+
+    $user->notify(new PlanCancelledNotification);
+
+    $notification = $user->notifications()->first();
+
+    expect($notification->data['title'])->toBe(__('notifications.plan_cancelled.subject', [], 'fr_CA'));
+});
+
 test('welcome notification stores in database', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new WelcomeNotification);
 
