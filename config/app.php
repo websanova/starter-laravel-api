@@ -97,7 +97,7 @@ return [
     |
     */
 
-    'supported_locales' => explode(',', env('APP_SUPPORTED_LOCALES', 'en,en-CA,fr-CA')),
+    'supported_locales' => explode(',', env('APP_SUPPORTED_LOCALES', 'en,en_CA,fr_CA')),
 
     /*
     |--------------------------------------------------------------------------

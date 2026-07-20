@@ -12,12 +12,12 @@ test('preferred locale returns the base language when the stored tag has no exac
     expect($user->preferredLocale())->toBe('en');
 });
 
-test('preferred locale returns the exact tag when a translation exists for it', function () {
-    config(['app.supported_locales' => ['en', 'en-CA'], 'app.fallback_locale' => 'en']);
+test('preferred locale returns the exact translation locale when one exists for the tag', function () {
+    config(['app.supported_locales' => ['en', 'en_CA'], 'app.fallback_locale' => 'en']);
 
     $user = User::factory()->create(['locale' => 'en-CA']);
 
-    expect($user->preferredLocale())->toBe('en-CA');
+    expect($user->preferredLocale())->toBe('en_CA');
 });
 
 test('preferred locale falls back when neither the tag nor its base language is supported', function () {

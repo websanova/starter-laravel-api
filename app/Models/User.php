@@ -215,19 +215,21 @@ class User extends Authenticatable implements HasLocalePreference
 
     /**
      * Resolve the user's stored locale to a locale the application has
-     * translations for. The stored value is a BCP 47 tag while translations
-     * are keyed by app.supported_locales, so an exact tag is preferred, then
-     * the base language, then the configured fallback.
+     * translations for. The stored value is a BCP 47 tag (hyphenated) while
+     * translation folders use the underscore convention, so the tag is
+     * normalized first, then matched most specific to least: exact locale,
+     * base language, then the configured fallback.
      */
     public function preferredLocale(): string
     {
         $supported = config('app.supported_locales');
+        $locale = str_replace('-', '_', $this->locale);
 
-        if (in_array($this->locale, $supported)) {
-            return $this->locale;
+        if (in_array($locale, $supported)) {
+            return $locale;
         }
 
-        $base = Str::before($this->locale, '-');
+        $base = Str::before($locale, '_');
 
         if (in_array($base, $supported)) {
             return $base;
