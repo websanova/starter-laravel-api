@@ -57,6 +57,13 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - API Resources for all responses
 - JSON-only, lang files for all user-facing strings
 
+**Localization (i18n)**
+- Full multi-locale support out of the box, with a sample Canadian French translation included
+- Per-user locale preference that localizes emails and notifications automatically, even inside queued jobs where there's no request to read from
+- Request responses localized from the client's `Accept-Language` header, falling back to the base language when a region isn't translated
+- Add a language by dropping in a lang folder, no code changes
+- Translating an app is far easier now that AI can generate a full, accurate translation set in minutes, so supporting locales out of the box is more worthwhile than it used to be
+
 **Roles and Permissions (Spatie)**
 - Two roles: super (god mode), admin (manages users)
 - Coarse permissions with policy-based target checks
