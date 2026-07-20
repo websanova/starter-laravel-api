@@ -56,7 +56,7 @@ test('clearing timezone falls back to the default', function () {
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.timezone', config('auth.user.default_timezone'));
+        ->assertJsonPath('data.timezone', config('user.default_timezone'));
 
     expect($user->fresh()->getRawOriginal('timezone'))->toBeNull();
 });

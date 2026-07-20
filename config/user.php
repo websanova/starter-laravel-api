@@ -27,6 +27,6 @@ return [
     |
     */
 
-    'supported_locales' => explode(',', env('USER_SUPPORTED_LOCALES', 'en-US')),
+    'supported_locales' => explode(',', env('USER_SUPPORTED_LOCALES', 'en-US,en-CA,fr-CA')),
 
 ];
