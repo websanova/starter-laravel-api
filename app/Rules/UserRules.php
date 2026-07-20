@@ -79,7 +79,7 @@ class UserRules
      */
     public static function locale(): array
     {
-        return ['sometimes', 'nullable', 'string', Rule::in(config('app.supported_locales'))];
+        return ['sometimes', 'nullable', 'string', Rule::in(config('user.supported_locales'))];
     }
 
     /**

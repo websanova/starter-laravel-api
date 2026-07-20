@@ -143,7 +143,7 @@ class User extends Authenticatable
     protected function locale(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ?? config('auth.user.default_locale'),
+            get: fn ($value) => $value ?? config('user.default_locale'),
         );
     }
 
@@ -153,7 +153,7 @@ class User extends Authenticatable
     protected function timezone(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ?? config('auth.user.default_timezone'),
+            get: fn ($value) => $value ?? config('user.default_timezone'),
         );
     }
 

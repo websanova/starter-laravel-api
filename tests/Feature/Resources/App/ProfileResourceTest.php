@@ -40,12 +40,12 @@ test('plan data included when user has a plan', function () {
 });
 
 test('locale and timezone returned as stored when set', function () {
-    $user = User::factory()->create(['locale' => 'en', 'timezone' => 'Europe/London']);
+    $user = User::factory()->create(['locale' => 'en-US', 'timezone' => 'Europe/London']);
     $user->load(['plan.prices', 'subscriptions']);
 
     $resource = (new ProfileResource($user))->toArray(request());
 
-    expect($resource['locale'])->toBe('en');
+    expect($resource['locale'])->toBe('en-US');
     expect($resource['timezone'])->toBe('Europe/London');
 });
 

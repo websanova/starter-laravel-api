@@ -27,7 +27,7 @@ class UserFactory extends Factory
         return [
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'locale' => fake()->boolean() ? fake()->randomElement(config('app.supported_locales')) : null,
+            'locale' => fake()->boolean() ? fake()->randomElement(config('user.supported_locales')) : null,
             'timezone' => fake()->boolean() ? fake()->timezone() : null,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),

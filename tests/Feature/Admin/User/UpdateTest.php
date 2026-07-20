@@ -107,12 +107,12 @@ test('admin can update a user locale and timezone', function () {
     $target = User::factory()->create();
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$target->id}", [
-        'locale' => 'en',
+        'locale' => 'en-US',
         'timezone' => 'Europe/London',
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.locale', 'en')
+        ->assertJsonPath('data.locale', 'en-US')
         ->assertJsonPath('data.timezone', 'Europe/London');
 });
 

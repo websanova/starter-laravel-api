@@ -92,7 +92,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | The locales the application provides translations for. Used to resolve
-    | the closest match from the client's Accept-Language header.
+    | the closest match from the client's Accept-Language header. The first
+    | locale is used as the default when the header matches nothing.
     |
     */
 

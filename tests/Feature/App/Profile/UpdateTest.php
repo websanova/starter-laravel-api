@@ -30,11 +30,11 @@ test('user can update their locale', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->patchJson('/profile', [
-        'locale' => 'en',
+        'locale' => 'en-US',
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.locale', 'en');
+        ->assertJsonPath('data.locale', 'en-US');
 });
 
 test('user can update their timezone', function () {
