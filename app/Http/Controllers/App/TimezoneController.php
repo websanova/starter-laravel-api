@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use DateTimeZone;
+use App\Support\Timezone;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class TimezoneController extends Controller
 {
     /**
-     * Return the list of supported IANA timezone identifiers.
+     * Return the supported timezones as a value/label set.
      */
     public function index(): JsonResponse
     {
         return response()->json([
-            'data' => Cache::rememberForever('timezones', fn () => DateTimeZone::listIdentifiers()),
+            'data' => Timezone::options(),
         ]);
     }
 }

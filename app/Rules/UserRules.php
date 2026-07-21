@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use App\Enums\UserRole;
 use App\Enums\UserSort;
+use App\Support\Timezone;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -87,7 +88,7 @@ class UserRules
      */
     public static function timezone(): array
     {
-        return ['sometimes', 'nullable', 'timezone'];
+        return ['sometimes', 'nullable', 'string', Rule::in(Timezone::identifiers())];
     }
 
     /**

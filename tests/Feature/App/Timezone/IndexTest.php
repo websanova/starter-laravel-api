@@ -11,7 +11,7 @@ test('guest can retrieve timezones', function () {
     expect($response->json('data'))
         ->toBeArray()
         ->not->toBeEmpty()
-        ->toContain('America/New_York');
+        ->toContain(['value' => 'America/New_York', 'label' => 'America/New York']);
 });
 
 test('timezones are available on the admin path', function () {
@@ -20,5 +20,5 @@ test('timezones are available on the admin path', function () {
     $response->assertStatus(200)
         ->assertJsonStructure(['data']);
 
-    expect($response->json('data'))->toContain('America/New_York');
+    expect($response->json('data'))->toContain(['value' => 'America/New_York', 'label' => 'America/New York']);
 });
