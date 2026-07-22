@@ -26,6 +26,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
+    Route::get('/profile', [App\Http\Controllers\App\ProfileController::class, 'show']);
+
     Route::post('/verify', [App\Http\Controllers\App\VerificationController::class, 'verify']);
     Route::post('/verify/resend', [App\Http\Controllers\App\VerificationController::class, 'resend']);
 
@@ -38,7 +40,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
         Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
 
-        Route::get('/profile', [App\Http\Controllers\App\ProfileController::class, 'show']);
         Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
         Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
         Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
