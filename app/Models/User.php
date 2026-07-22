@@ -7,6 +7,7 @@ use App\Enums\SortDirection;
 use App\Enums\StoragePath;
 use App\Enums\UserRole;
 use App\Enums\UserSort;
+use App\Enums\VerificationMode;
 use App\Models\Concerns\HasTrashedScope;
 use App\Models\Concerns\ManagesSubscription;
 use App\Models\Concerns\Searchable;
@@ -167,6 +168,24 @@ class User extends Authenticatable implements HasLocalePreference
             get: fn () => $this->avatar
                 ? Storage::url($this->avatar)
                 : null,
+        );
+    }
+
+    /**
+     * Determine whether the user must verify before accessing protected routes.
+     */
+    protected function isVerificationRequired(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (config('verification.mode') !== VerificationMode::Required || $this->email_verified_at) {
+                    return false;
+                }
+
+                $gracePeriod = config('verification.grace_period');
+
+                return !($gracePeriod && $this->created_at->diffInSeconds(now()) < $gracePeriod);
+            },
         );
     }
 

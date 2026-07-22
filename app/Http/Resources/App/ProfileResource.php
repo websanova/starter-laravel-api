@@ -22,6 +22,7 @@ class ProfileResource extends JsonResource
             'is_on_grace_period' => $this->is_on_grace_period,
             'is_on_trial' => $this->is_on_trial,
             'is_subscribed' => $this->is_subscribed,
+            'is_verification_required' => $this->is_verification_required,
             'last_name' => $this->last_name,
             'locale' => $this->locale,
             'plan' => [

@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\VerificationMode;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,21 +13,7 @@ class EnsureVerified
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $mode = config('verification.mode');
-
-        if ($mode !== VerificationMode::Required) {
-            return $next($request);
-        }
-
-        $user = $request->user();
-
-        if (!$user->email_verified_at) {
-            $gracePeriod = config('verification.grace_period');
-
-            if ($gracePeriod && $user->created_at->diffInSeconds(now()) < $gracePeriod) {
-                return $next($request);
-            }
-
+        if ($request->user()->is_verification_required) {
             return response()->json([
                 'message' => __('responses.auth.unverified'),
             ], 403);
