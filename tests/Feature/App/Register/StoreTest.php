@@ -115,4 +115,59 @@ test('registration stores a supported non-default locale', function () {
     ]);
 });
 
+test('registration leaves timezone null when not provided', function () {
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'timezone' => null,
+    ]);
+});
+
+test('registration discards an unsupported timezone', function () {
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'timezone' => 'Mars/Olympus_Mons',
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'timezone' => null,
+    ]);
+});
+
+test('registration discards the default timezone so the user follows the configured default', function () {
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'timezone' => config('user.default_timezone'),
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'timezone' => null,
+    ]);
+});
+
+test('registration stores a supported non-default timezone', function () {
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'timezone' => 'Europe/Paris',
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'timezone' => 'Europe/Paris',
+    ]);
+});
+
 

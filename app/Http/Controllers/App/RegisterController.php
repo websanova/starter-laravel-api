@@ -29,6 +29,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'locale' => $request->locale,
+            'timezone' => $request->timezone,
         ]);
 
         $mode = config('verification.mode');
