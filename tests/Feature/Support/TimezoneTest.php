@@ -15,5 +15,5 @@ test('options returns a value/label set with underscores converted', function ()
     expect(Timezone::options())
         ->toBeArray()
         ->not->toBeEmpty()
-        ->toContain(['value' => 'America/New_York', 'label' => 'America/New York']);
+        ->toContain(['value' => 'America/New_York', 'label' => 'America / New York']);
 });
