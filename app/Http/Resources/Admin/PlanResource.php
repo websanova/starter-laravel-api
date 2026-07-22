@@ -16,16 +16,16 @@ class PlanResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'prices' => PriceResource::collection($this->prices),
-            'features' => $this->features,
-            'is_active' => $this->is_active,
-            'is_public' => $this->is_public,
-            'is_complimentary' => $this->is_complimentary,
-            'sort_order' => $this->sort_order,
             'created_at' => $this->created_at,
+            'features' => $this->features,
+            'id' => $this->id,
+            'is_active' => $this->is_active,
+            'is_complimentary' => $this->is_complimentary,
+            'is_public' => $this->is_public,
+            'name' => $this->name,
+            'prices' => PriceResource::collection($this->prices),
+            'slug' => $this->slug,
+            'sort_order' => $this->sort_order,
             'updated_at' => $this->updated_at,
         ];
     }

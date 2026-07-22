@@ -15,12 +15,12 @@ class PromotionCodeResource extends JsonResource
         $coupon = $this->resource->coupon;
 
         return [
-            'code' => $this->resource->code,
-            'percent_off' => $coupon->percent_off,
             'amount_off' => $coupon->amount_off,
+            'code' => $this->resource->code,
             'currency' => $coupon->currency,
             'duration' => $coupon->duration,
             'duration_in_months' => $coupon->duration_in_months,
+            'percent_off' => $coupon->percent_off,
         ];
     }
 }

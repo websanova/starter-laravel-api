@@ -13,12 +13,12 @@ class TagResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'created_at' => $this->created_at,
             'id' => $this->id,
-            'user_id' => $this->user_id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'user_id' => $this->user_id,
         ];
     }
 }

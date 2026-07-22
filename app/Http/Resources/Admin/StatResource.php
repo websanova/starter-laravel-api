@@ -15,10 +15,10 @@ class StatResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'calculated_at' => $this->calculated_at->toIso8601String(),
             'group' => $this->group,
             'key' => $this->key,
             'value' => $this->value,
-            'calculated_at' => $this->calculated_at->toIso8601String(),
         ];
     }
 }

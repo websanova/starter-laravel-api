@@ -16,15 +16,15 @@ class BookmarkResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'category_id' => $this->category_id,
-            'url' => $this->url,
-            'title' => $this->title,
+            'created_at' => $this->created_at,
             'description' => $this->description,
+            'id' => $this->id,
             'is_favorited' => $this->is_favorited,
             'tags' => TagResource::collection($this->whenLoaded('tags')),
-            'created_at' => $this->created_at,
+            'title' => $this->title,
             'updated_at' => $this->updated_at,
+            'url' => $this->url,
         ];
     }
 }

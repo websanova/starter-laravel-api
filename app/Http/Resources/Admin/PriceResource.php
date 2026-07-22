@@ -13,11 +13,11 @@ class PriceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'amount' => $this->amount,
             'id' => $this->id,
             'interval' => $this->interval,
-            'stripe_product_id' => $this->stripe_product_id,
             'stripe_price_id' => $this->stripe_price_id,
-            'amount' => $this->amount,
+            'stripe_product_id' => $this->stripe_product_id,
         ];
     }
 }
