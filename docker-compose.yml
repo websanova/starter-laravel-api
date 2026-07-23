@@ -11,9 +11,11 @@ services:
             - .:/var/www/html
         depends_on:
             - mysql
+            - redis
         environment:
             DB_HOST: mysql
             DB_PORT: 3306
+            REDIS_HOST: redis
     mysql:
         image: mysql:8.0
         ports:
@@ -25,6 +27,10 @@ services:
             MYSQL_ROOT_PASSWORD: password
         volumes:
             - mysql_data:/var/lib/mysql
+    redis:
+        image: redis:7-alpine
+        ports:
+            - "6379:6379"
 
 volumes:
     mysql_data:
