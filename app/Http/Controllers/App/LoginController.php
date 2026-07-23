@@ -25,6 +25,7 @@ class LoginController extends Controller
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => [__('responses.auth.failed')],
+                'password' => [__('responses.auth.failed')],
             ]);
         }
 
@@ -35,6 +36,7 @@ class LoginController extends Controller
             if ($gracePeriod === 0 || Carbon::now()->greaterThan($deadline)) {
                 throw ValidationException::withMessages([
                     'email' => [__('responses.auth.deleted')],
+                    'password' => [__('responses.auth.deleted')],
                 ]);
             }
 
