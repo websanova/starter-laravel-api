@@ -36,7 +36,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => UserRules::firstName(false),
+            'first_name' => UserRules::firstName(),
             'last_name' => UserRules::lastName(false),
             'email' => UserRules::emailNew(),
             'password' => UserRules::passwordNew(),
