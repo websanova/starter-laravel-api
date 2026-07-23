@@ -43,6 +43,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Query Logging
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, executed database queries are logged and appended to the
+    | JSON response body under a "queries" key. Intended for local debugging
+    | only. Never enable this in production.
+    |
+    */
+
+    'queries' => (bool) env('APP_QUERIES', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |
