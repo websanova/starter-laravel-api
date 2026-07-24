@@ -9,10 +9,7 @@ test('guest can retrieve settings', function () {
         ->assertExactJson([
             'data' => [
                 'verification_code_length' => config('verification.code_length'),
-                'verification_required' => [
-                    'email' => true,
-                    'phone' => false,
-                ],
+                'verification_required' => ['email'],
             ],
         ]);
 });
@@ -24,10 +21,7 @@ test('settings are available on the admin path', function () {
         ->assertExactJson([
             'data' => [
                 'verification_code_length' => config('verification.code_length'),
-                'verification_required' => [
-                    'email' => true,
-                    'phone' => false,
-                ],
+                'verification_required' => ['email'],
             ],
         ]);
 });
