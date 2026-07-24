@@ -13,7 +13,9 @@ class SettingController extends Controller
     public function show(): JsonResponse
     {
         return response()->json([
-            'data' => [],
+            'data' => [
+                'verification_code_length' => config('verification.code_length'),
+            ],
         ]);
     }
 }
