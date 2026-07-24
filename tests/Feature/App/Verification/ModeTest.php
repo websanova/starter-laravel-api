@@ -110,7 +110,7 @@ test('auto mode allows all users to access protected routes', function () {
 
 test('grace period allows unverified user within window', function () {
     config(['verification.mode.email' => VerificationMode::Required]);
-    config(['verification.grace_period.email' => 3600]);
+    config(['verification.grace_period.email' => 60]);
 
     $user = User::factory()->unverified()->create();
 
@@ -121,10 +121,10 @@ test('grace period allows unverified user within window', function () {
 
 test('grace period blocks unverified user after window expires', function () {
     config(['verification.mode.email' => VerificationMode::Required]);
-    config(['verification.grace_period.email' => 3600]);
+    config(['verification.grace_period.email' => 60]);
 
     $user = User::factory()->unverified()->create();
-    $user->forceFill(['created_at' => now()->subSeconds(3601)])->save();
+    $user->forceFill(['created_at' => now()->subMinutes(61)])->save();
 
     $response = $this->actingAs($user)->getJson('/profile');
 

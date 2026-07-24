@@ -84,6 +84,6 @@ trait ManagesVerification
 
         $gracePeriod = config("verification.grace_period.{$channel->value}");
 
-        return !($gracePeriod && $this->created_at->diffInSeconds(now()) < $gracePeriod);
+        return !($gracePeriod && $this->created_at->diffInMinutes(now()) < $gracePeriod);
     }
 }

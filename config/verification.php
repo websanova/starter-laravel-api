@@ -25,7 +25,7 @@ return [
 
     'mode' => [
         'email' => VerificationMode::from(env('VERIFICATION_EMAIL_MODE', 'required')),
-        'phone' => VerificationMode::from(env('VERIFICATION_PHONE_MODE', 'disabled')),
+        'phone' => VerificationMode::from(env('VERIFICATION_PHONE_MODE', 'required')),
     ],
 
     /*
@@ -33,10 +33,12 @@ return [
     | Grace Period
     |--------------------------------------------------------------------------
     |
-    | The number of seconds after registration during which an unverified
+    | The number of minutes after registration during which an unverified
     | user can still access protected routes. Only applies when the
     | channel's mode is "required". Set to null or 0 to require
-    | immediate verification.
+    | immediate verification. Minutes rather than seconds because these
+    | windows are typically hours or days, unlike the code timings below
+    | which stay in seconds.
     |
     | When both channels are required, staggering the grace periods avoids
     | hitting the user with two prompts at signup. Typically one channel
@@ -49,7 +51,7 @@ return [
 
     'grace_period' => [
         'email' => env('VERIFICATION_EMAIL_GRACE_PERIOD', null),
-        'phone' => env('VERIFICATION_PHONE_GRACE_PERIOD', null),
+        'phone' => env('VERIFICATION_PHONE_GRACE_PERIOD', 600),
     ],
 
     /*
