@@ -14,33 +14,28 @@ use Illuminate\Support\Facades\Hash;
 class VerificationService
 {
     /**
-     * Send a verification code for the given channel, or for every active
-     * channel the user has an identifier for when no channel is given.
+     * Send a verification code for the given channel.
      */
-    public function send(User $user, ?VerificationChannel $channel = null): void
+    public function send(User $user, VerificationChannel $channel): void
     {
-        $channels = $channel ? [$channel] : VerificationChannel::cases();
-
-        foreach ($channels as $channel) {
-            if (config("verification.mode.{$channel->value}") === VerificationMode::Disabled) {
-                continue;
-            }
-
-            if (!$user->{$channel->field()}) {
-                continue;
-            }
-
-            $code = $this->generateCode();
-
-            VerificationCode::create([
-                'user_id' => $user->id,
-                'channel' => $channel,
-                'code' => Hash::make($code),
-                'expires_at' => now()->addSeconds(config('verification.code_expiry')),
-            ]);
-
-            $user->notify(new VerificationCodeNotification($channel, $code));
+        if (config("verification.mode.{$channel->value}") === VerificationMode::Disabled) {
+            return;
         }
+
+        if (!$user->{$channel->field()}) {
+            return;
+        }
+
+        $code = $this->generateCode();
+
+        VerificationCode::create([
+            'user_id' => $user->id,
+            'channel' => $channel,
+            'code' => Hash::make($code),
+            'expires_at' => now()->addSeconds(config('verification.code_expiry')),
+        ]);
+
+        $user->notify(new VerificationCodeNotification($channel, $code));
     }
 
     /**
