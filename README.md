@@ -22,6 +22,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Per-channel modes: each channel independently disabled, auto, or required
 - Optional per-channel grace period before enforcement
 - Email fully wired, SMS scaffolded (needs a phone-capture flow)
+- Channels toggle on/off on the fly without locking out existing users. Gating tracks whether the user actually has the identifier, so a previously registered user with no phone bypasses a newly-required phone channel. Email is always collected at registration so it enforces immediately. Forcing existing phone-less users to add a number is out of scope, add a phone-required interrupt later if you need it.
 
 **Password Reset and Email Change**
 - Token-based two-step flows with frontend URL redirect
