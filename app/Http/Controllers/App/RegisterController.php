@@ -8,16 +8,11 @@ use App\Http\Requests\App\Register\StoreRequest;
 use App\Http\Resources\App\ProfileResource;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
-use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function __construct(
-        protected VerificationService $verificationService
-    ) {}
-
     /**
      * Register a new user and return a Sanctum token.
      */
@@ -34,11 +29,9 @@ class RegisterController extends Controller
 
         $mode = config('verification.mode');
 
-        match ($mode) {
-            VerificationMode::Auto => $user->update(['email_verified_at' => now()]),
-            VerificationMode::Required => $this->verificationService->send($user),
-            VerificationMode::Disabled => null,
-        };
+        if ($mode === VerificationMode::Auto) {
+            $user->update(['email_verified_at' => now()]);
+        }
 
         if ($mode !== VerificationMode::Required) {
             $user->notify(new WelcomeNotification());

@@ -17,7 +17,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Configurable token expiration
 - Soft-deleted accounts auto-restore on login during grace period
 
-**Email Verification**
+**Account Verification**
 - Code-based, not signed URLs, works with any client
 - Three modes: disabled, auto, required
 - Optional grace period before enforcement

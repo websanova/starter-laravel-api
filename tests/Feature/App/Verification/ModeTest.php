@@ -8,7 +8,7 @@ use App\Notifications\VerificationCodeNotification;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Notification;
 
-test('required mode sends verification on register', function () {
+test('required mode does not send verification on register', function () {
     Notification::fake();
     config(['verification.mode' => VerificationMode::Required]);
 
@@ -24,7 +24,7 @@ test('required mode sends verification on register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     expect($user->email_verified_at)->toBeNull();
-    Notification::assertSentTo($user, VerificationCodeNotification::class);
+    Notification::assertNotSentTo($user, VerificationCodeNotification::class);
 });
 
 test('auto mode verifies user immediately on register', function () {
