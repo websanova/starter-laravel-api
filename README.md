@@ -19,9 +19,9 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 **Account Verification**
 - Code-based, not signed URLs, works with any client
-- Three modes: disabled, auto, required
-- Optional grace period before enforcement
-- Multi-channel ready (email now, SMS later)
+- Per-channel modes: each channel independently disabled, auto, or required
+- Optional per-channel grace period before enforcement
+- Email fully wired, SMS scaffolded (needs a phone-capture flow)
 
 **Password Reset and Email Change**
 - Token-based two-step flows with frontend URL redirect
