@@ -62,7 +62,7 @@ class VerificationService
         }
 
         $record->update(['verified_at' => now()]);
-        $user->update([$channel->column() => now()]);
+        $user->update([$channel->verifiedAtField() => now()]);
 
         if (!$user->hasPendingVerification()) {
             $user->notify(new WelcomeNotification());

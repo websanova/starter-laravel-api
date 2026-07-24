@@ -19,9 +19,9 @@ enum VerificationChannel: string
     }
 
     /**
-     * The user column recording when this channel was verified.
+     * The user field recording when this channel was verified.
      */
-    public function column(): string
+    public function verifiedAtField(): string
     {
         return match ($this) {
             self::Email => 'email_verified_at',

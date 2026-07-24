@@ -54,14 +54,12 @@ trait ManagesVerification
 
     /**
      * Determine whether the given channel needs to be verified. A channel
-     * is pending when its mode is required, the user has the identifier,
-     * and it has not been verified yet.
+     * is pending when its mode is required and it has not been verified yet.
      */
     protected function channelVerificationPending(VerificationChannel $channel): bool
     {
         return config("verification.mode.{$channel->value}") === VerificationMode::Required
-            && $this->{$channel->field()}
-            && !$this->{$channel->column()};
+            && !$this->{$channel->verifiedAtField()};
     }
 
     /**
