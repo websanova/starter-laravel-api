@@ -2,6 +2,7 @@
 
 uses()->group('app.register.store');
 
+use App\Enums\VerificationMode;
 use App\Models\User;
 
 test('user can register with valid data', function () {
@@ -167,6 +168,65 @@ test('registration stores a supported non-default timezone', function () {
     $this->assertDatabaseHas('users', [
         'email' => 'test@example.com',
         'timezone' => 'Europe/Paris',
+    ]);
+});
+
+test('registration ignores phone when the phone channel is disabled', function () {
+    config(['verification.mode.phone' => VerificationMode::Disabled]);
+
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'phone' => '15551234567',
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'phone' => null,
+    ]);
+});
+
+test('registration requires phone when the phone channel is enabled', function () {
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $response = $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['phone']);
+});
+
+test('registration fails with an invalid phone', function () {
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $response = $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'phone' => 'not-a-phone',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['phone']);
+});
+
+test('registration stores phone when the phone channel is enabled', function () {
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $this->postJson('/register', [
+        'email' => 'test@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'phone' => '15551234567',
+    ])->assertStatus(201);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'test@example.com',
+        'phone' => '15551234567',
     ]);
 });
 

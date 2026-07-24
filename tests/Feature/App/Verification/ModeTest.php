@@ -24,6 +24,7 @@ test('required mode does not send verification on register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     expect($user->email_verified_at)->toBeNull();
+    Notification::assertSentTo($user, WelcomeNotification::class);
     Notification::assertNotSentTo($user, VerificationCodeNotification::class);
 });
 

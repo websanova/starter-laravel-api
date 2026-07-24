@@ -7,7 +7,6 @@ use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
 use App\Notifications\VerificationCodeNotification;
-use App\Notifications\WelcomeNotification;
 use App\Support\ServiceResult;
 use Illuminate\Support\Facades\Hash;
 
@@ -63,10 +62,6 @@ class VerificationService
 
         $record->update(['verified_at' => now()]);
         $user->update([$channel->verifiedAtField() => now()]);
-
-        if (!$user->is_verification_pending) {
-            $user->notify(new WelcomeNotification());
-        }
 
         return ServiceResult::success();
     }

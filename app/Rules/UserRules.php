@@ -128,6 +128,19 @@ class UserRules
     }
 
     /**
+     * Validation rules for the phone field.
+     */
+    public static function phone(bool $required = false): array
+    {
+        return [
+            $required ? 'required' : 'sometimes',
+            'string',
+            'max:20',
+            'regex:/^\+?[1-9]\d{6,14}$/',
+        ];
+    }
+
+    /**
      * Validation rules for the role field as an array item.
      */
     public static function role(): array

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Enums\VerificationChannel;
 use App\Enums\VerificationMode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\Register\StoreRequest;
@@ -22,18 +23,19 @@ class RegisterController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'phone' => $request->validated('phone'),
             'password' => Hash::make($request->password),
             'locale' => $request->locale,
             'timezone' => $request->timezone,
         ]);
 
-        if (config('verification.mode.email') === VerificationMode::Auto) {
-            $user->update(['email_verified_at' => now()]);
+        foreach (VerificationChannel::cases() as $channel) {
+            if (config("verification.mode.{$channel->value}") === VerificationMode::Auto && $user->{$channel->field()}) {
+                $user->update([$channel->verifiedAtField() => now()]);
+            }
         }
 
-        if (!$user->is_verification_pending) {
-            $user->notify(new WelcomeNotification());
-        }
+        $user->notify(new WelcomeNotification());
 
         $token = $user->createToken('auth')->plainTextToken;
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\App\Register;
 
+use App\Enums\VerificationMode;
 use App\Rules\UserRules;
 use App\Support\Timezone;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,7 +36,7 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'first_name' => UserRules::firstName(),
             'last_name' => UserRules::lastName(false),
             'email' => UserRules::emailNew(),
@@ -43,6 +44,12 @@ class StoreRequest extends FormRequest
             'locale' => ['nullable', 'string'],
             'timezone' => ['nullable', 'string'],
         ];
+
+        if (config('verification.mode.phone') !== VerificationMode::Disabled) {
+            $rules['phone'] = UserRules::phone(true);
+        }
+
+        return $rules;
     }
 }
 
