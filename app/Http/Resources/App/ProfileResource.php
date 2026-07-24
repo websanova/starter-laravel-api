@@ -19,11 +19,10 @@ class ProfileResource extends JsonResource
             'first_name' => $this->first_name,
             'id' => $this->id,
             'is_complimentary' => $this->is_complimentary,
-            'is_email_verification_required' => $this->is_email_verification_required,
             'is_on_grace_period' => $this->is_on_grace_period,
             'is_on_trial' => $this->is_on_trial,
-            'is_phone_verification_required' => $this->is_phone_verification_required,
             'is_subscribed' => $this->is_subscribed,
+            'is_verification_pending' => $this->is_verification_pending,
             'is_verification_required' => $this->is_verification_required,
             'last_name' => $this->last_name,
             'locale' => $this->locale,
@@ -37,6 +36,8 @@ class ProfileResource extends JsonResource
             'timezone' => $this->timezone,
             'trial_ends_at' => $this->trial_ends_at,
             'updated_at' => $this->updated_at,
+            'verification_pending' => $this->verification_pending,
+            'verification_required' => $this->verification_required,
         ];
     }
 }

@@ -31,7 +31,7 @@ class RegisterController extends Controller
             $user->update(['email_verified_at' => now()]);
         }
 
-        if (!$user->hasPendingVerification()) {
+        if (!$user->is_verification_pending) {
             $user->notify(new WelcomeNotification());
         }
 

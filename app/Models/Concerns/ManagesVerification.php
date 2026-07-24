@@ -9,36 +9,43 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 trait ManagesVerification
 {
     /**
-     * Determine whether the user must verify their email before accessing
-     * protected routes.
+     * The channels currently blocking access to protected routes, taking
+     * each channel's grace period into account.
      */
-    protected function isEmailVerificationRequired(): Attribute
+    protected function verificationRequired(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->channelVerificationRequired(VerificationChannel::Email),
+            get: fn () => collect(VerificationChannel::cases())
+                ->filter(fn (VerificationChannel $channel) => $this->channelVerificationRequired($channel))
+                ->map(fn (VerificationChannel $channel) => $channel->value)
+                ->values()
+                ->all(),
         );
     }
 
     /**
-     * Determine whether the user must verify their phone before accessing
-     * protected routes.
+     * The channels that still need to be verified, ignoring the grace
+     * period.
      */
-    protected function isPhoneVerificationRequired(): Attribute
+    protected function verificationPending(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->channelVerificationRequired(VerificationChannel::Phone),
+            get: fn () => collect(VerificationChannel::cases())
+                ->filter(fn (VerificationChannel $channel) => $this->channelVerificationPending($channel))
+                ->map(fn (VerificationChannel $channel) => $channel->value)
+                ->values()
+                ->all(),
         );
     }
 
     /**
-     * Determine whether the user must verify any channel before accessing
+     * Determine whether any channel is currently blocking access to
      * protected routes.
      */
     protected function isVerificationRequired(): Attribute
     {
         return Attribute::make(
-            get: fn () => collect(VerificationChannel::cases())
-                ->contains(fn (VerificationChannel $channel) => $this->channelVerificationRequired($channel)),
+            get: fn () => !empty($this->verification_required),
         );
     }
 
@@ -46,19 +53,22 @@ trait ManagesVerification
      * Determine whether any channel still needs to be verified, ignoring
      * the grace period.
      */
-    public function hasPendingVerification(): bool
+    protected function isVerificationPending(): Attribute
     {
-        return collect(VerificationChannel::cases())
-            ->contains(fn (VerificationChannel $channel) => $this->channelVerificationPending($channel));
+        return Attribute::make(
+            get: fn () => !empty($this->verification_pending),
+        );
     }
 
     /**
      * Determine whether the given channel needs to be verified. A channel
-     * is pending when its mode is required and it has not been verified yet.
+     * is pending when its mode is required, the user has the identifier,
+     * and it has not been verified yet.
      */
     protected function channelVerificationPending(VerificationChannel $channel): bool
     {
         return config("verification.mode.{$channel->value}") === VerificationMode::Required
+            && $this->{$channel->field()}
             && !$this->{$channel->verifiedAtField()};
     }
 

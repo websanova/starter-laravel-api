@@ -141,14 +141,14 @@ test('no grace period blocks unverified user immediately', function () {
     $response->assertStatus(403);
 });
 
-test('phone required blocks user without phone', function () {
+test('phone required does not block user without phone', function () {
     config(['verification.mode.phone' => VerificationMode::Required]);
 
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->getJson('/profile');
 
-    $response->assertStatus(403);
+    $response->assertStatus(200);
 });
 
 test('phone required blocks user with unverified phone', function () {
