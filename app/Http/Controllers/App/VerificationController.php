@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Enums\VerificationChannel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\Verification\ResendRequest;
 use App\Http\Requests\App\Verification\VerifyRequest;
@@ -21,7 +22,11 @@ class VerificationController extends Controller
      */
     public function verify(VerifyRequest $request): JsonResponse
     {
-        $result = $this->verificationService->verify($request->user(), $request->code);
+        $result = $this->verificationService->verify(
+            $request->user(),
+            $request->code,
+            VerificationChannel::from($request->channel)
+        );
 
         if (!$result->success) {
             throw ValidationException::withMessages([
@@ -37,11 +42,13 @@ class VerificationController extends Controller
      */
     public function resend(ResendRequest $request): JsonResponse
     {
-        if (!$this->verificationService->canResend($request->user())) {
+        $channel = VerificationChannel::from($request->channel);
+
+        if (!$this->verificationService->canResend($request->user(), $channel)) {
             throw new TooManyRequestsHttpException(null, __('responses.verification.throttled'));
         }
 
-        $this->verificationService->send($request->user());
+        $this->verificationService->send($request->user(), $channel);
 
         return response()->json(['message' => __('responses.verification.sent')]);
     }

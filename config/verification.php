@@ -9,27 +9,23 @@ return [
     | Verification Mode
     |--------------------------------------------------------------------------
     |
-    | Controls how user verification behaves.
+    | Controls how verification behaves per channel. A channel is active
+    | when its mode is not "disabled".
     | - "disabled": no verification sent or enforced
-    | - "auto": user is automatically marked verified on register
+    | - "auto": the channel is automatically marked verified
     | - "required": user must verify before accessing protected routes
     |
-    */
-
-    'mode' => VerificationMode::from(env('VERIFICATION_MODE', 'required')),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Verification Channels
-    |--------------------------------------------------------------------------
-    |
-    | The channels through which the verification code is delivered.
-    | One code is generated and sent to all enabled channels.
+    | NOTE: Phone is not implemented out of the box as a registration
+    | field. Enabling it at signup means adding phone capture to the
+    | register flow. Enabling it later instead means building a phone
+    | capture and verify flow for existing users. Either way the plumbing
+    | here (channel modes, codes, stamping) is already in place.
     |
     */
 
-    'channels' => [
-        'email',
+    'mode' => [
+        'email' => VerificationMode::from(env('VERIFICATION_EMAIL_MODE', 'required')),
+        'phone' => VerificationMode::from(env('VERIFICATION_PHONE_MODE', 'disabled')),
     ],
 
     /*
@@ -38,12 +34,23 @@ return [
     |--------------------------------------------------------------------------
     |
     | The number of seconds after registration during which an unverified
-    | user can still access protected routes. Only applies when mode is
-    | "required". Set to null or 0 to require immediate verification.
+    | user can still access protected routes. Only applies when the
+    | channel's mode is "required". Set to null or 0 to require
+    | immediate verification.
+    |
+    | When both channels are required, staggering the grace periods avoids
+    | hitting the user with two prompts at signup. Typically one channel
+    | is verified up front with no grace period (usually email) and the
+    | other gets a grace period so it kicks in later. Two grace periods
+    | spread apart also works. Ultimately it is up to the app and how
+    | strictly it wants to confirm each channel.
     |
     */
 
-    'grace_period' => env('VERIFICATION_GRACE_PERIOD', null),
+    'grace_period' => [
+        'email' => env('VERIFICATION_EMAIL_GRACE_PERIOD', null),
+        'phone' => env('VERIFICATION_PHONE_GRACE_PERIOD', null),
+    ],
 
     /*
     |--------------------------------------------------------------------------

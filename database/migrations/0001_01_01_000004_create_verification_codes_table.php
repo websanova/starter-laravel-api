@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('channel');
             $table->string('code');
             $table->unsignedTinyInteger('attempts')->default(0);
             $table->timestamp('expires_at');

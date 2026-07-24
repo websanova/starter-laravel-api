@@ -3,7 +3,7 @@
 return [
 
     'auth.failed' => 'The provided credentials are incorrect.',
-    'auth.unverified' => 'Your email address is not verified.',
+    'auth.unverified' => 'Your account is not verified.',
     'auth.throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'auth.deleted' => 'This account has been deleted.',
     'auth.password_reset_required' => 'You must update your password before continuing.',
@@ -18,7 +18,7 @@ return [
 
     'password.updated' => 'Your password has been updated.',
 
-    'verification.verified' => 'Email verified successfully.',
+    'verification.verified' => 'Verified successfully.',
     'verification.sent' => 'Verification code sent.',
     'verification.throttled' => 'Please wait before requesting a new code.',
     'verification.invalid_code' => 'The verification code is incorrect.',

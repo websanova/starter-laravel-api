@@ -7,9 +7,9 @@ use App\Enums\SortDirection;
 use App\Enums\StoragePath;
 use App\Enums\UserRole;
 use App\Enums\UserSort;
-use App\Enums\VerificationMode;
 use App\Models\Concerns\HasTrashedScope;
 use App\Models\Concerns\ManagesSubscription;
+use App\Models\Concerns\ManagesVerification;
 use App\Models\Concerns\Searchable;
 use App\Notifications\ResetPasswordNotification;
 use App\Observers\SearchableObserver;
@@ -38,7 +38,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasLocalePreference
 {
     /** @use HasFactory<UserFactory> */
-    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, ManagesSubscription, Notifiable, Searchable, SoftDeletes;
+    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, ManagesSubscription, ManagesVerification, Notifiable, Searchable, SoftDeletes;
 
     protected $guard_name = 'api';
 
@@ -64,6 +64,8 @@ class User extends Authenticatable implements HasLocalePreference
         'timezone',
         'email',
         'email_verified_at',
+        'phone',
+        'phone_verified_at',
         'password',
         'avatar',
         'plan_id',
@@ -91,6 +93,7 @@ class User extends Authenticatable implements HasLocalePreference
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
             'password' => 'hashed',
             'is_password_reset_required' => 'boolean',
@@ -168,24 +171,6 @@ class User extends Authenticatable implements HasLocalePreference
             get: fn () => $this->avatar
                 ? Storage::url($this->avatar)
                 : null,
-        );
-    }
-
-    /**
-     * Determine whether the user must verify before accessing protected routes.
-     */
-    protected function isVerificationRequired(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                if (config('verification.mode') !== VerificationMode::Required || $this->email_verified_at) {
-                    return false;
-                }
-
-                $gracePeriod = config('verification.grace_period');
-
-                return !($gracePeriod && $this->created_at->diffInSeconds(now()) < $gracePeriod);
-            },
         );
     }
 

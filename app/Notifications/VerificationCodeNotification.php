@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\VerificationChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -11,15 +12,16 @@ class VerificationCodeNotification extends Notification
     use Queueable;
 
     public function __construct(
+        protected VerificationChannel $channel,
         protected string $code
     ) {}
 
     /**
-     * Map config channel names to Laravel notification channels.
+     * Map verification channel names to Laravel notification channels.
      */
     protected array $channelMap = [
         'email' => 'mail',
-        'sms' => 'vonage',
+        'phone' => 'vonage',
     ];
 
     /**
@@ -27,9 +29,7 @@ class VerificationCodeNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return collect(config('verification.channels'))
-            ->map(fn (string $channel) => $this->channelMap[$channel] ?? $channel)
-            ->all();
+        return [$this->channelMap[$this->channel->value] ?? $this->channel->value];
     }
 
     /**

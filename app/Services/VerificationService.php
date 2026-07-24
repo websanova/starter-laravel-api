@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\VerificationChannel;
 use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
@@ -13,31 +14,42 @@ use Illuminate\Support\Facades\Hash;
 class VerificationService
 {
     /**
-     * Send a verification code to the user via all configured channels.
+     * Send a verification code for the given channel, or for every active
+     * channel the user has an identifier for when no channel is given.
      */
-    public function send(User $user): void
+    public function send(User $user, ?VerificationChannel $channel = null): void
     {
-        if (config('verification.mode') === VerificationMode::Disabled) {
-            return;
+        $channels = $channel ? [$channel] : VerificationChannel::cases();
+
+        foreach ($channels as $channel) {
+            if (config("verification.mode.{$channel->value}") === VerificationMode::Disabled) {
+                continue;
+            }
+
+            if (!$user->{$channel->field()}) {
+                continue;
+            }
+
+            $code = $this->generateCode();
+
+            VerificationCode::create([
+                'user_id' => $user->id,
+                'channel' => $channel,
+                'code' => Hash::make($code),
+                'expires_at' => now()->addSeconds(config('verification.code_expiry')),
+            ]);
+
+            $user->notify(new VerificationCodeNotification($channel, $code));
         }
-
-        $code = $this->generateCode();
-
-        VerificationCode::create([
-            'user_id' => $user->id,
-            'code' => Hash::make($code),
-            'expires_at' => now()->addSeconds(config('verification.code_expiry')),
-        ]);
-
-        $user->notify(new VerificationCodeNotification($code));
     }
 
     /**
-     * Verify the code for the given user.
+     * Verify the code for the given user and channel.
      */
-    public function verify(User $user, string $code): ServiceResult
+    public function verify(User $user, string $code, VerificationChannel $channel): ServiceResult
     {
         $record = VerificationCode::where('user_id', $user->id)
+            ->where('channel', $channel)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
             ->where('attempts', '<', config('verification.max_attempts'))
@@ -55,18 +67,23 @@ class VerificationService
         }
 
         $record->update(['verified_at' => now()]);
-        $user->update(['email_verified_at' => now()]);
-        $user->notify(new WelcomeNotification());
+        $user->update([$channel->column() => now()]);
+
+        if (!$user->hasPendingVerification()) {
+            $user->notify(new WelcomeNotification());
+        }
 
         return ServiceResult::success();
     }
 
     /**
-     * Check if the user can request a new code (throttle check).
+     * Check if the user can request a new code for the given channel
+     * (throttle check).
      */
-    public function canResend(User $user): bool
+    public function canResend(User $user, VerificationChannel $channel): bool
     {
         $latest = VerificationCode::where('user_id', $user->id)
+            ->where('channel', $channel)
             ->latest()
             ->first();
 

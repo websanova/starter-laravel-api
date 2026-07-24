@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use App\Enums\SortDirection;
 use App\Enums\TrashedFilter;
+use App\Enums\VerificationChannel;
 use Illuminate\Validation\Rule;
 
 class SharedRules
@@ -54,6 +55,14 @@ class SharedRules
     public static function trashed(): array
     {
         return ['sometimes', 'string', Rule::enum(TrashedFilter::class)];
+    }
+
+    /**
+     * Validation rules for the verification channel field.
+     */
+    public static function verificationChannel(): array
+    {
+        return ['required', 'string', Rule::enum(VerificationChannel::class)];
     }
 
     /**

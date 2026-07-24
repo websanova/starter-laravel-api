@@ -3,7 +3,7 @@
 return [
 
     'auth.failed' => 'Les informations d identification fournies sont incorrectes.',
-    'auth.unverified' => 'Votre adresse courriel n est pas verifiee.',
+    'auth.unverified' => 'Votre compte n est pas verifie.',
     'auth.throttle' => 'Trop de tentatives de connexion. Veuillez reessayer dans :seconds secondes.',
     'auth.deleted' => 'Ce compte a ete supprime.',
     'auth.password_reset_required' => 'Vous devez mettre a jour votre mot de passe avant de continuer.',
@@ -18,7 +18,7 @@ return [
 
     'password.updated' => 'Votre mot de passe a ete mis a jour.',
 
-    'verification.verified' => 'Adresse courriel verifiee avec succes.',
+    'verification.verified' => 'Verifie avec succes.',
     'verification.sent' => 'Code de verification envoye.',
     'verification.throttled' => 'Veuillez patienter avant de demander un nouveau code.',
     'verification.invalid_code' => 'Le code de verification est incorrect.',

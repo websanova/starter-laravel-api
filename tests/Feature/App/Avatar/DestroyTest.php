@@ -42,7 +42,7 @@ test('delete fails when unauthenticated', function () {
 });
 
 test('delete fails when unverified', function () {
-    config(['verification.mode' => VerificationMode::Required]);
+    config(['verification.mode.email' => VerificationMode::Required]);
 
     $user = User::factory()->unverified()->create();
 

@@ -27,13 +27,11 @@ class RegisterController extends Controller
             'timezone' => $request->timezone,
         ]);
 
-        $mode = config('verification.mode');
-
-        if ($mode === VerificationMode::Auto) {
+        if (config('verification.mode.email') === VerificationMode::Auto) {
             $user->update(['email_verified_at' => now()]);
         }
 
-        if ($mode !== VerificationMode::Required) {
+        if (!$user->hasPendingVerification()) {
             $user->notify(new WelcomeNotification());
         }
 

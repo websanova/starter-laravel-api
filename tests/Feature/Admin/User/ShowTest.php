@@ -15,7 +15,7 @@ test('super can view any user', function () {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data' => ['id', 'first_name', 'last_name', 'locale', 'timezone', 'email', 'role', 'is_password_reset_required', 'email_verified_at', 'last_active_at', 'created_at', 'updated_at', 'deleted_at'],
+            'data' => ['id', 'first_name', 'last_name', 'locale', 'timezone', 'email', 'phone', 'role', 'is_password_reset_required', 'email_verified_at', 'phone_verified_at', 'last_active_at', 'created_at', 'updated_at', 'deleted_at'],
         ]);
 });
 

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('timezone')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('phone')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
             $table->boolean('is_password_reset_required')->default(false);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\App\Verification;
 
+use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResendRequest extends FormRequest
@@ -11,7 +12,9 @@ class ResendRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'channel' => SharedRules::verificationChannel(),
+        ];
     }
 }
 

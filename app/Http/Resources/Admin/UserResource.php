@@ -31,6 +31,8 @@ class UserResource extends JsonResource
             'last_active_at' => $this->last_active_at,
             'last_name' => $this->last_name,
             'locale' => $this->locale,
+            'phone' => $this->phone,
+            'phone_verified_at' => $this->phone_verified_at,
             'plan' => $this->when($this->relationLoaded('plan'), fn () => [
                 'features' => $this->plan->features,
                 'id' => $this->plan->id,

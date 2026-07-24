@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Notification;
 
 test('required mode does not send verification on register', function () {
     Notification::fake();
-    config(['verification.mode' => VerificationMode::Required]);
+    config(['verification.mode.email' => VerificationMode::Required]);
 
     $response = $this->postJson('/register', [
         'first_name' => 'Test',
@@ -29,7 +29,7 @@ test('required mode does not send verification on register', function () {
 
 test('auto mode verifies user immediately on register', function () {
     Notification::fake();
-    config(['verification.mode' => VerificationMode::Auto]);
+    config(['verification.mode.email' => VerificationMode::Auto]);
 
     $response = $this->postJson('/register', [
         'first_name' => 'Test',
@@ -49,7 +49,7 @@ test('auto mode verifies user immediately on register', function () {
 
 test('disabled mode skips verification on register', function () {
     Notification::fake();
-    config(['verification.mode' => VerificationMode::Disabled]);
+    config(['verification.mode.email' => VerificationMode::Disabled]);
 
     $response = $this->postJson('/register', [
         'first_name' => 'Test',
@@ -68,7 +68,7 @@ test('disabled mode skips verification on register', function () {
 });
 
 test('required mode blocks unverified user from protected routes', function () {
-    config(['verification.mode' => VerificationMode::Required]);
+    config(['verification.mode.email' => VerificationMode::Required]);
 
     $user = User::factory()->unverified()->create();
 
@@ -78,7 +78,7 @@ test('required mode blocks unverified user from protected routes', function () {
 });
 
 test('required mode allows verified user to access protected routes', function () {
-    config(['verification.mode' => VerificationMode::Required]);
+    config(['verification.mode.email' => VerificationMode::Required]);
 
     $user = User::factory()->create();
 
@@ -88,7 +88,7 @@ test('required mode allows verified user to access protected routes', function (
 });
 
 test('disabled mode allows unverified user to access protected routes', function () {
-    config(['verification.mode' => VerificationMode::Disabled]);
+    config(['verification.mode.email' => VerificationMode::Disabled]);
 
     $user = User::factory()->unverified()->create();
 
@@ -98,7 +98,7 @@ test('disabled mode allows unverified user to access protected routes', function
 });
 
 test('auto mode allows all users to access protected routes', function () {
-    config(['verification.mode' => VerificationMode::Auto]);
+    config(['verification.mode.email' => VerificationMode::Auto]);
 
     $user = User::factory()->unverified()->create();
 
@@ -108,8 +108,8 @@ test('auto mode allows all users to access protected routes', function () {
 });
 
 test('grace period allows unverified user within window', function () {
-    config(['verification.mode' => VerificationMode::Required]);
-    config(['verification.grace_period' => 3600]);
+    config(['verification.mode.email' => VerificationMode::Required]);
+    config(['verification.grace_period.email' => 3600]);
 
     $user = User::factory()->unverified()->create();
 
@@ -119,8 +119,8 @@ test('grace period allows unverified user within window', function () {
 });
 
 test('grace period blocks unverified user after window expires', function () {
-    config(['verification.mode' => VerificationMode::Required]);
-    config(['verification.grace_period' => 3600]);
+    config(['verification.mode.email' => VerificationMode::Required]);
+    config(['verification.grace_period.email' => 3600]);
 
     $user = User::factory()->unverified()->create();
     $user->forceFill(['created_at' => now()->subSeconds(3601)])->save();
@@ -131,10 +131,30 @@ test('grace period blocks unverified user after window expires', function () {
 });
 
 test('no grace period blocks unverified user immediately', function () {
-    config(['verification.mode' => VerificationMode::Required]);
-    config(['verification.grace_period' => null]);
+    config(['verification.mode.email' => VerificationMode::Required]);
+    config(['verification.grace_period.email' => null]);
 
     $user = User::factory()->unverified()->create();
+
+    $response = $this->actingAs($user)->getJson('/profile');
+
+    $response->assertStatus(403);
+});
+
+test('phone required does not block user without phone', function () {
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->getJson('/profile');
+
+    $response->assertStatus(200);
+});
+
+test('phone required blocks user with unverified phone', function () {
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $user = User::factory()->create(['phone' => '15551234567']);
 
     $response = $this->actingAs($user)->getJson('/profile');
 

@@ -13,6 +13,7 @@ class VerifyRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'channel' => SharedRules::verificationChannel(),
             'code' => SharedRules::verificationCode(),
         ];
     }
