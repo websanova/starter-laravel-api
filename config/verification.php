@@ -25,7 +25,7 @@ return [
 
     'mode' => [
         'email' => VerificationMode::from(env('VERIFICATION_EMAIL_MODE', 'required')),
-        'phone' => VerificationMode::from(env('VERIFICATION_PHONE_MODE', 'required')),
+        'phone' => VerificationMode::from(env('VERIFICATION_PHONE_MODE', 'disabled')),
     ],
 
     /*
