@@ -36,6 +36,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     });
 
     Route::middleware(['verified', 'password-updated'])->group(function () {
+        Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);
+
         Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
         Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
