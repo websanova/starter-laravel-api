@@ -28,11 +28,8 @@ class NotificationController extends Controller
      */
     public function update(UpdateRequest $request, Notification $notification): JsonResponse
     {
-        if ($request->validated('read')) {
-            $notification->markAsRead();
-        } else {
-            $notification->markAsUnread();
-        }
+        // Required in validation.
+        $request->validated('read') ? $notification->markAsRead() : $notification->markAsUnread();
 
         return response()->json(null, 204);
     }
