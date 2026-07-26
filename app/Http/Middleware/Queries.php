@@ -23,9 +23,8 @@ class Queries
 
         $response = $next($request);
 
-        if ($response instanceof JsonResponse) {
-            $data = $response->getData(true);
-            $data['queries'] = DB::getQueryLog();
+        if ($response instanceof JsonResponse && is_object($data = $response->getData())) {
+            $data->queries = DB::getQueryLog();
             $response->setData($data);
         }
 
