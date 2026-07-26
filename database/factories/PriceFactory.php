@@ -25,6 +25,7 @@ class PriceFactory extends Factory
             'stripe_product_id' => 'prod_' . fake()->unique()->bothify('##??##'),
             'stripe_price_id' => 'price_' . fake()->unique()->bothify('##??##'),
             'amount' => fake()->numberBetween(500, 50000),
+            'currency' => config('cashier.currency'),
         ];
     }
 }

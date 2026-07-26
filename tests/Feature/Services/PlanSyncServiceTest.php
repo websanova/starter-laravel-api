@@ -24,7 +24,7 @@ test('sync succeeds when no prices have a product', function () {
     expect($result->success)->toBeTrue();
 });
 
-test('syncPrice populates the price id and amount from the stripe product', function () {
+test('syncPrice populates the price id, amount and currency from the stripe product', function () {
     $productId = config('subscription.stripe_products.pro.monthly');
 
     if (!$productId) {
@@ -42,6 +42,7 @@ test('syncPrice populates the price id and amount from the stripe product', func
     expect($result->success)->toBeTrue();
     expect($price->fresh()->stripe_price_id)->not->toBeNull();
     expect($price->fresh()->amount)->toBeGreaterThan(0);
+    expect($price->fresh()->currency)->not->toBeEmpty();
 });
 
 test('syncPrice returns an error when the stripe product does not exist', function () {

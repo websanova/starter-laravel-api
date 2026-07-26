@@ -32,6 +32,7 @@ return new class extends Migration
             $table->string('stripe_product_id')->nullable();
             $table->string('stripe_price_id')->nullable();
             $table->unsignedInteger('amount')->default(0);
+            $table->string('currency', 3);
             $table->timestamps();
 
             $table->unique(['plan_id', 'interval']);

@@ -14,6 +14,7 @@ class PriceResource extends JsonResource
     {
         return [
             'amount' => $this->amount,
+            'currency' => $this->currency,
             'id' => $this->id,
             'interval' => $this->interval,
             'stripe_price_id' => $this->stripe_price_id,

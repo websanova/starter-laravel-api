@@ -16,9 +16,12 @@ class PlanResource extends JsonResource
             'features' => $this->features,
             'id' => $this->id,
             'name' => $this->name,
-            'prices' => $this->prices->mapWithKeys(fn ($price) => [
-                $price->interval->value => $price->amount,
-            ]),
+            'prices' => (object) $this->prices->mapWithKeys(fn ($price) => [
+                $price->interval->value => [
+                    'amount' => $price->amount,
+                    'currency' => $price->currency,
+                ],
+            ])->all(),
             'slug' => $this->slug,
         ];
     }

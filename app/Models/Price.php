@@ -22,6 +22,7 @@ class Price extends Model
         'stripe_product_id',
         'stripe_price_id',
         'amount',
+        'currency',
     ];
 
     /**
@@ -35,6 +36,16 @@ class Price extends Model
             'interval' => PlanInterval::class,
             'amount' => 'integer',
         ];
+    }
+
+    /**
+     * Default the currency to the application currency when not set.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Price $price) {
+            $price->currency ??= config('cashier.currency');
+        });
     }
 
     /**

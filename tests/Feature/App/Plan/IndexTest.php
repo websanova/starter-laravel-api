@@ -36,6 +36,27 @@ test('private plans are excluded', function () {
         ->assertJsonCount(3, 'data');
 });
 
+test('prices are keyed by interval with amount and currency', function () {
+    $plan = Plan::factory()->paid()->create();
+
+    $response = $this->getJson('/plans');
+
+    $prices = collect($response->json('data'))->firstWhere('slug', $plan->slug)['prices'];
+
+    $response->assertStatus(200);
+    expect($prices['monthly'])->toBe(['amount' => 999, 'currency' => config('cashier.currency')]);
+    expect($prices['yearly'])->toBe(['amount' => 9990, 'currency' => config('cashier.currency')]);
+});
+
+test('a plan with no prices serializes prices as an object', function () {
+    Plan::factory()->create();
+
+    $response = $this->getJson('/plans');
+
+    $response->assertStatus(200);
+    expect($response->getContent())->toContain('"prices":{}');
+});
+
 test('response does not expose internal fields', function () {
     Plan::factory()->paid()->create();
 

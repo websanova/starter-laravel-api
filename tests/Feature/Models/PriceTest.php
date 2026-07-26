@@ -18,3 +18,10 @@ test('interval is cast to the enum', function () {
 
     expect($price->interval)->toBe(PlanInterval::Monthly);
 });
+
+test('currency defaults to the application currency', function () {
+    $plan = Plan::factory()->create();
+    $price = $plan->prices()->create(['interval' => PlanInterval::Monthly]);
+
+    expect($price->currency)->toBe(config('cashier.currency'));
+});

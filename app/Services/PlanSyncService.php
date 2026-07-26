@@ -49,7 +49,7 @@ class PlanSyncService
     }
 
     /**
-     * Sync a single price's Stripe price ID and amount from its product's default price.
+     * Sync a single price's Stripe price ID, amount and currency from its product's default price.
      */
     public function syncPrice(Price $price): ServiceResult
     {
@@ -75,6 +75,7 @@ class PlanSyncService
         $price->update([
             'stripe_price_id' => $default->id,
             'amount' => $default->unit_amount ?? 0,
+            'currency' => $default->currency,
         ]);
 
         return ServiceResult::success($price);
