@@ -7,9 +7,9 @@ use App\Models\Plan;
 use App\Models\Price;
 use Illuminate\Support\Facades\App;
 
-test('cached returns all plans ordered by sort_order', function () {
-    Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 20]);
-    Plan::factory()->create(['name' => 'Alpha', 'sort_order' => 10]);
+test('cached returns all plans ordered by tier', function () {
+    Plan::factory()->create(['name' => 'Gamma', 'tier' => 20]);
+    Plan::factory()->create(['name' => 'Alpha', 'tier' => 10]);
 
     $plans = Plan::cached();
     $names = $plans->pluck('name');
@@ -21,7 +21,7 @@ test('cached returns all plans ordered by sort_order', function () {
 });
 
 test('cached is invalidated when a plan is saved', function () {
-    $plan = Plan::factory()->create(['name' => 'Original', 'sort_order' => 99]);
+    $plan = Plan::factory()->create(['name' => 'Original', 'tier' => 99]);
 
     $cached = Plan::cached();
     expect($cached->last()->name)->toBe('Original');

@@ -18,11 +18,11 @@ return new class extends Migration
             $table->json('features')->nullable();
             $table->boolean('is_active')->default(false);
             $table->boolean('is_public')->default(false);
-            $table->unsignedInteger('sort_order')->default(0);
+            $table->unsignedInteger('tier')->default(0);
             $table->timestamps();
 
             $table->index('is_active');
-            $table->index('sort_order');
+            $table->index('tier');
         });
 
         Schema::create('prices', function (Blueprint $table) {

@@ -32,6 +32,7 @@ class ProfileResource extends JsonResource
                 'id' => $this->plan->id,
                 'name' => $this->plan->display_name,
                 'slug' => $this->plan->slug,
+                'tier' => $this->plan->tier,
             ],
             'timezone' => $this->timezone,
             'trial_ends_at' => $this->trial_ends_at,

@@ -25,7 +25,7 @@ class PlanResource extends JsonResource
             'name' => $this->name,
             'prices' => PriceResource::collection($this->prices),
             'slug' => $this->slug,
-            'sort_order' => $this->sort_order,
+            'tier' => $this->tier,
             'updated_at' => $this->updated_at,
         ];
     }

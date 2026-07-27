@@ -34,7 +34,7 @@ test('plan data included when user has a plan', function () {
 
     $resource = (new ProfileResource($user))->toArray(request());
 
-    expect($resource['plan'])->toHaveKeys(['id', 'name', 'slug', 'features']);
+    expect($resource['plan'])->toHaveKeys(['id', 'name', 'slug', 'features', 'tier']);
     expect($resource['plan']['slug'])->toBe('pro');
     expect($resource['plan']['features'])->toBe(['bookmarks' => 100]);
 });

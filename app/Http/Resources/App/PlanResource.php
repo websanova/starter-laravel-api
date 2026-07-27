@@ -23,6 +23,7 @@ class PlanResource extends JsonResource
                 ],
             ])->all(),
             'slug' => $this->slug,
+            'tier' => $this->tier,
         ];
     }
 }

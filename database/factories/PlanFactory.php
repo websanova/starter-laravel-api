@@ -25,7 +25,7 @@ class PlanFactory extends Factory
             'features' => [],
             'is_active' => true,
             'is_public' => true,
-            'sort_order' => 0,
+            'tier' => 0,
         ];
     }
 

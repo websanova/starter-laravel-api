@@ -25,7 +25,7 @@ class PlanSeeder extends Seeder
                 ],
                 'is_active' => true,
                 'is_public' => true,
-                'sort_order' => 0,
+                'tier' => 0,
             ],
         );
 
@@ -40,7 +40,7 @@ class PlanSeeder extends Seeder
                 ],
                 'is_active' => true,
                 'is_public' => true,
-                'sort_order' => 1,
+                'tier' => 1,
             ],
         );
 

@@ -16,7 +16,7 @@ test('super can list plans', function () {
 
     $response->assertStatus(200)
         ->assertJsonStructure([
-            'data' => [['id', 'name', 'slug', 'prices', 'features', 'is_active', 'sort_order']],
+            'data' => [['id', 'name', 'slug', 'prices', 'features', 'is_active', 'tier']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
@@ -59,13 +59,13 @@ test('can filter plans by active status', function () {
         ->assertJsonCount(4, 'data');
 });
 
-test('plans are sorted by sort_order ascending by default', function () {
+test('plans are sorted by tier ascending by default', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
-    Plan::factory()->create(['name' => 'Alpha', 'sort_order' => 10]);
-    Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 30]);
-    Plan::factory()->create(['name' => 'Beta', 'sort_order' => 20]);
+    Plan::factory()->create(['name' => 'Alpha', 'tier' => 10]);
+    Plan::factory()->create(['name' => 'Gamma', 'tier' => 30]);
+    Plan::factory()->create(['name' => 'Beta', 'tier' => 20]);
 
     $response = $this->actingAs($admin)->getJson('/admin/plans');
 

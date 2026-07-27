@@ -15,7 +15,7 @@ test('super can create a plan', function () {
         'slug' => 'enterprise',
         'features' => ['bookmarks' => null, 'categories' => null],
         'is_active' => true,
-        'sort_order' => 3,
+        'tier' => 3,
     ]);
 
     $response->assertStatus(201)

@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
             'features.*' => PlanRules::featureValue(),
             'is_active' => PlanRules::isActive(),
             'is_public' => PlanRules::isPublic(),
-            'sort_order' => PlanRules::sortOrder(),
+            'tier' => PlanRules::tier(),
         ];
     }
 }

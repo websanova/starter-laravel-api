@@ -77,9 +77,9 @@ class PlanRules
     }
 
     /**
-     * Validation rules for the sort_order field.
+     * Validation rules for the tier field.
      */
-    public static function sortOrder(): array
+    public static function tier(): array
     {
         return ['sometimes', 'integer', 'min:0'];
     }
