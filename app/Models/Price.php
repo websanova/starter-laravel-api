@@ -39,13 +39,17 @@ class Price extends Model
     }
 
     /**
-     * Default the currency to the application currency when not set.
+     * Default the currency to the application currency when not set, and
+     * invalidate the plans cache since it holds the plan prices.
      */
     protected static function booted(): void
     {
         static::creating(function (Price $price) {
             $price->currency ??= config('cashier.currency');
         });
+
+        static::saved(fn () => Plan::flushCache());
+        static::deleted(fn () => Plan::flushCache());
     }
 
     /**

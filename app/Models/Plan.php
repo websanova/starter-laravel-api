@@ -69,8 +69,16 @@ class Plan extends Model
     {
         parent::boot();
 
-        static::saved(fn () => Cache::forget(static::$cacheKey));
-        static::deleted(fn () => Cache::forget(static::$cacheKey));
+        static::saved(fn () => static::flushCache());
+        static::deleted(fn () => static::flushCache());
+    }
+
+    /**
+     * Invalidate the cached plans.
+     */
+    public static function flushCache(): void
+    {
+        Cache::forget(static::$cacheKey);
     }
 
     /**
