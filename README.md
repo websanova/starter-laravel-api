@@ -9,6 +9,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - [Docker Setup](docs/docker-setup.md)
 - [Stripe Setup](docs/stripe-setup.md)
 - [Dev Commands](docs/dev-commands.md)
+- [Markdown Viewer](docs/markdown-viewer.md)
 
 ## Features
 
