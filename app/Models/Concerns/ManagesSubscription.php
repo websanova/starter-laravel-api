@@ -12,9 +12,24 @@ use App\Notifications\PlanResumedNotification;
 use App\Notifications\PlanSubscribedNotification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Cashier\Subscription;
+use Laravel\Cashier\SubscriptionBuilder;
 
 trait ManagesSubscription
 {
+    /**
+     * Start the trial clock. The clock starts when access starts, so this only
+     * applies when the user is let in without a card. When a card is required
+     * up front there is no access to burn until they subscribe.
+     */
+    public function startTrial(): void
+    {
+        if (config('subscription.mode') !== SubscriptionMode::Trial || config('subscription.require_card_upfront')) {
+            return;
+        }
+
+        $this->update(['trial_ends_at' => now()->addDays(config('subscription.trial_days'))]);
+    }
+
     /**
      * Subscribe to a plan.
      */
@@ -22,9 +37,7 @@ trait ManagesSubscription
     {
         $subscription = $this->newSubscription('default', $plan->priceId($interval));
 
-        if (config('subscription.mode') === SubscriptionMode::Trial && !$this->subscribed()) {
-            $subscription->trialDays(config('subscription.trial_days'));
-        }
+        $this->applyTrial($subscription);
 
         if ($promotionCodeId) {
             $subscription->withPromotionCode($promotionCodeId);
@@ -150,6 +163,32 @@ trait ManagesSubscription
                 return $subscription && $subscription->onGracePeriod();
             },
         );
+    }
+
+    /**
+     * Hand the remaining trial to Stripe. An existing date carries over
+     * untouched so the clock never resets, an expired one grants nothing, and
+     * a first time subscriber who was paywalled from registration starts their
+     * trial here. Anyone with a past subscription is returning after a cancel
+     * and gets no trial.
+     */
+    protected function applyTrial(SubscriptionBuilder $subscription): void
+    {
+        if ($this->trial_ends_at) {
+            if ($this->trial_ends_at->isFuture()) {
+                $subscription->trialUntil($this->trial_ends_at);
+            }
+
+            return;
+        }
+
+        if (
+            config('subscription.mode') === SubscriptionMode::Trial && 
+            config('subscription.require_card_upfront') && 
+            $this->subscriptions()->doesntExist()
+        ) {
+            $subscription->trialDays(config('subscription.trial_days'));
+        }
     }
 
     /**

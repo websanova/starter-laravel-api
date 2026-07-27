@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\App;
 
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,11 +13,14 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $subscription = $this->subscription();
+
         return [
             'avatar_url' => $this->avatar_url,
             'created_at' => $this->created_at,
             'email' => $this->email,
             'first_name' => $this->first_name,
+            'has_payment_method' => $this->hasDefaultPaymentMethod(),
             'id' => $this->id,
             'is_complimentary' => $this->is_complimentary,
             'is_on_grace_period' => $this->is_on_grace_period,
@@ -34,8 +38,12 @@ class ProfileResource extends JsonResource
                 'slug' => $this->plan->slug,
                 'tier' => $this->plan->tier,
             ],
+            'subscription' => $subscription ? [
+                'ends_at' => $subscription->ends_at,
+                'interval' => Plan::intervalForPriceId($subscription->stripe_price),
+            ] : null,
             'timezone' => $this->timezone,
-            'trial_ends_at' => $this->trial_ends_at,
+            'trial_ends_at' => $this->trialEndsAt(),
             'updated_at' => $this->updated_at,
             'verification_pending' => $this->verification_pending,
             'verification_required' => $this->verification_required,

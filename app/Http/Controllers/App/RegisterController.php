@@ -35,6 +35,8 @@ class RegisterController extends Controller
             }
         }
 
+        $user->startTrial();
+
         $user->notify(new WelcomeNotification());
 
         $token = $user->createToken('auth')->plainTextToken;

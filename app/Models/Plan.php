@@ -159,6 +159,21 @@ class Plan extends Model
     }
 
     /**
+     * Resolve the billing interval for a Stripe price ID.
+     */
+    public static function intervalForPriceId(?string $priceId): ?PlanInterval
+    {
+        if (is_null($priceId)) {
+            return null;
+        }
+
+        return static::cached()
+            ->flatMap->prices
+            ->firstWhere('stripe_price_id', $priceId)
+            ?->interval;
+    }
+
+    /**
      * Get a specific feature value.
      */
     public function feature(string $key, mixed $default = null): mixed
