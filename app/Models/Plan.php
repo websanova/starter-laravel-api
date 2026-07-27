@@ -167,6 +167,16 @@ class Plan extends Model
     }
 
     /**
+     * The public display name, translated per request or per recipient locale.
+     */
+    protected function displayName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => __('plans.' . $this->slug . '.name'),
+        );
+    }
+
+    /**
      * Whether this plan has Stripe prices.
      */
     protected function isBillable(): Attribute

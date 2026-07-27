@@ -33,7 +33,7 @@ class PlanChangedNotification extends Notification
     {
         return (new MailMessage)
             ->subject(__('notifications.plan_changed.subject'))
-            ->line(__('notifications.plan_changed.line1', ['plan' => $this->plan->name]));
+            ->line(__('notifications.plan_changed.line1', ['plan' => $this->plan->display_name]));
     }
 
     /**
@@ -43,7 +43,7 @@ class PlanChangedNotification extends Notification
     {
         return [
             'title' => __('notifications.plan_changed.subject'),
-            'body' => __('notifications.plan_changed.line1', ['plan' => $this->plan->name]),
+            'body' => __('notifications.plan_changed.line1', ['plan' => $this->plan->display_name]),
         ];
     }
 }

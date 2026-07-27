@@ -5,6 +5,7 @@ uses()->group('model.plan');
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\Price;
+use Illuminate\Support\Facades\App;
 
 test('cached returns all plans ordered by sort_order', function () {
     Plan::factory()->create(['name' => 'Gamma', 'sort_order' => 20]);
@@ -112,4 +113,18 @@ test('feature returns default for missing feature', function () {
 
     expect($plan->feature('bookmarks'))->toBeNull();
     expect($plan->feature('bookmarks', 5))->toBe(5);
+});
+
+test('display_name resolves from lang for a seeded tier', function () {
+    $plan = Plan::free();
+
+    expect($plan->display_name)->toBe('Starter Basic');
+});
+
+test('display_name follows the active locale', function () {
+    $plan = Plan::free();
+
+    App::setLocale('fr_CA');
+
+    expect($plan->display_name)->toBe('Starter Essentiel');
 });

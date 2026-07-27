@@ -74,7 +74,7 @@ test('plan resumed notification sends via mail and database', function () {
 });
 
 test('plan subscribed notification includes plan name in data', function () {
-    $plan = Plan::factory()->paid()->create(['name' => 'Pro']);
+    $plan = Plan::where('slug', 'pro')->first();
     $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanSubscribedNotification($plan));
@@ -82,11 +82,11 @@ test('plan subscribed notification includes plan name in data', function () {
     $notification = $user->notifications()->first();
 
     expect($notification->data['title'])->toBe('Thanks for Subscribing!');
-    expect($notification->data['body'])->toContain('Pro');
+    expect($notification->data['body'])->toContain('Starter Pro');
 });
 
 test('plan changed notification includes plan name in data', function () {
-    $plan = Plan::factory()->paid()->create(['name' => 'Enterprise']);
+    $plan = Plan::where('slug', 'free')->first();
     $user = User::factory()->create(['locale' => 'en-US']);
 
     $user->notify(new PlanChangedNotification($plan));
@@ -94,7 +94,7 @@ test('plan changed notification includes plan name in data', function () {
     $notification = $user->notifications()->first();
 
     expect($notification->data['title'])->toBe('Plan Updated');
-    expect($notification->data['body'])->toContain('Enterprise');
+    expect($notification->data['body'])->toContain('Starter Basic');
 });
 
 test('plan cancelled notification data', function () {
