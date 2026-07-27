@@ -16,6 +16,9 @@ class SettingController extends Controller
     {
         return response()->json([
             'data' => [
+                'subscription_card_upfront' => config('subscription.require_card_upfront'),
+                'subscription_mode' => config('subscription.mode')->value,
+                'subscription_trial_days' => config('subscription.trial_days'),
                 'verification_code_length' => config('verification.code_length'),
                 'verification_required' => collect(VerificationChannel::cases())
                     ->filter(fn (VerificationChannel $channel) => config("verification.mode.{$channel->value}") === VerificationMode::Required)
