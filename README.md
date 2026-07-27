@@ -6,10 +6,18 @@ A Laravel API starter with a full auth system, account management, and productio
 
 Full documentation at [websanova.com/docs/starter-api](https://websanova.com/docs/starter-api).
 
+**Dev:**
+
 - [Docker Setup](docs/docker-setup.md)
 - [Stripe Setup](docs/stripe-setup.md)
 - [Dev Commands](docs/dev-commands.md)
 - [Markdown Viewer](docs/markdown-viewer.md)
+
+**Subscriptions:**
+
+- [Susbcription Summary](docs/subscription-summary.md)
+- [Susbcription Flows](docs/subscription-flows.md)
+
 
 ## Features
 
