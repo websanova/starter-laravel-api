@@ -36,9 +36,11 @@ return [
     | Require Card Upfront
     |--------------------------------------------------------------------------
     |
-    | When true, a payment method is collected at registration even if the
-    | user starts on a free plan or trial. When false, payment is only
-    | collected when the user subscribes to a paid plan.
+    | Applies to "trial" mode only. When true, nothing is stamped at
+    | registration so the user is gated from the first request, and their
+    | trial instead begins at their first subscribe. When false the trial
+    | is stamped at registration and the clock runs whether they subscribe
+    | or not. No card is collected at registration either way.
     |
     */
 
