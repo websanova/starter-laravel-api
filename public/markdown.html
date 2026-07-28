@@ -31,14 +31,14 @@
 
         body {
             margin: 0;
-            padding: 1.5rem 1rem 6rem;
+            padding: 0rem 1rem 6rem;
             background: var(--bg);
             color: var(--fg);
             font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
         }
 
         main {
-            max-width: 44rem;
+            max-width: 100%;
             margin: 0 auto;
         }
 
@@ -113,11 +113,11 @@
             background: none;
             border: 0;
             padding: 0;
-            text-align: center;
+            text-align: left;
+            overflow-x: auto;
         }
 
         pre.mermaid svg {
-            max-width: 100%;
             height: auto;
         }
 
@@ -143,8 +143,9 @@
         mermaid.initialize({
             startOnLoad: false,
             theme: dark ? 'dark' : 'default',
-            flowchart: { useMaxWidth: true },
-            sequence: { useMaxWidth: true }
+            themeVariables: { fontSize: '12px' },
+            flowchart: { useMaxWidth: false, padding: 8, nodeSpacing: 40, rankSpacing: 60 },
+            sequence: { useMaxWidth: false }
         });
 
         const fail = (title, detail) => {
