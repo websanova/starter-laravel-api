@@ -72,36 +72,6 @@ test('priceId returns the correct stripe price id', function () {
     expect($plan->priceId(PlanInterval::Yearly))->toBe('price_yearly_abc');
 });
 
-test('is_billable returns false when no stripe prices are set', function () {
-    $plan = Plan::factory()->create();
-
-    expect($plan->is_billable)->toBeFalse();
-});
-
-test('is_billable returns true when stripe prices are set', function () {
-    $plan = Plan::factory()->paid()->create();
-
-    expect($plan->is_billable)->toBeTrue();
-});
-
-test('is_complimentary returns true for non-free plan with no prices', function () {
-    $plan = Plan::factory()->create(['slug' => 'pro-comp']);
-
-    expect($plan->is_complimentary)->toBeTrue();
-});
-
-test('is_complimentary returns false for free plan', function () {
-    $plan = Plan::free();
-
-    expect($plan->is_complimentary)->toBeFalse();
-});
-
-test('is_complimentary returns false for paid plan', function () {
-    $plan = Plan::factory()->paid()->create();
-
-    expect($plan->is_complimentary)->toBeFalse();
-});
-
 test('feature returns value for existing feature', function () {
     $plan = Plan::factory()->create(['features' => ['bookmarks' => 10]]);
 

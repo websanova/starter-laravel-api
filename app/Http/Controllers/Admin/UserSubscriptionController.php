@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSubscription\DestroyRequest;
 use App\Http\Requests\Admin\UserSubscription\ResumeRequest;
 use App\Http\Requests\Admin\UserSubscription\ShowRequest;
-use App\Http\Requests\Admin\UserSubscription\UpdateRequest;
 use App\Http\Resources\Admin\SubscriptionResource;
-use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
@@ -27,33 +25,6 @@ class UserSubscriptionController extends Controller
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),
-        ]);
-    }
-
-    /**
-     * Create or swap a user's subscription, or assign a complimentary plan.
-     */
-    public function update(UpdateRequest $request, User $user): JsonResponse
-    {
-        $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
-
-        if ($plan->is_complimentary) {
-            $user->assignComplimentaryPlan($plan);
-
-            return response()->json([
-                'message' => __('responses.admin.user.subscription_updated'),
-            ]);
-        }
-
-        if ($user->subscribed()) {
-            $subscription = $user->swapPlan($plan, $request->validated('interval'));
-        } else {
-            $subscription = $user->subscribeToPlan($plan, $request->validated('interval'));
-        }
-
-        return response()->json([
-            'data' => new SubscriptionResource($subscription),
-            'message' => __('responses.admin.user.subscription_updated'),
         ]);
     }
 

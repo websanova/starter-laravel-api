@@ -220,25 +220,4 @@ class Plan extends Model
             get: fn () => __('plans.' . $this->slug . '.name'),
         );
     }
-
-    /**
-     * Whether this plan has Stripe prices.
-     */
-    protected function isBillable(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->prices->whereNotNull('stripe_price_id')->isNotEmpty(),
-        );
-    }
-
-    /**
-     * Whether this plan is a complimentary (non-free, no price) plan.
-     */
-    protected function isComplimentary(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => !$this->is_billable
-                && $this->slug !== PlanTier::Free->value,
-        );
-    }
 }

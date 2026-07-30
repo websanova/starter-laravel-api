@@ -40,7 +40,6 @@ return [
     'admin.user.role_updated' => 'Role de l utilisateur mis a jour avec succes.',
     'admin.user.password_reset' => 'Un mot de passe temporaire a ete envoye a l utilisateur.',
     'admin.user.subscription_created' => 'Abonnement de l utilisateur cree avec succes.',
-    'admin.user.subscription_updated' => 'Abonnement de l utilisateur mis a jour avec succes.',
     'admin.user.subscription_cancelled' => 'Abonnement de l utilisateur annule avec succes.',
     'admin.user.subscription_resumed' => 'Abonnement de l utilisateur repris avec succes.',
     'admin.user.subscription_coupon_applied' => 'Coupon applique a l abonnement de l utilisateur avec succes.',

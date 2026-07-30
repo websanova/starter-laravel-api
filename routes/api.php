@@ -102,7 +102,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::post('/users/{user}/password-reset', [App\Http\Controllers\Admin\UserPasswordResetController::class, 'store']);
 
     Route::get('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show']);
-    Route::put('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'update']);
     Route::delete('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'destroy']);
     Route::patch('/users/{user}/subscription/resume', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'resume']);
     Route::post('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'store']);

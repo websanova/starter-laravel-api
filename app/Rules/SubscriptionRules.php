@@ -24,18 +24,6 @@ class SubscriptionRules
     }
 
     /**
-     * Validation rules for the plan slug field (admin side).
-     */
-    public static function planAdmin(): array
-    {
-        return [
-            'required',
-            'string',
-            Rule::exists('plans', 'slug')->where('is_active', true),
-        ];
-    }
-
-    /**
      * Validation rules for the plan slug field (account side).
      */
     public static function planPublic(): array

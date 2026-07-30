@@ -20,7 +20,6 @@ class PlanResource extends JsonResource
             'features' => $this->features,
             'id' => $this->id,
             'is_active' => $this->is_active,
-            'is_complimentary' => $this->is_complimentary,
             'is_public' => $this->is_public,
             'name' => $this->name,
             'prices' => PriceResource::collection($this->prices),

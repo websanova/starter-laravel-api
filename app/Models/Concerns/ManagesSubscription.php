@@ -139,7 +139,9 @@ trait ManagesSubscription
     }
 
     /**
-     * Whether the user is on a complimentary plan.
+     * Whether the user holds a complimentary grant. Paired with the
+     * is_complimentary attribute below, which serializes the same check for
+     * API responses. This method form is the one to use in guards.
      */
     public function onComplimentary(): bool
     {
@@ -147,7 +149,9 @@ trait ManagesSubscription
     }
 
     /**
-     * Whether the user is on a complimentary plan.
+     * Whether the user holds a complimentary grant, in attribute form so it
+     * serializes into responses alongside is_subscribed and is_on_trial.
+     * Same check as onComplimentary().
      */
     protected function isComplimentary(): Attribute
     {

@@ -40,7 +40,6 @@ return [
     'admin.user.role_updated' => 'User role updated successfully.',
     'admin.user.password_reset' => 'A temporary password has been sent to the user.',
     'admin.user.subscription_created' => 'User subscription created successfully.',
-    'admin.user.subscription_updated' => 'User subscription updated successfully.',
     'admin.user.subscription_cancelled' => 'User subscription cancelled successfully.',
     'admin.user.subscription_resumed' => 'User subscription resumed successfully.',
     'admin.user.subscription_coupon_applied' => 'Coupon applied to user subscription successfully.',
