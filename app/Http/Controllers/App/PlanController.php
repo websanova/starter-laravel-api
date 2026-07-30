@@ -14,13 +14,8 @@ class PlanController extends Controller
      */
     public function index(): JsonResponse
     {
-        $plans = Plan::cached()
-            ->where('is_active', true)
-            ->where('is_public', true)
-            ->values();
-
         return response()->json([
-            'data' => PlanResource::collection($plans),
+            'data' => PlanResource::collection(Plan::listable()),
         ]);
     }
 }

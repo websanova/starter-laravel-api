@@ -33,12 +33,16 @@ class UserResource extends JsonResource
             'locale' => $this->locale,
             'phone' => $this->phone,
             'phone_verified_at' => $this->phone_verified_at,
-            'plan' => $this->when($this->relationLoaded('plan'), fn () => [
-                'features' => $this->plan->features,
-                'id' => $this->plan->id,
-                'name' => $this->plan->name,
-                'slug' => $this->plan->slug,
-            ]),
+            'plan' => $this->when($this->relationLoaded('plan'), function () {
+                $plan = $this->currentPlan();
+
+                return $plan ? [
+                    'features' => $plan->features,
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'slug' => $plan->slug,
+                ] : null;
+            }),
             'role' => $this->roles->first()?->name,
             'timezone' => $this->timezone,
             'trial_ends_at' => $this->trial_ends_at,

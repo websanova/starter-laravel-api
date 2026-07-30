@@ -45,7 +45,10 @@ trait ManagesSubscription
 
         $subscription->create($this->defaultPaymentMethod()?->id);
 
-        $this->update(['plan_id' => $plan->id]);
+        $this->load('subscriptions');
+
+        $this->complimentary_plan_id = null;
+        $this->fillPlan()->save();
 
         $this->notify(new PlanSubscribedNotification($plan));
 
@@ -58,7 +61,8 @@ trait ManagesSubscription
     public function swapPlan(Plan $plan, PlanInterval $interval): Subscription
     {
         $this->subscription()->swap($plan->priceId($interval));
-        $this->update(['plan_id' => $plan->id]);
+
+        $this->fillPlan()->save();
 
         $this->notify(new PlanChangedNotification($plan));
 
@@ -98,9 +102,40 @@ trait ManagesSubscription
             $subscription->cancelNow();
         }
 
-        $this->update(['plan_id' => $plan->id]);
+        $this->complimentary_plan_id = $plan->id;
+        $this->fillPlan()->save();
 
         $this->notify(new PlanChangedNotification($plan));
+    }
+
+    /**
+     * Recompute the cached plan from the entitlement that actually grants it.
+     * A complimentary grant wins, otherwise it follows the live subscription,
+     * and a lapsed subscription leaves nothing. Sets the attribute without
+     * saving so several fills can be chained into one write.
+     */
+    public function fillPlan(): static
+    {
+        $this->loadMissing('subscriptions');
+
+        $this->plan_id = $this->complimentary_plan_id
+            ?? ($this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null);
+
+        return $this;
+    }
+
+    /**
+     * Get the plan the user is entitled to, falling back to the free plan.
+     * Required mode has no free tier to fall back on, so a user without a
+     * subscription has no plan at all.
+     */
+    public function currentPlan(): ?Plan
+    {
+        if (config('subscription.mode') === SubscriptionMode::Required) {
+            return $this->plan;
+        }
+
+        return $this->plan ?? Plan::free();
     }
 
     /**
@@ -108,7 +143,7 @@ trait ManagesSubscription
      */
     public function onComplimentary(): bool
     {
-        return $this->plan->is_complimentary;
+        return !is_null($this->complimentary_plan_id);
     }
 
     /**
@@ -117,7 +152,7 @@ trait ManagesSubscription
     protected function isComplimentary(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->plan->is_complimentary,
+            get: fn () => !is_null($this->complimentary_plan_id),
         );
     }
 
@@ -210,7 +245,13 @@ trait ManagesSubscription
      */
     public function canUsePlanFeature(PlanFeature $feature): bool
     {
-        $value = $this->plan->feature($feature->value);
+        $plan = $this->currentPlan();
+
+        if (!$plan) {
+            return false;
+        }
+
+        $value = $plan->feature($feature->value);
 
         if ($feature->isCountable()) {
             if (is_null($value)) {

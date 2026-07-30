@@ -6,6 +6,7 @@ use App\Enums\PlanInterval;
 use App\Enums\PlanSort;
 use App\Enums\PlanTier;
 use App\Enums\SortDirection;
+use App\Enums\SubscriptionMode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,6 +101,22 @@ class Plan extends Model
     }
 
     /**
+     * Get the plans that may be listed publicly. Required mode has no free
+     * tier to offer, so it is withheld even when the plan remains active.
+     */
+    public static function listable(): Collection
+    {
+        return static::cached()
+            ->where('is_active', true)
+            ->where('is_public', true)
+            ->when(
+                config('subscription.mode') === SubscriptionMode::Required,
+                fn ($plans) => $plans->where('slug', '!=', PlanTier::Free->value)
+            )
+            ->values();
+    }
+
+    /**
      * Get the users on this plan.
      */
     public function users(): HasMany
@@ -156,6 +173,19 @@ class Plan extends Model
     public function priceId(PlanInterval $interval): ?string
     {
         return $this->prices->firstWhere('interval', $interval)?->stripe_price_id;
+    }
+
+    /**
+     * Resolve the plan owning a Stripe price ID.
+     */
+    public static function forPriceId(?string $priceId): ?self
+    {
+        if (is_null($priceId)) {
+            return null;
+        }
+
+        return static::cached()
+            ->first(fn ($plan) => $plan->prices->contains('stripe_price_id', $priceId));
     }
 
     /**

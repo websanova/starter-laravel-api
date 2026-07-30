@@ -69,6 +69,7 @@ class User extends Authenticatable implements HasLocalePreference
         'password',
         'avatar',
         'plan_id',
+        'complimentary_plan_id',
         'keywords',
         'last_active_at',
         'is_password_reset_required',
@@ -101,13 +102,12 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
-     * Get the user's plan, falling back to the free plan.
+     * Get the user's plan. Null until one is assigned, so read entitlements
+     * through currentPlan() rather than this relation.
      */
     public function plan(): BelongsTo
     {
-        return $this->belongsTo(Plan::class)->withDefault(function () {
-            return Plan::free();
-        });
+        return $this->belongsTo(Plan::class);
     }
 
     /**

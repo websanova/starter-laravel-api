@@ -14,6 +14,7 @@ class ProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         $subscription = $this->subscription();
+        $plan = $this->currentPlan();
 
         return [
             'avatar_url' => $this->avatar_url,
@@ -31,13 +32,13 @@ class ProfileResource extends JsonResource
             'last_name' => $this->last_name,
             'locale' => $this->locale,
             'phone' => $this->phone,
-            'plan' => [
-                'features' => $this->plan->features,
-                'id' => $this->plan->id,
-                'name' => $this->plan->display_name,
-                'slug' => $this->plan->slug,
-                'tier' => $this->plan->tier,
-            ],
+            'plan' => $plan ? [
+                'features' => $plan->features,
+                'id' => $plan->id,
+                'name' => $plan->display_name,
+                'slug' => $plan->slug,
+                'tier' => $plan->tier,
+            ] : null,
             'subscription' => $subscription ? [
                 'ends_at' => $subscription->ends_at,
                 'interval' => Plan::intervalForPriceId($subscription->stripe_price),
