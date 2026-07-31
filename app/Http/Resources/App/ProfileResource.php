@@ -15,6 +15,7 @@ class ProfileResource extends JsonResource
     {
         $subscription = $this->subscription();
         $plan = $this->currentPlan();
+        $trialEndsAt = $this->trialEndsAt();
 
         return [
             'avatar_url' => $this->avatar_url,
@@ -44,7 +45,9 @@ class ProfileResource extends JsonResource
                 'interval' => Plan::intervalForPriceId($subscription->stripe_price),
             ] : null,
             'timezone' => $this->timezone,
-            'trial_ends_at' => $this->trialEndsAt(),
+            'trial' => $trialEndsAt ? [
+                'ends_at' => $trialEndsAt,
+            ] : null,
             'updated_at' => $this->updated_at,
             'verification_pending' => $this->verification_pending,
             'verification_required' => $this->verification_required,

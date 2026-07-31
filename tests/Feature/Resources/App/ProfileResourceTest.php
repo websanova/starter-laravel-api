@@ -13,6 +13,7 @@ test('subscription fields always included', function () {
     $resource = (new ProfileResource($user))->toArray(request());
 
     expect($resource)->toHaveKeys(['is_subscribed', 'is_on_trial', 'is_on_grace_period']);
+    expect($resource['trial'])->toBeNull();
 });
 
 test('subscription fields show false when user has no subscriptions', function () {
@@ -59,14 +60,14 @@ test('locale and timezone fall back to config defaults when null', function () {
     expect($resource['timezone'])->toBe(config('user.default_timezone'));
 });
 
-test('trial_ends_at always included', function () {
+test('trial data included when user has a trial date', function () {
     $trialEnd = now()->addDays(7);
     $user = User::factory()->create(['trial_ends_at' => $trialEnd]);
     $user->load(['plan.prices', 'subscriptions']);
 
     $resource = (new ProfileResource($user))->toArray(request());
 
-    expect($resource)->toHaveKey('trial_ends_at');
-    expect($resource['trial_ends_at']->toDateTimeString())->toBe($trialEnd->toDateTimeString());
+    expect($resource['trial'])->toHaveKey('ends_at');
+    expect($resource['trial']['ends_at']->toDateTimeString())->toBe($trialEnd->toDateTimeString());
 });
 
