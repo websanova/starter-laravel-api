@@ -9,6 +9,16 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateRequest extends FormRequest
 {
     /**
+     * Determine if the user is authorized to make this request. Swapping only
+     * applies to a live subscription, a user without one starts a new
+     * subscription through the store endpoint instead.
+     */
+    public function authorize(): bool
+    {
+        return $this->user()->subscribed();
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
@@ -16,7 +26,6 @@ class UpdateRequest extends FormRequest
         return [
             'plan' => SubscriptionRules::planPublic(),
             'interval' => SubscriptionRules::interval(),
-            'promotion_code' => SubscriptionRules::promotionCode(),
         ];
     }
 
@@ -38,4 +47,3 @@ class UpdateRequest extends FormRequest
         return $data;
     }
 }
-

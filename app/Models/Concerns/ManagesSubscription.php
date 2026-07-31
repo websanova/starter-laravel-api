@@ -3,16 +3,10 @@
 namespace App\Models\Concerns;
 
 use App\Enums\PlanFeature;
-use App\Enums\PlanInterval;
 use App\Enums\SubscriptionMode;
 use App\Models\Plan;
-use App\Notifications\PlanCancelledNotification;
-use App\Notifications\PlanChangedNotification;
-use App\Notifications\PlanResumedNotification;
-use App\Notifications\PlanSubscribedNotification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Laravel\Cashier\Subscription;
-use Laravel\Cashier\SubscriptionBuilder;
+use Illuminate\Support\Carbon;
 
 trait ManagesSubscription
 {
@@ -31,81 +25,28 @@ trait ManagesSubscription
     }
 
     /**
-     * Subscribe to a plan.
+     * Resolve the trial end date handed to Stripe when a subscription is
+     * created. An existing stamp decides on its own, carrying over untouched so
+     * the clock never resets and granting nothing once it has passed, which is
+     * what stops a second trial. Only an unstamped user reaches the fresh
+     * window, and only when they were paywalled from registration and have
+     * never subscribed before.
      */
-    public function subscribeToPlan(Plan $plan, PlanInterval $interval, ?string $promotionCodeId = null): Subscription
+    public function resolveTrialEnd(): ?Carbon
     {
-        $subscription = $this->newSubscription('default', $plan->priceId($interval));
-
-        $this->applyTrial($subscription);
-
-        if ($promotionCodeId) {
-            $subscription->withPromotionCode($promotionCodeId);
+        if ($this->trial_ends_at) {
+            return $this->trial_ends_at->isFuture() ? $this->trial_ends_at : null;
         }
 
-        $subscription->create($this->defaultPaymentMethod()?->id);
-
-        $this->load('subscriptions');
-
-        $this->complimentary_plan_id = null;
-        $this->fillPlan()->save();
-
-        $this->notify(new PlanSubscribedNotification($plan));
-
-        return $this->subscription();
-    }
-
-    /**
-     * Swap to a different plan.
-     */
-    public function swapPlan(Plan $plan, PlanInterval $interval): Subscription
-    {
-        $this->subscription()->swap($plan->priceId($interval));
-
-        $this->fillPlan()->save();
-
-        $this->notify(new PlanChangedNotification($plan));
-
-        return $this->subscription();
-    }
-
-    /**
-     * Cancel the subscription at period end.
-     */
-    public function cancelPlan(): void
-    {
-        $this->subscription()->cancel();
-
-        $this->notify(new PlanCancelledNotification);
-    }
-
-    /**
-     * Resume a cancelled subscription before the period ends.
-     */
-    public function resumePlan(): Subscription
-    {
-        $this->subscription()->resume();
-
-        $this->notify(new PlanResumedNotification);
-
-        return $this->subscription();
-    }
-
-    /**
-     * Assign a plan without Stripe billing, cancelling any active subscription.
-     */
-    public function assignComplimentaryPlan(Plan $plan): void
-    {
-        $subscription = $this->subscription();
-
-        if ($subscription && !$subscription->ended()) {
-            $subscription->cancelNow();
+        if (
+            config('subscription.mode') === SubscriptionMode::Trial &&
+            config('subscription.require_card_upfront') &&
+            $this->subscriptions()->doesntExist()
+        ) {
+            return now()->addDays(config('subscription.trial_days'));
         }
 
-        $this->complimentary_plan_id = $plan->id;
-        $this->fillPlan()->save();
-
-        $this->notify(new PlanChangedNotification($plan));
+        return null;
     }
 
     /**
@@ -202,32 +143,6 @@ trait ManagesSubscription
                 return $subscription && $subscription->onGracePeriod();
             },
         );
-    }
-
-    /**
-     * Hand the remaining trial to Stripe. An existing date carries over
-     * untouched so the clock never resets, an expired one grants nothing, and
-     * a first time subscriber who was paywalled from registration starts their
-     * trial here. Anyone with a past subscription is returning after a cancel
-     * and gets no trial.
-     */
-    protected function applyTrial(SubscriptionBuilder $subscription): void
-    {
-        if ($this->trial_ends_at) {
-            if ($this->trial_ends_at->isFuture()) {
-                $subscription->trialUntil($this->trial_ends_at);
-            }
-
-            return;
-        }
-
-        if (
-            config('subscription.mode') === SubscriptionMode::Trial && 
-            config('subscription.require_card_upfront') && 
-            $this->subscriptions()->doesntExist()
-        ) {
-            $subscription->trialDays(config('subscription.trial_days'));
-        }
     }
 
     /**

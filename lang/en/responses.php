@@ -62,6 +62,8 @@ return [
     'subscription.updated' => 'Subscription updated successfully.',
     'subscription.cancelled' => 'Subscription cancelled successfully.',
     'subscription.resumed' => 'Subscription resumed successfully.',
+    'subscription.already_subscribed' => 'You already have an active subscription.',
+    'subscription.payment_required' => 'Your subscription has an outstanding payment. Update your payment method to continue.',
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
 
     'admin.plan.created' => 'Plan created successfully.',
