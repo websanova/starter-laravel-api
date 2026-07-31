@@ -49,9 +49,10 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::delete('/avatar', [App\Http\Controllers\App\AvatarController::class, 'destroy']);
 
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
+        Route::post('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'store']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
-        Route::delete('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'destroy']);
-        Route::patch('/subscription/resume', [App\Http\Controllers\App\SubscriptionController::class, 'resume']);
+        Route::post('/subscription/cancel', [App\Http\Controllers\App\SubscriptionCancelController::class, 'store']);
+        Route::post('/subscription/resume', [App\Http\Controllers\App\SubscriptionResumeController::class, 'store']);
         Route::get('/subscription/coupon/{code}', [App\Http\Controllers\App\SubscriptionCouponController::class, 'show']);
 
         Route::middleware('subscribed')->group(function () {

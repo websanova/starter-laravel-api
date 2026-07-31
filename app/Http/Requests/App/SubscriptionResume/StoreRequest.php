@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\App\Subscription;
+namespace App\Http\Requests\App\SubscriptionResume;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResumeRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,4 +27,3 @@ class ResumeRequest extends FormRequest
         return [];
     }
 }
-

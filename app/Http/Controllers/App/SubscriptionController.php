@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\App\Subscription\DestroyRequest;
-use App\Http\Requests\App\Subscription\ResumeRequest;
+use App\Http\Requests\App\Subscription\StoreRequest;
 use App\Http\Requests\App\Subscription\UpdateRequest;
 use App\Http\Resources\App\SubscriptionResource;
 use App\Models\Plan;
@@ -28,6 +27,14 @@ class SubscriptionController extends Controller
         return response()->json([
             'data' => new SubscriptionResource($subscription),
         ]);
+    }
+
+    /**
+     * Create a subscription.
+     */
+    public function store(StoreRequest $request): JsonResponse
+    {
+        return response()->json([]);
     }
 
     /**
@@ -68,31 +75,6 @@ class SubscriptionController extends Controller
         }
 
         return response()->json($response);
-    }
-
-    /**
-     * Cancel the subscription at period end.
-     */
-    public function destroy(DestroyRequest $request): JsonResponse
-    {
-        $request->user()->cancelPlan();
-
-        return response()->json([
-            'message' => __('responses.subscription.cancelled'),
-        ]);
-    }
-
-    /**
-     * Resume a cancelled subscription before the period ends.
-     */
-    public function resume(ResumeRequest $request): JsonResponse
-    {
-        $subscription = $request->user()->resumePlan();
-
-        return response()->json([
-            'data' => new SubscriptionResource($subscription),
-            'message' => __('responses.subscription.resumed'),
-        ]);
     }
 }
 
