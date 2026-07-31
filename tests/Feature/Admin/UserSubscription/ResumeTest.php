@@ -39,8 +39,8 @@ test('admin cannot resume complimentary user', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
-    $plan = Plan::factory()->complimentary()->create();
-    $target = User::factory()->create(['plan_id' => $plan->id]);
+    $plan = Plan::factory()->create();
+    $target = User::factory()->complimentary($plan)->create();
 
     $response = $this->actingAs($admin)->patchJson("/admin/users/{$target->id}/subscription/resume");
 

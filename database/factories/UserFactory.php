@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +44,18 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user holds a complimentary grant for the given plan.
+     * Mirrors what fillPlan() writes so the cached plan_id stays in sync.
+     */
+    public function complimentary(Plan $plan): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'complimentary_plan_id' => $plan->id,
+            'plan_id' => $plan->id,
         ]);
     }
 }

@@ -73,7 +73,7 @@ test('required mode blocks unverified user from protected routes', function () {
 
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(403);
 });
@@ -83,7 +83,7 @@ test('required mode allows verified user to access protected routes', function (
 
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(200);
 });
@@ -93,7 +93,7 @@ test('disabled mode allows unverified user to access protected routes', function
 
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(200);
 });
@@ -103,7 +103,7 @@ test('auto mode allows all users to access protected routes', function () {
 
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(200);
 });
@@ -114,7 +114,7 @@ test('grace period allows unverified user within window', function () {
 
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(200);
 });
@@ -126,7 +126,7 @@ test('grace period blocks unverified user after window expires', function () {
     $user = User::factory()->unverified()->create();
     $user->forceFill(['created_at' => now()->subMinutes(61)])->save();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(403);
 });
@@ -137,7 +137,7 @@ test('no grace period blocks unverified user immediately', function () {
 
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(403);
 });
@@ -147,17 +147,18 @@ test('phone required does not block user without phone', function () {
 
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(200);
 });
 
 test('phone required blocks user with unverified phone', function () {
     config(['verification.mode.phone' => VerificationMode::Required]);
+    config(['verification.grace_period.phone' => null]);
 
     $user = User::factory()->create(['phone' => '15551234567']);
 
-    $response = $this->actingAs($user)->getJson('/profile');
+    $response = $this->actingAs($user)->getJson('/sync');
 
     $response->assertStatus(403);
 });

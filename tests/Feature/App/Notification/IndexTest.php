@@ -18,7 +18,7 @@ test('user can list their notifications', function () {
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data')
         ->assertJsonStructure([
-            'data' => [['id', 'type', 'data', 'read_at', 'created_at']],
+            'data' => [['id', 'title', 'body', 'read_at', 'created_at']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
@@ -46,7 +46,7 @@ test('user can filter read notifications', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.data.title', 'Read');
+        ->assertJsonPath('data.0.title', 'Read');
 });
 
 test('user can filter unread notifications', function () {
@@ -59,7 +59,7 @@ test('user can filter unread notifications', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.data.title', 'Unread');
+        ->assertJsonPath('data.0.title', 'Unread');
 });
 
 test('no read filter returns all notifications', function () {
@@ -96,8 +96,8 @@ test('notifications are sorted by latest first', function () {
     $response = $this->actingAs($user)->getJson('/notifications');
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.0.data.title', 'New')
-        ->assertJsonPath('data.1.data.title', 'Old');
+        ->assertJsonPath('data.0.title', 'New')
+        ->assertJsonPath('data.1.title', 'Old');
 });
 
 test('invalid read filter returns validation error', function () {

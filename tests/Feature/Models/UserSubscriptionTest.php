@@ -9,8 +9,8 @@ use App\Models\User;
 test('user without plan falls back to free plan', function () {
     $user = User::factory()->create(['plan_id' => null]);
 
-    expect($user->plan->slug)->toBe('free');
-    expect($user->plan->name)->toBe('Free');
+    expect($user->currentPlan()->slug)->toBe('free');
+    expect($user->currentPlan()->name)->toBe('Free');
 });
 
 test('user with plan returns their assigned plan', function () {
@@ -100,7 +100,7 @@ test('is_on_grace_period returns false when subscriptions loaded but none exist'
 });
 
 test('assignComplimentaryPlan sets plan without stripe', function () {
-    $plan = Plan::factory()->complimentary()->create();
+    $plan = Plan::factory()->create();
     $user = User::factory()->create();
 
     $user->assignComplimentaryPlan($plan);
@@ -109,8 +109,8 @@ test('assignComplimentaryPlan sets plan without stripe', function () {
 });
 
 test('onComplimentary returns true for complimentary plan', function () {
-    $plan = Plan::factory()->complimentary()->create();
-    $user = User::factory()->create(['plan_id' => $plan->id]);
+    $plan = Plan::factory()->create();
+    $user = User::factory()->complimentary($plan)->create();
 
     expect($user->onComplimentary())->toBeTrue();
 });

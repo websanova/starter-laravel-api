@@ -44,8 +44,8 @@ test('registration fails with missing fields', function () {
     $response = $this->postJson('/register', []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['email', 'password'])
-        ->assertJsonMissingValidationErrors(['first_name', 'last_name']);
+        ->assertJsonValidationErrors(['first_name', 'email', 'password'])
+        ->assertJsonMissingValidationErrors(['last_name']);
 });
 
 test('registration fails with mismatched password confirmation', function () {
@@ -63,6 +63,7 @@ test('registration fails with mismatched password confirmation', function () {
 
 test('registration leaves locale null when not provided', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -76,6 +77,7 @@ test('registration leaves locale null when not provided', function () {
 
 test('registration discards an unsupported locale', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -90,6 +92,7 @@ test('registration discards an unsupported locale', function () {
 
 test('registration discards the default locale so the user follows the configured default', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -104,6 +107,7 @@ test('registration discards the default locale so the user follows the configure
 
 test('registration stores a supported non-default locale', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -118,6 +122,7 @@ test('registration stores a supported non-default locale', function () {
 
 test('registration leaves timezone null when not provided', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -131,6 +136,7 @@ test('registration leaves timezone null when not provided', function () {
 
 test('registration discards an unsupported timezone', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -145,6 +151,7 @@ test('registration discards an unsupported timezone', function () {
 
 test('registration discards the default timezone so the user follows the configured default', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -159,6 +166,7 @@ test('registration discards the default timezone so the user follows the configu
 
 test('registration stores a supported non-default timezone', function () {
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -175,6 +183,7 @@ test('registration ignores phone when the phone channel is disabled', function (
     config(['verification.mode.phone' => VerificationMode::Disabled]);
 
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -191,6 +200,7 @@ test('registration requires phone when the phone channel is enabled', function (
     config(['verification.mode.phone' => VerificationMode::Required]);
 
     $response = $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -204,6 +214,7 @@ test('registration fails with an invalid phone', function () {
     config(['verification.mode.phone' => VerificationMode::Required]);
 
     $response = $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
@@ -218,6 +229,7 @@ test('registration stores phone when the phone channel is enabled', function () 
     config(['verification.mode.phone' => VerificationMode::Required]);
 
     $this->postJson('/register', [
+        'first_name' => 'Test',
         'email' => 'test@example.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',

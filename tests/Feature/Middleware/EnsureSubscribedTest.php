@@ -76,8 +76,8 @@ test('trial mode blocks user with expired trial', function () {
 test('required mode allows complimentary user', function () {
     config(['subscription.mode' => \App\Enums\SubscriptionMode::Required]);
 
-    $plan = Plan::factory()->complimentary()->create();
-    $user = User::factory()->create(['plan_id' => $plan->id]);
+    $plan = Plan::factory()->create();
+    $user = User::factory()->complimentary($plan)->create();
 
     $response = $this->actingAs($user)->getJson('/bookmarks');
 
@@ -87,8 +87,8 @@ test('required mode allows complimentary user', function () {
 test('trial mode allows complimentary user', function () {
     config(['subscription.mode' => \App\Enums\SubscriptionMode::Trial]);
 
-    $plan = Plan::factory()->complimentary()->create();
-    $user = User::factory()->create(['plan_id' => $plan->id]);
+    $plan = Plan::factory()->create();
+    $user = User::factory()->complimentary($plan)->create();
 
     $response = $this->actingAs($user)->getJson('/bookmarks');
 

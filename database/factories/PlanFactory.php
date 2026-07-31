@@ -50,14 +50,6 @@ class PlanFactory extends Factory
     }
 
     /**
-     * Indicate that the plan is a complimentary plan (non-free, no prices).
-     */
-    public function complimentary(): static
-    {
-        return $this->state(fn (array $attributes) => []);
-    }
-
-    /**
      * Indicate that the plan is a paid plan with monthly and yearly prices.
      */
     public function paid(): static
