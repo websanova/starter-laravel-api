@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\App\Subscription;
+namespace App\Http\Requests\App\SubscriptionCheckout;
 
 use App\Enums\PlanInterval;
 use App\Rules\SubscriptionRules;
