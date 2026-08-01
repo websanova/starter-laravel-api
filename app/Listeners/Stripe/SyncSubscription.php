@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\Stripe;
 
-use App\Services\SubscriptionService;
+use App\Contracts\SubscriptionProvider;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookHandled;
 
 class SyncSubscription
 {
     public function __construct(
-        protected SubscriptionService $subscriptions,
+        protected SubscriptionProvider $subscriptions,
     ) {}
 
     /**

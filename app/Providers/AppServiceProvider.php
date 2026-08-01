@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Contracts\PlanSyncProvider;
+use App\Contracts\PromotionCodeProvider;
+use App\Contracts\SubscriptionProvider;
+use App\Services\Stripe\PlanSyncService;
+use App\Services\Stripe\PromotionCodeService;
+use App\Services\Stripe\SubscriptionService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +25,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // Disable Cashier's auto-registered web routes to avoid CSRF issues. Webhook is registered manually in api.php.
         Cashier::ignoreRoutes();
+
+        // Billing runs through one provider at a time. Swapping to another means writing
+        // the implementations under App\Services\{Provider} and rebinding them here.
+        $this->app->bind(SubscriptionProvider::class, SubscriptionService::class);
+        $this->app->bind(PromotionCodeProvider::class, PromotionCodeService::class);
+        $this->app->bind(PlanSyncProvider::class, PlanSyncService::class);
     }
 
     /**

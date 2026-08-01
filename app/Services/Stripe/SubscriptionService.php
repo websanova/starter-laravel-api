@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Stripe;
 
+use App\Contracts\PromotionCodeProvider;
+use App\Contracts\SubscriptionProvider;
 use App\Enums\PlanInterval;
 use App\Enums\SubscriptionIntent;
 use App\Models\Plan;
@@ -12,12 +14,13 @@ use App\Notifications\PlanResumedNotification;
 use App\Notifications\PlanSubscribedNotification;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Subscription;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
-class SubscriptionService
+class SubscriptionService implements SubscriptionProvider
 {
     public function __construct(
-        protected PromotionCodeService $promotionCodes,
+        protected PromotionCodeProvider $promotionCodes,
     ) {}
 
     /**
@@ -51,12 +54,16 @@ class SubscriptionService
          * a different one cannot, because its invoice was already drawn against
          * the old price.
          */
-        if ($existing && $existing->incomplete()) {
-            if ($existing->stripe_price === $plan->priceId($interval)) {
-                return ServiceResult::success($this->intent($existing));
-            }
+        try {
+            if ($existing && $existing->incomplete()) {
+                if ($existing->stripe_price === $plan->priceId($interval)) {
+                    return ServiceResult::success($this->intent($existing));
+                }
 
-            $existing->cancelNow();
+                $existing->cancelNow();
+            }
+        } catch (ApiErrorException) {
+            return ServiceResult::error('provider_unavailable');
         }
 
         $promotionCodeId = null;
@@ -81,9 +88,13 @@ class SubscriptionService
             $builder->withPromotionCode($promotionCodeId);
         }
 
-        $subscription = $builder->create($user->defaultPaymentMethod()?->id);
+        try {
+            $subscription = $builder->create($user->defaultPaymentMethod()?->id);
 
-        return ServiceResult::success($this->intent($subscription));
+            return ServiceResult::success($this->intent($subscription));
+        } catch (ApiErrorException) {
+            return ServiceResult::error('provider_unavailable');
+        }
     }
 
     /**
@@ -209,14 +220,15 @@ class SubscriptionService
     /**
      * Read back whichever intent Stripe attached to the subscription. A trial
      * bills nothing up front, so it carries a setup intent to put the card on
-     * file, and everything else carries the payment intent for the first
-     * invoice. The client confirms against one or the other.
+     * file, and everything else carries the first invoice's confirmation
+     * secret. A fully discounted first invoice needs neither, in which case
+     * there is nothing to confirm and the client goes straight to sync.
      */
     protected function intent(Subscription $subscription): array
     {
         $stripeSubscription = $subscription->asStripeSubscription([
             'pending_setup_intent',
-            'latest_invoice.payment_intent',
+            'latest_invoice.confirmation_secret',
         ]);
 
         if ($stripeSubscription->pending_setup_intent) {
@@ -226,9 +238,18 @@ class SubscriptionService
             ];
         }
 
+        $confirmationSecret = $stripeSubscription->latest_invoice?->confirmation_secret;
+
+        if (!$confirmationSecret) {
+            return [
+                'intent_type' => SubscriptionIntent::None->value,
+                'client_secret' => null,
+            ];
+        }
+
         return [
             'intent_type' => SubscriptionIntent::Payment->value,
-            'client_secret' => $stripeSubscription->latest_invoice->payment_intent->client_secret,
+            'client_secret' => $confirmationSecret->client_secret,
         ];
     }
 }

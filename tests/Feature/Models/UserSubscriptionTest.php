@@ -103,7 +103,7 @@ test('assignComplimentary sets plan without stripe', function () {
     $plan = Plan::factory()->create();
     $user = User::factory()->create();
 
-    app(\App\Services\SubscriptionService::class)->assignComplimentary($user, $plan);
+    app(\App\Contracts\SubscriptionProvider::class)->assignComplimentary($user, $plan);
 
     expect($user->fresh()->plan_id)->toBe($plan->id);
     expect($user->fresh()->complimentary_plan_id)->toBe($plan->id);

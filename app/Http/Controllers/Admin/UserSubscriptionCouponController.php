@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Contracts\PromotionCodeProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSubscriptionCoupon\DestroyRequest;
 use App\Http\Requests\Admin\UserSubscriptionCoupon\StoreRequest;
 use App\Http\Resources\Admin\SubscriptionResource;
 use App\Models\User;
-use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -16,7 +16,7 @@ class UserSubscriptionCouponController extends Controller
     /**
      * Apply a promotion code to a user's existing subscription.
      */
-    public function store(StoreRequest $request, User $user, PromotionCodeService $promotionCodeService): JsonResponse
+    public function store(StoreRequest $request, User $user, PromotionCodeProvider $promotionCodeService): JsonResponse
     {
         $result = $promotionCodeService->resolve($request->validated('promotion_code'));
 

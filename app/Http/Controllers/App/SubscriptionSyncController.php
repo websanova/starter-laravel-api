@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Contracts\SubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionSync\StoreRequest;
-use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionSyncController extends Controller
@@ -15,7 +15,7 @@ class SubscriptionSyncController extends Controller
      * exists only to close the window where the client would otherwise refresh
      * against stale state.
      */
-    public function store(StoreRequest $request, SubscriptionService $subscriptions): JsonResponse
+    public function store(StoreRequest $request, SubscriptionProvider $subscriptions): JsonResponse
     {
         $subscriptions->sync($request->user());
 

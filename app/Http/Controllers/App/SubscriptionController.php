@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Contracts\SubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\Subscription\StoreRequest;
 use App\Http\Requests\App\Subscription\UpdateRequest;
 use App\Http\Resources\App\SubscriptionResource;
 use App\Models\Plan;
-use App\Services\SubscriptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +35,7 @@ class SubscriptionController extends Controller
      * needs, since the subscription is not real until the payment clears and
      * the client picks the resulting state up from the sync endpoint.
      */
-    public function store(StoreRequest $request, SubscriptionService $subscriptions): JsonResponse
+    public function store(StoreRequest $request, SubscriptionProvider $subscriptions): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
@@ -64,7 +64,7 @@ class SubscriptionController extends Controller
     /**
      * Swap the subscription to a different plan or interval.
      */
-    public function update(UpdateRequest $request, SubscriptionService $subscriptions): JsonResponse
+    public function update(UpdateRequest $request, SubscriptionProvider $subscriptions): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 

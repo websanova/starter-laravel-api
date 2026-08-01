@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\PlanSyncProvider;
 use App\Models\Plan;
-use App\Services\PlanSyncService;
 use Illuminate\Console\Command;
 
 class SyncPlans extends Command
@@ -25,7 +25,7 @@ class SyncPlans extends Command
     /**
      * Execute the console command.
      */
-    public function handle(PlanSyncService $service): int
+    public function handle(PlanSyncProvider $service): int
     {
         $synced = 0;
         $failed = 0;

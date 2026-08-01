@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Stripe;
 
+use App\Contracts\PromotionCodeProvider;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 
-class PromotionCodeService
+class PromotionCodeService implements PromotionCodeProvider
 {
     /**
      * Resolve a promotion code string to a Stripe promotion code object.

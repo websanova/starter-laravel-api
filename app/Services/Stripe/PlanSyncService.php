@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Stripe;
 
+use App\Contracts\PlanSyncProvider;
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\Price;
@@ -9,7 +10,7 @@ use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 
-class PlanSyncService
+class PlanSyncService implements PlanSyncProvider
 {
     /**
      * Sync every plan's prices from their Stripe product default prices.

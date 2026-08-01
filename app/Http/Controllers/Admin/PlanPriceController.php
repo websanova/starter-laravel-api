@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Contracts\PlanSyncProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Plan\Price\UpdateRequest;
 use App\Http\Resources\Admin\PriceResource;
 use App\Models\Plan;
 use App\Models\Price;
-use App\Services\PlanSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -16,7 +16,7 @@ class PlanPriceController extends Controller
     /**
      * Update a plan price's product and sync it from Stripe.
      */
-    public function update(UpdateRequest $request, Plan $plan, Price $price, PlanSyncService $service): JsonResponse
+    public function update(UpdateRequest $request, Plan $plan, Price $price, PlanSyncProvider $service): JsonResponse
     {
         $price->update($request->validated());
 

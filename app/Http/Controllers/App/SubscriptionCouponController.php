@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Contracts\PromotionCodeProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\App\PromotionCodeResource;
-use App\Services\PromotionCodeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -13,7 +13,7 @@ class SubscriptionCouponController extends Controller
     /**
      * Look up a promotion code.
      */
-    public function show(string $code, PromotionCodeService $promotionCodeService): JsonResponse
+    public function show(string $code, PromotionCodeProvider $promotionCodeService): JsonResponse
     {
         $result = $promotionCodeService->resolve($code);
 

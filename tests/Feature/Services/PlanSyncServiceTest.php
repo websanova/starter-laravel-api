@@ -4,12 +4,12 @@ uses()->group('service.plan-sync');
 
 use App\Models\Plan;
 use App\Models\Price;
-use App\Services\PlanSyncService;
+use App\Contracts\PlanSyncProvider;
 
 test('syncPrice returns an error when no product id is set', function () {
     $price = Price::factory()->create(['stripe_product_id' => null]);
 
-    $result = app(PlanSyncService::class)->syncPrice($price);
+    $result = app(PlanSyncProvider::class)->syncPrice($price);
 
     expect($result->success)->toBeFalse();
     expect($result->error)->toBe('price.missing_product');
@@ -19,7 +19,7 @@ test('sync succeeds when no prices have a product', function () {
     $plan = Plan::factory()->create();
     Price::factory()->for($plan)->create(['stripe_product_id' => null]);
 
-    $result = app(PlanSyncService::class)->sync($plan);
+    $result = app(PlanSyncProvider::class)->sync($plan);
 
     expect($result->success)->toBeTrue();
 });
@@ -37,7 +37,7 @@ test('syncPrice populates the price id, amount and currency from the stripe prod
         'amount' => 0,
     ]);
 
-    $result = app(PlanSyncService::class)->syncPrice($price);
+    $result = app(PlanSyncProvider::class)->syncPrice($price);
 
     expect($result->success)->toBeTrue();
     expect($price->fresh()->stripe_price_id)->not->toBeNull();
@@ -52,7 +52,7 @@ test('syncPrice returns an error when the stripe product does not exist', functi
 
     $price = Price::factory()->create(['stripe_product_id' => 'prod_nonexistent0000']);
 
-    $result = app(PlanSyncService::class)->syncPrice($price);
+    $result = app(PlanSyncProvider::class)->syncPrice($price);
 
     expect($result->success)->toBeFalse();
     expect($result->error)->toBe('price.sync_failed');

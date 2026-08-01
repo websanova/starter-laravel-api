@@ -64,6 +64,7 @@ return [
     'subscription.resumed' => 'Subscription resumed successfully.',
     'subscription.already_subscribed' => 'You already have an active subscription.',
     'subscription.payment_required' => 'Your subscription has an outstanding payment. Update your payment method to continue.',
+    'subscription.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
 
     'admin.plan.created' => 'Plan created successfully.',
