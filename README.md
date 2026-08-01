@@ -81,15 +81,28 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Forced password reset flow with temp password email
 - Seeded super user on first migrate
 
-**Plans & Subscriptions (Cashier/Stripe)**
+**Plans & Subscriptions**
 - Flexible plans with usage limits and feature flags
 - Multiple billing intervals per plan (monthly, yearly)
-- Prices kept in sync with Stripe, no hardcoded amounts
+- Prices kept in sync with the provider, no hardcoded amounts
 - Three subscription modes: freemium, trial, required
 - Subscribe, swap, cancel, resume for both users and admins
 - 3D Secure (SCA) handled for client-side payment confirmation
 - Complimentary plans for granting access without billing
 - Feature limits enforced automatically
+
+**Billing Providers (Cashier/Stripe)**
+- Stripe through Laravel Cashier out of the box, one provider installed at a time
+- Provider contracts so a swap touches the services and migration, not controllers
+- Provider-namespaced services and webhook listener (`App\Services\Stripe`)
+- One idempotent sync shared by the client callback and the webhook
+- Entitlement committed only once the provider confirms payment
+
+**Promotion Codes**
+- Lookup endpoint so clients can check a code before checkout
+- Codes passed through on subscribe and revalidated by the provider
+- Admins can apply or clear discounts on an existing subscription
+- Nothing stored locally, the provider owns amounts, expiry, and limits
 
 **Notifications**
 - Laravel's database notification channel for in-app notifications (bell icon)
