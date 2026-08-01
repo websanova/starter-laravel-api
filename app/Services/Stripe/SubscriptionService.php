@@ -2,10 +2,8 @@
 
 namespace App\Services\Stripe;
 
-use App\Contracts\PromotionCodeProvider;
 use App\Contracts\SubscriptionProvider;
 use App\Enums\PlanInterval;
-use App\Enums\SubscriptionIntent;
 use App\Models\Plan;
 use App\Models\User;
 use App\Notifications\PlanCancelledNotification;
@@ -19,17 +17,14 @@ use Stripe\Subscription as StripeSubscription;
 
 class SubscriptionService implements SubscriptionProvider
 {
-    public function __construct(
-        protected PromotionCodeProvider $promotionCodes,
-    ) {}
-
     /**
-     * Start a subscription and hand back the Stripe intent the client confirms
-     * against. Cashier creates the subscription as incomplete, so nothing is
-     * charged and no entitlement is granted here. Everything that follows from
-     * a successful payment happens in sync().
+     * Open a checkout session and hand back the secret the embedded component
+     * mounts against. Stripe owns the whole payment flow from there, including
+     * tax, promotion codes and any card authentication, and it creates the
+     * subscription itself once the session completes. Nothing is recorded
+     * locally here, the webhook commits the result.
      */
-    public function start(User $user, Plan $plan, PlanInterval $interval, ?string $promotionCode = null): ServiceResult
+    public function start(User $user, Plan $plan, PlanInterval $interval): ServiceResult
     {
         $existing = $user->subscription();
 
@@ -48,53 +43,26 @@ class SubscriptionService implements SubscriptionProvider
             return ServiceResult::error('payment_required');
         }
 
-        /**
-         * A returning or refreshing user still has their unpaid subscription
-         * from the last attempt. The same price can be confirmed as it stands,
-         * a different one cannot, because its invoice was already drawn against
-         * the old price.
-         */
-        try {
-            if ($existing && $existing->incomplete()) {
-                if ($existing->stripe_price === $plan->priceId($interval)) {
-                    return ServiceResult::success($this->intent($existing));
-                }
-
-                $existing->cancelNow();
-            }
-        } catch (ApiErrorException) {
-            return ServiceResult::error('provider_unavailable');
-        }
-
-        $promotionCodeId = null;
-
-        if ($promotionCode) {
-            $result = $this->promotionCodes->resolve($promotionCode);
-
-            if (!$result->success) {
-                return $result;
-            }
-
-            $promotionCodeId = $result->data->id;
-        }
-
         $builder = $user->newSubscription('default', $plan->priceId($interval));
 
         if ($trialEndsAt = $user->resolveTrialEnd()) {
             $builder->trialUntil($trialEndsAt);
         }
 
-        if ($promotionCodeId) {
-            $builder->withPromotionCode($promotionCodeId);
-        }
-
         try {
-            $subscription = $builder->create($user->defaultPaymentMethod()?->id);
-
-            return ServiceResult::success($this->intent($subscription));
+            $checkout = $builder->checkout([
+                'ui_mode' => 'embedded',
+                'return_url' => config('app.frontend_url'),
+                'allow_promotion_codes' => true,
+                'automatic_tax' => ['enabled' => true],
+            ]);
         } catch (ApiErrorException) {
             return ServiceResult::error('provider_unavailable');
         }
+
+        return ServiceResult::success([
+            'client_secret' => $checkout->client_secret,
+        ]);
     }
 
     /**
@@ -215,41 +183,5 @@ class SubscriptionService implements SubscriptionProvider
         }
 
         $user->notify(new PlanSubscribedNotification($plan));
-    }
-
-    /**
-     * Read back whichever intent Stripe attached to the subscription. A trial
-     * bills nothing up front, so it carries a setup intent to put the card on
-     * file, and everything else carries the first invoice's confirmation
-     * secret. A fully discounted first invoice needs neither, in which case
-     * there is nothing to confirm and the client goes straight to sync.
-     */
-    protected function intent(Subscription $subscription): array
-    {
-        $stripeSubscription = $subscription->asStripeSubscription([
-            'pending_setup_intent',
-            'latest_invoice.confirmation_secret',
-        ]);
-
-        if ($stripeSubscription->pending_setup_intent) {
-            return [
-                'intent_type' => SubscriptionIntent::Setup->value,
-                'client_secret' => $stripeSubscription->pending_setup_intent->client_secret,
-            ];
-        }
-
-        $confirmationSecret = $stripeSubscription->latest_invoice?->confirmation_secret;
-
-        if (!$confirmationSecret) {
-            return [
-                'intent_type' => SubscriptionIntent::None->value,
-                'client_secret' => null,
-            ];
-        }
-
-        return [
-            'intent_type' => SubscriptionIntent::Payment->value,
-            'client_secret' => $confirmationSecret->client_secret,
-        ];
     }
 }

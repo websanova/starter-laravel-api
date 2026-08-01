@@ -9,7 +9,6 @@ use App\Http\Requests\App\Subscription\UpdateRequest;
 use App\Http\Resources\App\SubscriptionResource;
 use App\Models\Plan;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 
 class SubscriptionController extends Controller
 {
@@ -30,10 +29,10 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Start a subscription and return the Stripe intent the client confirms
-     * against. The response carries nothing beyond what the payment element
-     * needs, since the subscription is not real until the payment clears and
-     * the client picks the resulting state up from the sync endpoint.
+     * Open a checkout session and return the secret the client mounts the
+     * embedded checkout against. The subscription does not exist locally until
+     * the provider's webhook reports it, so the client polls its profile after
+     * checkout completes rather than reading state back from here.
      */
     public function store(StoreRequest $request, SubscriptionProvider $subscriptions): JsonResponse
     {
@@ -43,16 +42,9 @@ class SubscriptionController extends Controller
             $request->user(),
             $plan,
             $request->validated('interval'),
-            $request->validated('promotion_code'),
         );
 
         if (!$result->success) {
-            if (str_starts_with($result->error, 'promotion_code.')) {
-                throw ValidationException::withMessages([
-                    'promotion_code' => [__("validation.{$result->error}")],
-                ]);
-            }
-
             return response()->json([
                 'message' => __("responses.subscription.{$result->error}"),
             ], 409);

@@ -87,7 +87,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Prices kept in sync with the provider, no hardcoded amounts
 - Three subscription modes: freemium, trial, required
 - Subscribe, swap, cancel, resume for both users and admins
-- 3D Secure (SCA) handled for client-side payment confirmation
+- Embedded provider checkout, so tax, discounts and card authentication stay provider-side
 - Complimentary plans for granting access without billing
 - Feature limits enforced automatically
 
@@ -95,12 +95,11 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Stripe through Laravel Cashier out of the box, one provider installed at a time
 - Provider contracts so a swap touches the services and migration, not controllers
 - Provider-namespaced services and webhook listener (`App\Services\Stripe`)
-- One idempotent sync shared by the client callback and the webhook
+- Webhook is the single commit path, with idempotent writes throughout
 - Entitlement committed only once the provider confirms payment
 
 **Promotion Codes**
-- Lookup endpoint so clients can check a code before checkout
-- Codes passed through on subscribe and revalidated by the provider
+- Collected and validated inside the provider's checkout, no endpoint needed
 - Admins can apply or clear discounts on an existing subscription
 - Nothing stored locally, the provider owns amounts, expiry, and limits
 

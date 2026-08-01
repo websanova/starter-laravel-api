@@ -10,16 +10,16 @@ use App\Support\ServiceResult;
 interface SubscriptionProvider
 {
     /**
-     * Start a subscription and return whatever the client needs to complete
-     * the payment with the provider. Nothing about the user's entitlement
-     * changes until sync() commits it.
+     * Open a checkout with the provider and return whatever the client needs
+     * to mount it. Nothing is recorded locally, the provider creates the
+     * subscription and the webhook commits it.
      */
-    public function start(User $user, Plan $plan, PlanInterval $interval, ?string $promotionCode = null): ServiceResult;
+    public function start(User $user, Plan $plan, PlanInterval $interval): ServiceResult;
 
     /**
      * Pull the live subscription state from the provider and commit it locally.
-     * Runs from both the client after a completed payment and the provider's
-     * webhook, so every write has to be idempotent.
+     * Driven by the provider's webhook, which can repeat an event at any time,
+     * so every write has to be idempotent.
      */
     public function sync(User $user): void;
 
