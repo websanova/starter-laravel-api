@@ -48,6 +48,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Automatic Tax
+    |--------------------------------------------------------------------------
+    |
+    | Hands tax calculation to the billing provider at checkout and on every
+    | renewal after it. Off by default because it also has to be switched on
+    | in the provider's own dashboard, and a checkout will be rejected if it
+    | is enabled on only one side.
+    |
+    | Tax is calculated from the customer's billing address, so enabling this
+    | also lets checkout store the address it collects against the customer.
+    | Renewals bill without any checkout to ask, and read the address from
+    | there.
+    |
+    */
+
+    'automatic_tax' => (bool) env('SUBSCRIPTION_AUTOMATIC_TAX', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Stripe Products
     |--------------------------------------------------------------------------
     |

@@ -24,10 +24,12 @@ class ServiceResult
     }
 
     /**
-     * Create a failed result with an error key fragment.
+     * Create a failed result with an error key fragment. Failures can carry
+     * data of their own, typically a "debug" array of provider or system
+     * messages the controller surfaces only when the app is in debug mode.
      */
-    public static function error(string $error): static
+    public static function error(string $error, mixed $data = null): static
     {
-        return new static(success: false, error: $error);
+        return new static(success: false, error: $error, data: $data);
     }
 }

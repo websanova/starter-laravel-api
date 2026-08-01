@@ -49,15 +49,32 @@ class SubscriptionService implements SubscriptionProvider
             $builder->trialUntil($trialEndsAt);
         }
 
+        /**
+         * The client stays on its own page and picks the result up from the
+         * checkout component's completion callback, so there is nowhere to
+         * redirect back to and no return URL to hand over.
+         */
+        $options = [
+            'ui_mode' => 'embedded',
+            'redirect_on_completion' => 'never',
+            'allow_promotion_codes' => true,
+        ];
+
+        /**
+         * Tax is calculated from the customer's billing address, and renewals
+         * bill with no checkout to ask for one, so letting checkout write the
+         * address it collects onto the customer is what keeps later invoices
+         * calculable. Stripe rejects the session outright without it.
+         */
+        if (config('subscription.automatic_tax')) {
+            $options['automatic_tax'] = ['enabled' => true];
+            $options['customer_update'] = ['address' => 'auto'];
+        }
+
         try {
-            $checkout = $builder->checkout([
-                'ui_mode' => 'embedded',
-                'return_url' => config('app.frontend_url'),
-                'allow_promotion_codes' => true,
-                'automatic_tax' => ['enabled' => true],
-            ]);
-        } catch (ApiErrorException) {
-            return ServiceResult::error('provider_unavailable');
+            $checkout = $builder->checkout($options);
+        } catch (ApiErrorException $e) {
+            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
         }
 
         return ServiceResult::success([
