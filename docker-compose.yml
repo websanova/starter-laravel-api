@@ -31,6 +31,13 @@ services:
         image: redis:7-alpine
         ports:
             - "6379:6379"
+    stripe:
+        image: stripe/stripe-cli
+        command: listen --forward-to php:8000/stripe/webhook
+        environment:
+            STRIPE_API_KEY: ${STRIPE_SECRET}
+        depends_on:
+            - php
 
 volumes:
     mysql_data:

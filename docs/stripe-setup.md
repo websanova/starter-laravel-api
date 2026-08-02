@@ -16,10 +16,11 @@ Archiving prices before a sync should be avoided as there are edge cases were a 
 The initial migrations contain a plan seed, however this will only run once in production. After that any additional plans and prices that are added through migrations or other means can be synced via artisan commands.
 
 ```bash
-./dev artisan plans:sync
+> docker compose exec php php artisan plans:sync
+> ./dev artisan plans:sync
 ```
 
-## Webhooks
+## Webhooks (Prod)
 
 The API registers a webhook endpoint at `POST /stripe/webhook`. You'll need to create a matching webhook endpoint in the Stripe dashboard, point it at that URL, and copy the signing secret into your `.env`:
 
@@ -27,4 +28,17 @@ The API registers a webhook endpoint at `POST /stripe/webhook`. You'll need to c
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 ```
 
-To test in local dev you will need to setup a listener via the stripe cli.
+For local dev the webhook can be fetched from the logs.
+
+```bash
+> docker compose logs -f stripe
+> ./dev logs stripe
+```
+
+Set the webhook secret and clear cache if necessary.
+
+```bash
+> docker compose exec php php artisan config:clear
+> ./dev artisan config:clear
+```
+
