@@ -65,22 +65,4 @@ return [
 
     'automatic_tax' => (bool) env('SUBSCRIPTION_AUTOMATIC_TAX', false),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Stripe Products
-    |--------------------------------------------------------------------------
-    |
-    | The Stripe product IDs for each paid plan and billing interval. These
-    | are resolved here so the values are baked into the cached config and
-    | remain available after "config:cache" runs.
-    |
-    */
-
-    'stripe_products' => [
-        'pro' => [
-            'monthly' => env('STRIPE_PRODUCT_PRO_MONTHLY'),
-            'yearly' => env('STRIPE_PRODUCT_PRO_YEARLY'),
-        ],
-    ],
-
 ];

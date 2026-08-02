@@ -12,7 +12,7 @@ test('unauthenticated user cannot update a price', function () {
     $price = Price::factory()->for($plan)->create();
 
     $response = $this->patchJson("/admin/plans/{$plan->id}/prices/{$price->id}", [
-        'stripe_product_id' => 'prod_abc123',
+        'lookup_key' => 'test_monthly',
     ]);
 
     $response->assertStatus(401);
@@ -24,13 +24,13 @@ test('regular user cannot update a price', function () {
     $price = Price::factory()->for($plan)->create();
 
     $response = $this->actingAs($user)->patchJson("/admin/plans/{$plan->id}/prices/{$price->id}", [
-        'stripe_product_id' => 'prod_abc123',
+        'lookup_key' => 'test_monthly',
     ]);
 
     $response->assertStatus(403);
 });
 
-test('stripe_product_id is required', function () {
+test('lookup_key is required', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
     $plan = Plan::factory()->create();
@@ -39,7 +39,7 @@ test('stripe_product_id is required', function () {
     $response = $this->actingAs($admin)->patchJson("/admin/plans/{$plan->id}/prices/{$price->id}", []);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors('stripe_product_id');
+        ->assertJsonValidationErrors('lookup_key');
 });
 
 test('price must belong to the plan in the route', function () {
@@ -50,7 +50,7 @@ test('price must belong to the plan in the route', function () {
     $price = Price::factory()->for($otherPlan)->create();
 
     $response = $this->actingAs($admin)->patchJson("/admin/plans/{$plan->id}/prices/{$price->id}", [
-        'stripe_product_id' => 'prod_abc123',
+        'lookup_key' => 'test_monthly',
     ]);
 
     $response->assertStatus(404);

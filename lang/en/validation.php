@@ -8,8 +8,9 @@ return [
     'promotion_code.expired' => 'The promotion code has expired.',
     'promotion_code.max_redemptions' => 'The promotion code has reached its maximum number of redemptions.',
 
-    'price.missing_product' => 'A Stripe product ID is required before syncing.',
-    'price.sync_failed' => 'The Stripe product could not be retrieved.',
-    'price.no_default_price' => 'The Stripe product has no default price set.',
+    'price.missing_lookup_key' => 'A Stripe lookup key is required before syncing.',
+    'price.sync_failed' => 'The Stripe prices could not be retrieved.',
+    'price.not_found' => 'No active Stripe price matches this lookup key.',
+    'price.interval_mismatch' => 'The Stripe price bills on a different interval.',
 
 ];

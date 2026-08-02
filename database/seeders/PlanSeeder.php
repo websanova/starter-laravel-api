@@ -45,13 +45,13 @@ class PlanSeeder extends Seeder
         );
 
         $pro->prices()->firstOrCreate(
+            ['lookup_key' => 'pro_monthly'],
             ['interval' => PlanInterval::Monthly->value],
-            ['stripe_product_id' => config('subscription.stripe_products.pro.monthly')],
         );
 
         $pro->prices()->firstOrCreate(
+            ['lookup_key' => 'pro_yearly'],
             ['interval' => PlanInterval::Yearly->value],
-            ['stripe_product_id' => config('subscription.stripe_products.pro.yearly')],
         );
     }
 }

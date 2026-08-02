@@ -21,6 +21,7 @@ class PriceFactory extends Factory
     {
         return [
             'plan_id' => Plan::factory(),
+            'lookup_key' => fake()->unique()->bothify('plan_????'),
             'interval' => fake()->randomElement(PlanInterval::cases()),
             'stripe_product_id' => 'prod_' . fake()->unique()->bothify('##??##'),
             'stripe_price_id' => 'price_' . fake()->unique()->bothify('##??##'),

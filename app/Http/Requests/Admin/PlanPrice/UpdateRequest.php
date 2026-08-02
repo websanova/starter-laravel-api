@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin\Plan\Price;
+namespace App\Http\Requests\Admin\PlanPrice;
 
 use App\Rules\PriceRules;
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,7 +21,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'stripe_product_id' => PriceRules::stripeProductId(),
+            'lookup_key' => PriceRules::lookupKey(),
         ];
     }
 }

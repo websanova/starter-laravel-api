@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Contracts\PlanSyncProvider;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Plan\Price\UpdateRequest;
+use App\Http\Requests\Admin\PlanPrice\UpdateRequest;
 use App\Http\Resources\Admin\PriceResource;
 use App\Models\Plan;
 use App\Models\Price;
@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 class PlanPriceController extends Controller
 {
     /**
-     * Update a plan price's product and sync it from Stripe.
+     * Update a plan price's lookup key and sync it from Stripe.
      */
     public function update(UpdateRequest $request, Plan $plan, Price $price, PlanSyncProvider $service): JsonResponse
     {
@@ -24,7 +24,7 @@ class PlanPriceController extends Controller
 
         if (!$result->success) {
             throw ValidationException::withMessages([
-                'stripe_product_id' => [__("validation.{$result->error}")],
+                'lookup_key' => [__("validation.{$result->error}")],
             ]);
         }
 

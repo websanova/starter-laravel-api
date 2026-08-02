@@ -163,8 +163,9 @@ return [
     'promotion_code.expired' => 'Le code promotionnel a expire.',
     'promotion_code.max_redemptions' => 'Le code promotionnel a atteint son nombre maximal d utilisations.',
 
-    'price.missing_product' => 'Un identifiant de produit Stripe est requis avant la synchronisation.',
-    'price.sync_failed' => 'Le produit Stripe n a pas pu etre recupere.',
-    'price.no_default_price' => 'Le produit Stripe n a aucun prix par defaut defini.',
+    'price.missing_lookup_key' => 'Une cle de recherche Stripe est requise avant la synchronisation.',
+    'price.sync_failed' => 'Les prix Stripe n ont pas pu etre recuperes.',
+    'price.not_found' => 'Aucun prix Stripe actif ne correspond a cette cle de recherche.',
+    'price.interval_mismatch' => 'Le prix Stripe est facture sur un intervalle different.',
 
 ];

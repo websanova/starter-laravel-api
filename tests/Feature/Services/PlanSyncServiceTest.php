@@ -2,38 +2,42 @@
 
 uses()->group('service.plan-sync');
 
+use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\Price;
 use App\Contracts\PlanSyncProvider;
 
-test('syncPrice returns an error when no product id is set', function () {
-    $price = Price::factory()->create(['stripe_product_id' => null]);
+test('syncPrice returns an error when no lookup key is set', function () {
+    $price = Price::factory()->create(['lookup_key' => null]);
 
     $result = app(PlanSyncProvider::class)->syncPrice($price);
 
     expect($result->success)->toBeFalse();
-    expect($result->error)->toBe('price.missing_product');
+    expect($result->error)->toBe('price.missing_lookup_key');
 });
 
-test('sync succeeds when no prices have a product', function () {
+test('sync succeeds when no prices have a lookup key', function () {
     $plan = Plan::factory()->create();
-    Price::factory()->for($plan)->create(['stripe_product_id' => null]);
+    Price::factory()->for($plan)->create(['lookup_key' => null]);
 
     $result = app(PlanSyncProvider::class)->sync($plan);
 
     expect($result->success)->toBeTrue();
 });
 
-test('syncPrice populates the price id, amount and currency from the stripe product', function () {
-    $productId = config('subscription.stripe_products.pro.monthly');
-
-    if (!$productId) {
-        $this->markTestSkipped('Stripe products not configured.');
+test('syncPrice populates the price id, product id, amount and currency from stripe', function () {
+    if (!config('cashier.secret')) {
+        $this->markTestSkipped('Stripe is not configured.');
     }
 
+    // The plans migration seeds the Pro prices, so these lookup keys are taken.
+    Price::query()->delete();
+
     $price = Price::factory()->create([
-        'stripe_product_id' => $productId,
+        'lookup_key' => 'pro_monthly',
+        'interval' => PlanInterval::Monthly,
         'stripe_price_id' => null,
+        'stripe_product_id' => null,
         'amount' => 0,
     ]);
 
@@ -41,19 +45,65 @@ test('syncPrice populates the price id, amount and currency from the stripe prod
 
     expect($result->success)->toBeTrue();
     expect($price->fresh()->stripe_price_id)->not->toBeNull();
+    expect($price->fresh()->stripe_product_id)->not->toBeNull();
     expect($price->fresh()->amount)->toBeGreaterThan(0);
     expect($price->fresh()->currency)->not->toBeEmpty();
 });
 
-test('syncPrice returns an error when the stripe product does not exist', function () {
-    if (!config('subscription.stripe_products.pro.monthly')) {
-        $this->markTestSkipped('Stripe products not configured.');
+test('syncPrice returns an error when no active stripe price matches the lookup key', function () {
+    if (!config('cashier.secret')) {
+        $this->markTestSkipped('Stripe is not configured.');
     }
 
-    $price = Price::factory()->create(['stripe_product_id' => 'prod_nonexistent0000']);
+    $price = Price::factory()->create(['lookup_key' => 'nonexistent_lookup_key']);
 
     $result = app(PlanSyncProvider::class)->syncPrice($price);
 
     expect($result->success)->toBeFalse();
-    expect($result->error)->toBe('price.sync_failed');
+    expect($result->error)->toBe('price.not_found');
+});
+
+test('syncPrice returns an error when the stripe price bills on a different interval', function () {
+    if (!config('cashier.secret')) {
+        $this->markTestSkipped('Stripe is not configured.');
+    }
+
+    // The plans migration seeds the Pro prices, so these lookup keys are taken.
+    Price::query()->delete();
+
+    $price = Price::factory()->create([
+        'lookup_key' => 'pro_monthly',
+        'interval' => PlanInterval::Yearly,
+    ]);
+
+    $result = app(PlanSyncProvider::class)->syncPrice($price);
+
+    expect($result->success)->toBeFalse();
+    expect($result->error)->toBe('price.interval_mismatch');
+});
+
+test('sync populates every price on the plan in one pass', function () {
+    if (!config('cashier.secret')) {
+        $this->markTestSkipped('Stripe is not configured.');
+    }
+
+    // The plans migration seeds the Pro prices, so these lookup keys are taken.
+    Price::query()->delete();
+
+    $plan = Plan::factory()->create();
+
+    $plan->prices()->create([
+        'lookup_key' => 'pro_monthly',
+        'interval' => PlanInterval::Monthly,
+    ]);
+
+    $plan->prices()->create([
+        'lookup_key' => 'pro_yearly',
+        'interval' => PlanInterval::Yearly,
+    ]);
+
+    $result = app(PlanSyncProvider::class)->sync($plan);
+
+    expect($result->success)->toBeTrue();
+    expect($plan->prices()->whereNull('stripe_price_id')->count())->toBe(0);
 });

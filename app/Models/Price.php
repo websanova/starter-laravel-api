@@ -18,6 +18,7 @@ class Price extends Model
      */
     protected $fillable = [
         'plan_id',
+        'lookup_key',
         'interval',
         'stripe_product_id',
         'stripe_price_id',

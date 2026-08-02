@@ -17,6 +17,7 @@ class PriceResource extends JsonResource
             'currency' => $this->currency,
             'id' => $this->id,
             'interval' => $this->interval,
+            'lookup_key' => $this->lookup_key,
             'stripe_price_id' => $this->stripe_price_id,
             'stripe_product_id' => $this->stripe_product_id,
         ];
