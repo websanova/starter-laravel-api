@@ -52,11 +52,14 @@ class SubscriptionService implements SubscriptionProvider
         /**
          * The client stays on its own page and picks the result up from the
          * checkout component's completion callback, so there is nowhere to
-         * redirect back to and no return URL to hand over.
+         * redirect back to and no return URL to hand over. Cashier resolves
+         * route('home') for the return URL before it notices the redirect is
+         * never happening, so an empty one is passed to keep it off that path.
          */
         $options = [
             'ui_mode' => 'embedded',
             'redirect_on_completion' => 'never',
+            'return_url' => '',
             'allow_promotion_codes' => true,
         ];
 
