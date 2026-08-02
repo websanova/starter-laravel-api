@@ -43,6 +43,7 @@ class ProfileResource extends JsonResource
             'subscription' => $subscription ? [
                 'ends_at' => $subscription->ends_at,
                 'interval' => Plan::intervalForPriceId($subscription->stripe_price),
+                'status' => $subscription->stripe_status,
             ] : null,
             'timezone' => $this->timezone,
             'trial' => $trialEndsAt ? [
