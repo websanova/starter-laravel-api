@@ -67,9 +67,7 @@ return [
     'subscription.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
 
-    'admin.plan.created' => 'Plan created successfully.',
     'admin.plan.updated' => 'Plan updated successfully.',
-    'admin.plan.deleted' => 'Plan deleted successfully.',
     'admin.plan.price_synced' => 'Plan price synced successfully.',
 
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',

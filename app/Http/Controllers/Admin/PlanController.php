@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Plan\DestroyRequest;
 use App\Http\Requests\Admin\Plan\IndexRequest;
 use App\Http\Requests\Admin\Plan\ShowRequest;
-use App\Http\Requests\Admin\Plan\StoreRequest;
 use App\Http\Requests\Admin\Plan\UpdateRequest;
 use App\Http\Resources\Admin\PlanResource;
 use App\Models\Plan;
@@ -39,19 +37,6 @@ class PlanController extends Controller
     }
 
     /**
-     * Create a new plan.
-     */
-    public function store(StoreRequest $request): JsonResponse
-    {
-        $plan = Plan::create($request->validated());
-
-        return response()->json([
-            'data' => new PlanResource($plan),
-            'message' => __('responses.admin.plan.created'),
-        ], 201);
-    }
-
-    /**
      * Update a plan.
      */
     public function update(UpdateRequest $request, Plan $plan): JsonResponse
@@ -62,15 +47,5 @@ class PlanController extends Controller
             'data' => new PlanResource($plan),
             'message' => __('responses.admin.plan.updated'),
         ]);
-    }
-
-    /**
-     * Delete a plan.
-     */
-    public function destroy(DestroyRequest $request, Plan $plan): JsonResponse
-    {
-        $plan->delete();
-
-        return response()->json(null, 204);
     }
 }

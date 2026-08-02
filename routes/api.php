@@ -117,10 +117,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::delete('/users/{user}/tags/{tag}', [App\Http\Controllers\Admin\UserTagController::class, 'destroy'])->scopeBindings();
 
     Route::get('/plans', [App\Http\Controllers\Admin\PlanController::class, 'index']);
-    Route::post('/plans', [App\Http\Controllers\Admin\PlanController::class, 'store']);
     Route::get('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'show']);
     Route::patch('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'update']);
-    Route::delete('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'destroy']);
     Route::patch('/plans/{plan}/prices/{price}', [App\Http\Controllers\Admin\PlanPriceController::class, 'update'])->scopeBindings();
 
     Route::get('/stats', [App\Http\Controllers\Admin\StatController::class, 'index']);

@@ -64,9 +64,7 @@ return [
     'subscription.resumed' => 'Abonnement repris avec succes.',
     'plan.limit_reached' => 'Vous avez atteint la limite de cette fonctionnalite pour votre forfait actuel.',
 
-    'admin.plan.created' => 'Forfait cree avec succes.',
     'admin.plan.updated' => 'Forfait mis a jour avec succes.',
-    'admin.plan.deleted' => 'Forfait supprime avec succes.',
     'admin.plan.price_synced' => 'Prix du forfait synchronise avec succes.',
 
     'throttle' => 'Trop de requetes. Veuillez reessayer dans :seconds secondes.',

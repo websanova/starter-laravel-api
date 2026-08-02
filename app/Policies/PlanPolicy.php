@@ -13,11 +13,7 @@ class PlanPolicy
      */
     public function before(User $user, string $ability): ?bool
     {
-        if ($user->hasRole(UserRole::Super)) {
-            return $ability === 'delete' ? null : true;
-        }
-
-        return null;
+        return $user->hasRole(UserRole::Super) ? true : null;
     }
 
     /**
@@ -37,27 +33,10 @@ class PlanPolicy
     }
 
     /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        return $user->hasPermissionTo('plans.manage');
-    }
-
-    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Plan $plan): bool
     {
         return $user->hasPermissionTo('plans.manage');
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Plan $plan): bool
-    {
-        return ($user->hasRole(UserRole::Super) || $user->hasPermissionTo('plans.manage'))
-            && $plan->users()->count() === 0;
     }
 }
