@@ -16,6 +16,7 @@ class SettingController extends Controller
     {
         return response()->json([
             'data' => [
+                'subscription_automatic_tax' => config('subscription.automatic_tax'),
                 'subscription_card_upfront' => config('subscription.require_card_upfront'),
                 'subscription_mode' => config('subscription.mode')->value,
                 'subscription_trial_days' => config('subscription.trial_days'),
