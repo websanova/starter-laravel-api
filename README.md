@@ -87,7 +87,9 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Prices kept in sync with the provider, no hardcoded amounts
 - Three subscription modes: freemium, trial, required
 - Subscribe, swap, cancel, resume for both users and admins
-- Client-side payment element, with card authentication and tax handled provider-side
+- Client-side payment element, with card authentication handled provider-side
+- Optional automatic tax, off by default since it has to be switched on provider-side too
+- Billing address endpoint, required before subscribing only when automatic tax is on
 - Complimentary plans for granting access without billing
 - Feature limits enforced automatically
 
@@ -99,9 +101,8 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Entitlement committed only once the provider confirms payment
 
 **Promotion Codes**
-- Validated against the provider, nothing stored locally
+- Validated against the provider, nothing stored locally, so it owns amounts, expiry, and limits
 - Admins can apply or clear discounts on an existing subscription
-- Nothing stored locally, the provider owns amounts, expiry, and limits
 
 **Notifications**
 - Laravel's database notification channel for in-app notifications (bell icon)
