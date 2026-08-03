@@ -247,6 +247,34 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
+     * The billing address handed to the billing provider. Country and postal
+     * code are the pair automatic tax resolves a location from, and a state is
+     * derivable from those two, so the rest is only carried so that invoices
+     * read properly.
+     */
+    public function billingAddress(): array
+    {
+        return array_filter([
+            'city' => $this->billing_city,
+            'country' => $this->billing_country,
+            'line1' => $this->billing_line1,
+            'line2' => $this->billing_line2,
+            'postal_code' => $this->billing_postal_code,
+        ]);
+    }
+
+    /**
+     * Whether the user has enough of an address for the provider to resolve a
+     * tax location. A country on its own is enough in most of the world, but
+     * not in countries that tax below the national level, so both are held to
+     * the same bar rather than guessing per country.
+     */
+    public function hasBillingAddress(): bool
+    {
+        return !is_null($this->billing_country) && !is_null($this->billing_postal_code);
+    }
+
+    /**
      * Send the password reset notification.
      */
     public function sendPasswordResetNotification($token): void

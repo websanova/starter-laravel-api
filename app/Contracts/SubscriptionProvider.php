@@ -17,6 +17,14 @@ interface SubscriptionProvider
     public function start(User $user, Plan $plan, PlanInterval $interval): ServiceResult;
 
     /**
+     * Open a payment session and return the secret the client mounts its own
+     * payment form against. The subscription is created up front and sits
+     * incomplete until the client confirms, so this has to be safe to call
+     * repeatedly for the same attempt.
+     */
+    public function intent(User $user, Plan $plan, PlanInterval $interval): ServiceResult;
+
+    /**
      * Pull the live subscription state from the provider and commit it locally.
      * Driven by the provider's webhook, which can repeat an event at any time,
      * so every write has to be idempotent.

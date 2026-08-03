@@ -86,6 +86,124 @@ class SubscriptionService implements SubscriptionProvider
     }
 
     /**
+     * Open a payment session and hand back the secret a payment element mounts
+     * against. Unlike the hosted checkout above, the subscription is created
+     * here and up front, sitting incomplete until the client confirms it, so
+     * this has to stay safe to call again on a page refresh or on a second
+     * attempt after the user walked away from the first one.
+     */
+    public function intent(User $user, Plan $plan, PlanInterval $interval): ServiceResult
+    {
+        /**
+         * Hosted checkout collected the address itself on the way through.
+         * Nothing collects one here, so without it Stripe rejects the whole
+         * create, and a local failure that names the reason beats a provider
+         * error the client cannot act on.
+         */
+        if (config('subscription.automatic_tax') && !$user->hasBillingAddress()) {
+            return ServiceResult::error('address_required');
+        }
+
+        $priceId = $plan->priceId($interval);
+        $subscription = $user->subscription();
+
+        try {
+            /**
+             * The local status is only as fresh as the last webhook, and this
+             * is hit again the moment the payment page reloads. Pull the real
+             * status before deciding anything, or a subscription paid seconds
+             * ago still reads incomplete and gets torn down below. It also
+             * lets Stripe's own expiry land, which drops through to a fresh
+             * attempt untouched.
+             */
+            if ($subscription && $subscription->incomplete()) {
+                $subscription->syncStripeStatus();
+            }
+
+            if ($subscription && $subscription->valid()) {
+                return ServiceResult::error('already_subscribed');
+            }
+
+            if ($subscription && ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID)) {
+                return ServiceResult::error('payment_required');
+            }
+
+            /**
+             * An incomplete subscription is an attempt still in flight. The
+             * same price is the refresh case, so it is handed back as is and
+             * Stripe keeps the invoice and its element session alive. A
+             * different price means they changed their mind on the page, and
+             * swap refuses to touch an incomplete subscription, so the old
+             * attempt is cancelled outright and a new one built.
+             */
+            $reuse = $subscription && $subscription->incomplete() && $subscription->stripe_price === $priceId;
+
+            if ($subscription && $subscription->incomplete() && !$reuse) {
+                $subscription->cancelNow();
+            }
+
+            if (!$reuse) {
+                /**
+                 * Nothing pushes the address to Stripe on its own, so it is
+                 * written here on every attempt to keep the two sides from
+                 * drifting. It has to land before the create, since the first
+                 * invoice is finalized immediately and never recalculates its
+                 * tax afterwards.
+                 */
+                if ($user->hasBillingAddress()) {
+                    $user->updateOrCreateStripeCustomer(['address' => $user->billingAddress()]);
+                }
+
+                $builder = $user->newSubscription('default', $priceId)->ignoreIncompletePayments();
+
+                if ($trialEndsAt = $user->resolveTrialEnd()) {
+                    $builder->trialUntil($trialEndsAt);
+                }
+
+                /**
+                 * Checkout stamped the card onto the subscription on its way
+                 * out. Creating one directly leaves that off by default, and
+                 * sync() reads the card off exactly that field, so renewals
+                 * would bill against nothing without this.
+                 */
+                $options = [
+                    'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
+                ];
+
+                if (config('subscription.automatic_tax')) {
+                    $options['automatic_tax'] = ['enabled' => true];
+                }
+
+                $subscription = $builder->create(null, [], $options);
+            }
+
+            /**
+             * A subscription with something to charge for exposes the secret on
+             * its invoice, while one starting on a trial has nothing to charge
+             * yet, so Stripe hangs a setup intent off it instead. The client
+             * confirms those two with different calls, so which one came back
+             * goes along with it.
+             */
+            $stripeSubscription = $subscription->asStripeSubscription([
+                'latest_invoice.confirmation_secret',
+                'pending_setup_intent',
+            ]);
+        } catch (ApiErrorException $e) {
+            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
+        }
+
+        if ($secret = $stripeSubscription->latest_invoice->confirmation_secret->client_secret ?? null) {
+            return ServiceResult::success(['client_secret' => $secret, 'intent_type' => 'payment']);
+        }
+
+        if ($secret = $stripeSubscription->pending_setup_intent->client_secret ?? null) {
+            return ServiceResult::success(['client_secret' => $secret, 'intent_type' => 'setup']);
+        }
+
+        return ServiceResult::error('provider_unavailable');
+    }
+
+    /**
      * Pull the live state from Stripe and commit it locally. This is the only
      * place a subscription turns into an entitlement, and it runs from both the
      * client after a confirmed payment and the webhook whenever it lands. Every
