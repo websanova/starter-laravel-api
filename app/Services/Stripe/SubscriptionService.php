@@ -18,6 +18,61 @@ use Stripe\Subscription as StripeSubscription;
 class SubscriptionService implements SubscriptionProvider
 {
     /**
+     * Commit a billing address, pushing it to Stripe before storing it. The
+     * provider write goes first because a local address Stripe does not know
+     * about is worse than no address at all, it would let a subscribe through
+     * that the provider then rejects for having no tax location.
+     *
+     * The address keys are Stripe's own, so they pass straight through and are
+     * only renamed on the way into the users table.
+     */
+    public function updateBillingAddress(User $user, array $address): ServiceResult
+    {
+        $address = array_filter($address);
+
+        if ($address == $user->billingAddress()) {
+            return ServiceResult::success();
+        }
+
+        /**
+         * The first invoice is finalized the moment the subscription is
+         * created and never recalculates its tax, so an attempt still in
+         * flight would keep charging the old jurisdiction. Killing it makes
+         * the next intent() build a fresh one rather than hand back a secret
+         * for the stale invoice. Only the two fields a tax location resolves
+         * from count, since anything else leaves the amount untouched and
+         * tearing up a live payment session over a corrected street name
+         * costs the user their progress for nothing.
+         */
+        $movedTaxLocation = config('subscription.automatic_tax') && (
+            ($address['country'] ?? null) !== $user->billing_country ||
+            ($address['postal_code'] ?? null) !== $user->billing_postal_code
+        );
+
+        try {
+            $user->updateOrCreateStripeCustomer(['address' => $address]);
+
+            $subscription = $user->subscription();
+
+            if ($movedTaxLocation && $subscription && $subscription->incomplete()) {
+                $subscription->cancelNow();
+            }
+        } catch (ApiErrorException $e) {
+            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
+        }
+
+        $user->update([
+            'billing_city' => $address['city'] ?? null,
+            'billing_country' => $address['country'] ?? null,
+            'billing_line1' => $address['line1'] ?? null,
+            'billing_line2' => $address['line2'] ?? null,
+            'billing_postal_code' => $address['postal_code'] ?? null,
+        ]);
+
+        return ServiceResult::success();
+    }
+
+    /**
      * Open a payment session and hand back the secret a payment element mounts
      * against. The subscription is created here and up front, sitting
      * incomplete until the client confirms it, so this has to stay safe to
@@ -84,17 +139,6 @@ class SubscriptionService implements SubscriptionProvider
             }
 
             if (!$reuse) {
-                /**
-                 * Nothing pushes the address to Stripe on its own, so it is
-                 * written here on every attempt to keep the two sides from
-                 * drifting. It has to land before the create, since the first
-                 * invoice is finalized immediately and never recalculates its
-                 * tax afterwards.
-                 */
-                if ($user->hasBillingAddress()) {
-                    $user->updateOrCreateStripeCustomer(['address' => $user->billingAddress()]);
-                }
-
                 $builder = $user->newSubscription('default', $priceId)->ignoreIncompletePayments();
 
                 if ($trialEndsAt = $user->resolveTrialEnd()) {

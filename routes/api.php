@@ -48,6 +48,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/avatar', [App\Http\Controllers\App\AvatarController::class, 'store']);
         Route::delete('/avatar', [App\Http\Controllers\App\AvatarController::class, 'destroy']);
 
+        Route::put('/billing/address', [App\Http\Controllers\App\BillingAddressController::class, 'update']);
+
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
         Route::post('/subscription/intent', [App\Http\Controllers\App\SubscriptionIntentController::class, 'store']);

@@ -57,6 +57,8 @@ return [
     'bookmark.updated' => 'Bookmark updated successfully.',
     'bookmark.deleted' => 'Bookmark deleted successfully.',
 
+    'billing.address_updated' => 'Billing address updated successfully.',
+
     'subscription.required' => 'An active subscription is required to access this resource.',
     'subscription.created' => 'Subscription created successfully.',
     'subscription.updated' => 'Subscription updated successfully.',

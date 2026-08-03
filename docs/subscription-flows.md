@@ -77,7 +77,14 @@ flowchart LR
     Z1 -->|yes| C
     Z1 -->|no| Z2[Collect address]
     Z2 --> Z3["PUT /billing/address"]
-    Z3 --> C
+    Z3 --> Z4["Create or update<br/>Stripe customer"]
+    Z4 --> Z5{country or<br/>postal changed?}
+
+    Z5 -->|no| Z7
+    Z5 -->|yes| Z6["Cancel any incomplete<br/>subscription"]
+    Z6 --> Z7
+
+    Z7["Save billing_* columns"] --> C
 
     C["POST /subscription/intent<br/>{plan, interval}"] --> B{Existing<br/>subscription?}
 
@@ -88,7 +95,7 @@ flowchart LR
     B -->|none / expired| F1
     B3 --> F1
 
-    F1["Create Stripe subscription<br/>payment_behavior: default_incomplete"] --> F2["Local row saved<br/>status: incomplete"]
+    F1["Create Stripe subscription<br/>payment_behavior: default_incomplete<br/>creates the customer if none yet"] --> F2["Local row saved<br/>status: incomplete"]
     F2 --> G{Trial?}
 
     G -->|no| P1["client_secret from<br/>latest_invoice.confirmation_secret<br/>intent_type: payment"]
@@ -102,9 +109,9 @@ flowchart LR
     F7 --> F8["Promote card to customer default<br/>fills brand + last four"]
 ```
 
-The refresh path joins at the trial check rather than at the address write, so calling this again for the same attempt never rewrites the customer. That is why a changed address has to cancel the incomplete subscription at the `PUT`, since the first invoice is finalized on creation and never recalculates its tax afterwards.
+The address gate is client-driven. The intent call still refuses with `address_required` if it is skipped, but that is a backstop rather than a step anyone walks through.
 
-The address loop is client-driven. The API only refuses, it holds no state about where the user is in that loop.
+`PUT /billing/address` cancels any incomplete subscription when the address actually changes. The first invoice is finalized the moment the subscription is created and never recalculates its tax, so without that cancel the next intent call would hand back a secret for an invoice carrying the old jurisdiction.
 
 ## Plan Selection
 

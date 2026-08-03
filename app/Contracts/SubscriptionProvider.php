@@ -10,6 +10,13 @@ use App\Support\ServiceResult;
 interface SubscriptionProvider
 {
     /**
+     * Commit a billing address, pushing it to the provider before storing it
+     * locally. Cancels any payment attempt still in flight, since a finalized
+     * invoice never recalculates its tax against the new address.
+     */
+    public function updateBillingAddress(User $user, array $address): ServiceResult;
+
+    /**
      * Open a payment session and return the secret the client mounts its own
      * payment form against. The subscription is created up front and sits
      * incomplete until the client confirms, so this has to be safe to call
