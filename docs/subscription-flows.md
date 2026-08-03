@@ -69,20 +69,42 @@ A new subscritpion can be created on a fresh account and also other scenarios, l
 
 ```mermaid
 flowchart LR
-    A["POST /subscription<br/>{plan_id, interval}"] --> B{Existing<br/>subscription?}
+    A[Subscribe] --> Z{automatic_tax on?}
 
-    B -->|none| F1["Create Stripe subscription<br/>payment_behavior: default_incomplete"]
-    B -->|branch 2| X[TBD]
-    B -->|branch 3| Y[TBD]
+    Z -->|no| C
+    Z -->|yes| Z1{Billing address<br/>on file?}
 
-    F1 --> F2["Local row saved<br/>status: incomplete"]
-    F2 --> F3["Return client_secret<br/>from first invoice PI"]
-    F3 --> F4["Client mounts Payment Element"]
-    F4 --> F5["User submits card<br/>stripe.confirmPayment, 3DS if required"]
-    F5 --> F6["Stripe charges first invoice"]
+    Z1 -->|yes| C
+    Z1 -->|no| Z2[Collect address]
+    Z2 --> Z3["PUT /billing/address"]
+    Z3 --> C
+
+    C["POST /subscription/intent<br/>{plan, interval}"] --> B{Existing<br/>subscription?}
+
+    B -->|valid| B1["409 already_subscribed"]
+    B -->|past_due / unpaid| B2["409 payment_required"]
+    B -->|incomplete, same price| G
+    B -->|incomplete, other price| B3["Cancel it now"]
+    B -->|none / expired| F1
+    B3 --> F1
+
+    F1["Create Stripe subscription<br/>payment_behavior: default_incomplete"] --> F2["Local row saved<br/>status: incomplete"]
+    F2 --> G{Trial?}
+
+    G -->|no| P1["client_secret from<br/>latest_invoice.confirmation_secret<br/>intent_type: payment"]
+    G -->|yes| P2["client_secret from<br/>pending_setup_intent<br/>intent_type: setup"]
+
+    P1 --> F4["Client mounts Payment Element"]
+    P2 --> F4
+    F4 --> F5["stripe.confirmPayment or confirmSetup<br/>3DS if required"]
+    F5 --> F6["First invoice paid<br/>(zero on a trial)"]
     F6 --> F7["Webhook: status -> active"]
     F7 --> F8["Promote card to customer default<br/>fills brand + last four"]
 ```
+
+The refresh path joins at the trial check rather than at the address write, so calling this again for the same attempt never rewrites the customer. That is why a changed address has to cancel the incomplete subscription at the `PUT`, since the first invoice is finalized on creation and never recalculates its tax afterwards.
+
+The address loop is client-driven. The API only refuses, it holds no state about where the user is in that loop.
 
 ## Plan Selection
 
