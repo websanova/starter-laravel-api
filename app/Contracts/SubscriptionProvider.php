@@ -10,13 +10,6 @@ use App\Support\ServiceResult;
 interface SubscriptionProvider
 {
     /**
-     * Open a checkout with the provider and return whatever the client needs
-     * to mount it. Nothing is recorded locally, the provider creates the
-     * subscription and the webhook commits it.
-     */
-    public function start(User $user, Plan $plan, PlanInterval $interval): ServiceResult;
-
-    /**
      * Open a payment session and return the secret the client mounts its own
      * payment form against. The subscription is created up front and sits
      * incomplete until the client confirms, so this has to be safe to call

@@ -114,12 +114,12 @@ flowchart LR
     G -->|yes| H[Subscribe]
     G -. no .-> G2@{ shape: text, label: "Unreachable" }
 
-    R --> R2[[Checkout]]
-    S --> S2[[Checkout]]
-    K --> K2[[Checkout]]
+    R --> R2[[Payment]]
+    S --> S2[[Payment]]
+    K --> K2[[Payment]]
     L --> L2[[Cancel]]
-    M --> M2[[Checkout]]
-    H --> H2[[Checkout]]
+    M --> M2[[Payment]]
+    H --> H2[[Payment]]
 ```
 
 The subscription check sits ahead of the tier comparison on purpose. It catches the freemium user sitting on the free plan and the required-mode user carrying no plan at all in one branch, neither of whom has ever paid, so neither should be told they are upgrading. Upgrade then only ever means moving between two paid plans.

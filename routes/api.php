@@ -50,7 +50,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
-        Route::post('/subscription/checkout', [App\Http\Controllers\App\SubscriptionCheckoutController::class, 'store']);
         Route::post('/subscription/intent', [App\Http\Controllers\App\SubscriptionIntentController::class, 'store']);
         Route::post('/subscription/cancel', [App\Http\Controllers\App\SubscriptionCancelController::class, 'store']);
         Route::post('/subscription/resume', [App\Http\Controllers\App\SubscriptionResumeController::class, 'store']);

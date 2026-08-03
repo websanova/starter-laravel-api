@@ -87,7 +87,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Prices kept in sync with the provider, no hardcoded amounts
 - Three subscription modes: freemium, trial, required
 - Subscribe, swap, cancel, resume for both users and admins
-- Embedded provider checkout, so tax, discounts and card authentication stay provider-side
+- Client-side payment element, with card authentication and tax handled provider-side
 - Complimentary plans for granting access without billing
 - Feature limits enforced automatically
 
@@ -99,7 +99,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Entitlement committed only once the provider confirms payment
 
 **Promotion Codes**
-- Collected and validated inside the provider's checkout, no endpoint needed
+- Validated against the provider, nothing stored locally
 - Admins can apply or clear discounts on an existing subscription
 - Nothing stored locally, the provider owns amounts, expiry, and limits
 

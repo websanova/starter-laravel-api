@@ -18,87 +18,20 @@ use Stripe\Subscription as StripeSubscription;
 class SubscriptionService implements SubscriptionProvider
 {
     /**
-     * Open a checkout session and hand back the secret the embedded component
-     * mounts against. Stripe owns the whole payment flow from there, including
-     * tax, promotion codes and any card authentication, and it creates the
-     * subscription itself once the session completes. Nothing is recorded
-     * locally here, the webhook commits the result.
-     */
-    public function start(User $user, Plan $plan, PlanInterval $interval): ServiceResult
-    {
-        $existing = $user->subscription();
-
-        if ($existing && $existing->valid()) {
-            return ServiceResult::error('already_subscribed');
-        }
-
-        /**
-         * TODO: Past due and unpaid are billing failures on a subscription that
-         * already exists. Stripe keeps that subscription and its open invoice,
-         * so the fix is to attach a new payment method and retry the invoice,
-         * not to open a second subscription alongside the failing one. Until
-         * that endpoint exists the request is rejected here.
-         */
-        if ($existing && ($existing->pastDue() || $existing->stripe_status === StripeSubscription::STATUS_UNPAID)) {
-            return ServiceResult::error('payment_required');
-        }
-
-        $builder = $user->newSubscription('default', $plan->priceId($interval));
-
-        if ($trialEndsAt = $user->resolveTrialEnd()) {
-            $builder->trialUntil($trialEndsAt);
-        }
-
-        /**
-         * The client stays on its own page and picks the result up from the
-         * checkout component's completion callback, so there is nowhere to
-         * redirect back to and no return URL to hand over. Cashier resolves
-         * route('home') for the return URL before it notices the redirect is
-         * never happening, so an empty one is passed to keep it off that path.
-         */
-        $options = [
-            'ui_mode' => 'embedded',
-            'redirect_on_completion' => 'never',
-            'return_url' => '',
-            'allow_promotion_codes' => true,
-        ];
-
-        /**
-         * Tax is calculated from the customer's billing address, and renewals
-         * bill with no checkout to ask for one, so letting checkout write the
-         * address it collects onto the customer is what keeps later invoices
-         * calculable. Stripe rejects the session outright without it.
-         */
-        if (config('subscription.automatic_tax')) {
-            $options['automatic_tax'] = ['enabled' => true];
-            $options['customer_update'] = ['address' => 'auto'];
-        }
-
-        try {
-            $checkout = $builder->checkout($options);
-        } catch (ApiErrorException $e) {
-            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
-        }
-
-        return ServiceResult::success([
-            'client_secret' => $checkout->client_secret,
-        ]);
-    }
-
-    /**
      * Open a payment session and hand back the secret a payment element mounts
-     * against. Unlike the hosted checkout above, the subscription is created
-     * here and up front, sitting incomplete until the client confirms it, so
-     * this has to stay safe to call again on a page refresh or on a second
-     * attempt after the user walked away from the first one.
+     * against. The subscription is created here and up front, sitting
+     * incomplete until the client confirms it, so this has to stay safe to
+     * call again on a page refresh or on a second attempt after the user
+     * walked away from the first one.
      */
     public function intent(User $user, Plan $plan, PlanInterval $interval): ServiceResult
     {
         /**
-         * Hosted checkout collected the address itself on the way through.
-         * Nothing collects one here, so without it Stripe rejects the whole
-         * create, and a local failure that names the reason beats a provider
-         * error the client cannot act on.
+         * Tax is calculated from the customer's billing address, and nothing
+         * in this flow collects one, so it has to already be on the user.
+         * Stripe rejects the create outright without it, and a local failure
+         * that names the reason beats a provider error the client cannot act
+         * on.
          */
         if (config('subscription.automatic_tax') && !$user->hasBillingAddress()) {
             return ServiceResult::error('address_required');
@@ -124,6 +57,14 @@ class SubscriptionService implements SubscriptionProvider
                 return ServiceResult::error('already_subscribed');
             }
 
+            /**
+             * TODO: Past due and unpaid are billing failures on a subscription
+             * that already exists. Stripe keeps that subscription and its open
+             * invoice, so the fix is to attach a new payment method and retry
+             * the invoice, not to open a second subscription alongside the
+             * failing one. Until that endpoint exists the request is rejected
+             * here.
+             */
             if ($subscription && ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID)) {
                 return ServiceResult::error('payment_required');
             }
@@ -161,8 +102,8 @@ class SubscriptionService implements SubscriptionProvider
                 }
 
                 /**
-                 * Checkout stamped the card onto the subscription on its way
-                 * out. Creating one directly leaves that off by default, and
+                 * Stripe leaves the subscription's default payment method
+                 * unset unless it is told to keep the one that paid, and
                  * sync() reads the card off exactly that field, so renewals
                  * would bill against nothing without this.
                  */
