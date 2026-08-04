@@ -13,12 +13,13 @@ class SyncSubscription
     ) {}
 
     /**
-     * Commit the subscription state whenever Stripe moves it.
+     * Commit what Cashier's own handler leaves untouched whenever Stripe moves
+     * a subscription.
      *
-     * Portal swaps, dunning and payments that fail their way to cancelled never
-     * touch our own write paths, so the webhook is the only signal for those.
-     * The client calls the same sync after confirming a payment, since this
-     * event can land well after the user is already back on the site.
+     * Cashier writes the subscription row itself before this runs, so nothing
+     * here re-reads it. What is left is the user side, and since portal swaps,
+     * dunning and payments that fail their way to cancelled never touch our own
+     * write paths, the webhook is the only signal for any of it.
      */
     public function handle(WebhookHandled $event): void
     {
@@ -37,6 +38,7 @@ class SyncSubscription
             return;
         }
 
-        $this->subscriptions->sync($user);
+        $this->subscriptions->commitPlan($user);
+        $this->subscriptions->commitPaymentMethod($user);
     }
 }

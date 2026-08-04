@@ -26,10 +26,22 @@ interface SubscriptionProvider
 
     /**
      * Pull the live subscription state from the provider and commit it locally.
-     * Driven by the provider's webhook, which can repeat an event at any time,
-     * so every write has to be idempotent.
+     * The entry point for a provider whose webhooks do not commit on their own.
      */
     public function sync(User $user): void;
+
+    /**
+     * Commit the plan the user is entitled to and announce the move. Driven by
+     * the provider's webhook, which can repeat an event at any time, so the
+     * write is idempotent and only the caller that changes something announces.
+     */
+    public function commitPlan(User $user): void;
+
+    /**
+     * Commit the card details shown in the account, promoting the one that paid
+     * for the subscription to the customer default.
+     */
+    public function commitPaymentMethod(User $user): void;
 
     /**
      * Swap the subscription to a different plan or interval.

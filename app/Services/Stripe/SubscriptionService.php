@@ -189,10 +189,10 @@ class SubscriptionService implements SubscriptionProvider
     }
 
     /**
-     * Pull the live state from Stripe and commit it locally. This is the only
-     * place a subscription turns into an entitlement, and it runs from both the
-     * client after a confirmed payment and the webhook whenever it lands. Every
-     * write is idempotent so whichever arrives second finds nothing to do.
+     * Pull the live status from the provider and commit it locally. Cashier's
+     * own webhook handler writes the subscription row before anything here
+     * runs, so nothing calls this today. It stays as the entry point for a
+     * provider whose webhooks do not commit on their own.
      */
     public function sync(User $user): void
     {
@@ -203,27 +203,81 @@ class SubscriptionService implements SubscriptionProvider
         }
 
         $subscription->syncStripeStatus();
+    }
 
-        $stripeSubscription = $subscription->asStripeSubscription();
-
-        /**
-         * Stripe stamps the card on the subscription only. Cashier reads the
-         * card columns off the customer default, so without this promotion the
-         * user row keeps a null brand and last four after a successful signup.
-         */
-        if ($stripeSubscription->default_payment_method) {
-            $user->updateDefaultPaymentMethod($stripeSubscription->default_payment_method);
-        }
+    /**
+     * Commit the plan the user is entitled to and announce the move. Stripe
+     * repeats subscription events for the life of a subscription and retries
+     * anything that fails, so the comparison is made the write. Concurrent
+     * callers race on a single conditional update and only the winner sends.
+     */
+    public function commitPlan(User $user): void
+    {
+        $previousPlanId = $user->plan_id;
 
         $user->load('subscriptions');
 
-        if ($subscription->valid()) {
-            $user->complimentary_plan_id = null;
+        /**
+         * Cleared on its own rather than folded into the claim below. A
+         * complimentary grant on the same plan the user goes on to pay for
+         * leaves plan_id untouched, so the claim finds nothing to write and
+         * the grant would outlive the subscription that replaced it.
+         */
+        if ($user->complimentary_plan_id && $user->subscription()?->valid()) {
+            $user->update(['complimentary_plan_id' => null]);
         }
 
-        $user->fillPlan()->save();
+        $planId = $user->fillPlan()->plan_id;
 
-        $this->announceActivation($user, $subscription);
+        /**
+         * The where clause is doing two jobs. It decides whether the plan
+         * actually moved, which the affected row count cannot do on its own,
+         * since MySQL counts the rows it changed while SQLite counts the rows
+         * it matched. Writing the same plan back reports zero on the first and
+         * one on the second, so production would stay quiet and the test suite
+         * would announce on every repeat. It also makes that decision under the
+         * row lock, so two webhooks landing at once cannot both conclude they
+         * moved it and both mail the user. Stripe repeats subscription events
+         * and does not order deliveries, so concurrent deliveries are ordinary.
+         * The null arm is the same test written the only way it can be, since
+         * no operator compares a column to null.
+         */
+        $claimed = User::whereKey($user->id)
+            ->where(fn ($query) => $planId
+                ? $query->whereNull('plan_id')->orWhere('plan_id', '!=', $planId)
+                : $query->whereNotNull('plan_id'))
+            ->update(['plan_id' => $planId]);
+
+        if (!$claimed || !$planId) {
+            return;
+        }
+
+        $plan = Plan::cached()->firstWhere('id', $planId);
+
+        $user->notify($previousPlanId
+            ? new PlanChangedNotification($plan)
+            : new PlanSubscribedNotification($plan));
+    }
+
+    /**
+     * Commit the card details shown in the account. Stripe stamps the card on
+     * the subscription only, and Cashier reads the card columns off the
+     * customer default, so without this promotion the user row keeps a null
+     * brand and last four after a successful signup.
+     */
+    public function commitPaymentMethod(User $user): void
+    {
+        $subscription = $user->subscription();
+
+        if (!$subscription) {
+            return;
+        }
+
+        $stripeSubscription = $subscription->asStripeSubscription();
+
+        if ($stripeSubscription->default_payment_method) {
+            $user->updateDefaultPaymentMethod($stripeSubscription->default_payment_method);
+        }
     }
 
     /**
@@ -277,34 +331,5 @@ class SubscriptionService implements SubscriptionProvider
         $user->fillPlan()->save();
 
         $user->notify(new PlanChangedNotification($plan));
-    }
-
-    /**
-     * Announce the subscription once and only once. Stripe repeats
-     * customer.subscription.updated for the life of a subscription, and the
-     * client syncs on top of that, so the stamp is claimed with a conditional
-     * write and the database decides which caller sends the mail.
-     */
-    protected function announceActivation(User $user, Subscription $subscription): void
-    {
-        if (!$subscription->valid()) {
-            return;
-        }
-
-        $plan = Plan::forPriceId($subscription->stripe_price);
-
-        if (!$plan) {
-            return;
-        }
-
-        $stamped = Subscription::whereKey($subscription->id)
-            ->whereNull('activated_at')
-            ->update(['activated_at' => now()]);
-
-        if (!$stamped) {
-            return;
-        }
-
-        $user->notify(new PlanSubscribedNotification($plan));
     }
 }
