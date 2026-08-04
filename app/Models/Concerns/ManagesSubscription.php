@@ -102,6 +102,21 @@ trait ManagesSubscription
     }
 
     /**
+     * The card on file, or null when there is none. Stripe stamps the brand
+     * and last four onto the user during sync, so this reads straight off
+     * those columns rather than calling out to the provider.
+     */
+    protected function paymentMethod(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->pm_type ? [
+                'brand' => $this->pm_type,
+                'last_four' => $this->pm_last_four,
+            ] : null,
+        );
+    }
+
+    /**
      * Whether the user has an active subscription.
      */
     protected function isSubscribed(): Attribute

@@ -23,6 +23,7 @@ class ProfileResource extends JsonResource
             'created_at' => $this->created_at,
             'email' => $this->email,
             'first_name' => $this->first_name,
+            'has_billing_address' => $this->hasBillingAddress(),
             'has_payment_method' => $this->hasDefaultPaymentMethod(),
             'id' => $this->id,
             'is_complimentary' => $this->is_complimentary,
@@ -33,6 +34,7 @@ class ProfileResource extends JsonResource
             'is_verification_required' => $this->is_verification_required,
             'last_name' => $this->last_name,
             'locale' => $this->locale,
+            'payment_method' => $this->payment_method,
             'phone' => $this->phone,
             'plan' => $plan ? [
                 'features' => $plan->features,
