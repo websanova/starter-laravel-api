@@ -98,8 +98,8 @@ flowchart LR
     F1["Create Stripe subscription<br/>payment_behavior: default_incomplete<br/>creates the customer if none yet"] --> F2["Local row saved<br/>status: incomplete"]
     F2 --> G{Trial?}
 
-    G -->|no| P1["client_secret from<br/>latest_invoice.confirmation_secret<br/>intent_type: payment"]
-    G -->|yes| P2["client_secret from<br/>pending_setup_intent<br/>intent_type: setup"]
+    G -->|no| P1["client_secret from<br/>latest_invoice.confirmation_secret<br/>type: payment"]
+    G -->|yes| P2["client_secret from<br/>pending_setup_intent<br/>type: setup"]
 
     P1 --> F4["Client mounts Payment Element"]
     P2 --> F4

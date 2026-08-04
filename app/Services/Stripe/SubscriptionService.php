@@ -178,11 +178,11 @@ class SubscriptionService implements SubscriptionProvider
         }
 
         if ($secret = $stripeSubscription->latest_invoice->confirmation_secret->client_secret ?? null) {
-            return ServiceResult::success(['client_secret' => $secret, 'intent_type' => 'payment']);
+            return ServiceResult::success(['client_secret' => $secret, 'type' => 'payment']);
         }
 
         if ($secret = $stripeSubscription->pending_setup_intent->client_secret ?? null) {
-            return ServiceResult::success(['client_secret' => $secret, 'intent_type' => 'setup']);
+            return ServiceResult::success(['client_secret' => $secret, 'type' => 'setup']);
         }
 
         return ServiceResult::error('provider_unavailable');
