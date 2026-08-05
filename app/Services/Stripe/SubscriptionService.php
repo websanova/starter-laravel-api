@@ -214,15 +214,16 @@ class SubscriptionService implements SubscriptionProvider
      */
     public function commitPlan(User $user): void
     {
-        $previousPlanId = $user->plan_id;
+        $hadPlan = (bool) $user->plan_id;
+        $planId = $user->resolvePlanId();
 
-        if (!$user->reconcilePlan() || !$user->plan_id) {
+        if (!$user->claimPlan($planId) || !$planId) {
             return;
         }
 
-        $plan = Plan::cached()->firstWhere('id', $user->plan_id);
+        $plan = Plan::cached()->firstWhere('id', $planId);
 
-        $user->notify($previousPlanId
+        $user->notify($hadPlan
             ? new PlanChangedNotification($plan)
             : new PlanSubscribedNotification($plan));
     }

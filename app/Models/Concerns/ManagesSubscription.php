@@ -65,49 +65,38 @@ trait ManagesSubscription
     }
 
     /**
-     * Commit the plan the user is entitled to, reporting whether the write
-     * actually moved it. Stripe repeats subscription events for the life of a
-     * subscription and retries anything that fails, so the comparison is made
-     * the write. Concurrent callers race on a single conditional update and
-     * only the winner comes back true.
+     * Write the given plan id, reporting whether this call is the one that
+     * moved it. Stripe repeats subscription events and does not order
+     * deliveries, so two can be in here at once. Reading, comparing, then
+     * writing would let both conclude they moved it and both mail the user, so
+     * the comparison is made part of the write and decided under the row lock.
      */
-    public function reconcilePlan(): bool
+    public function claimPlan(?int $planId): bool
     {
         /**
-         * Cleared on its own rather than folded into the claim below, since it
-         * is a column with its own lifetime. Resolution already ignores it once
-         * a subscription is live, but is_complimentary and the stats queries
-         * read the column straight, so a grant left behind would keep reporting
-         * a user as complimentary after they started paying for the same plan.
+         * Cleared alongside the claim rather than folded into it, since it is a
+         * column with its own lifetime. Resolution already ignores it once a
+         * subscription is live, but is_complimentary and the stats queries read
+         * the column straight, so a grant left behind would keep reporting a
+         * user as complimentary after they started paying for the same plan.
          */
         if ($this->complimentary_plan_id && $this->subscription()?->valid()) {
             $this->update(['complimentary_plan_id' => null]);
         }
 
-        $planId = $this->resolvePlanId();
-
-        $this->plan_id = $planId;
-
         /**
-         * The where clause is doing two jobs. It decides whether the plan
-         * actually moved, which the affected row count cannot do on its own,
-         * since MySQL counts the rows it changed while SQLite counts the rows
-         * it matched. Writing the same plan back reports zero on the first and
-         * one on the second, so production would stay quiet and the test suite
-         * would announce on every repeat. It also makes that decision under the
-         * row lock, so two webhooks landing at once cannot both conclude they
-         * moved it and both mail the user. Stripe repeats subscription events
-         * and does not order deliveries, so concurrent deliveries are ordinary.
-         * The null arm is the same test written the only way it can be, since
-         * no operator compares a column to null.
+         * The affected row count cannot decide this on its own, since MySQL
+         * counts the rows it changed while SQLite counts the rows it matched.
+         * Writing the same plan back reports zero on the first and one on the
+         * second, so the where clause has to make the decision instead. The
+         * null arm is the same test written the only way it can be, since no
+         * operator compares a column to null.
          */
-        $claimed = static::whereKey($this->id)
+        return (bool) static::whereKey($this->id)
             ->where(fn ($query) => $planId
                 ? $query->whereNull('plan_id')->orWhere('plan_id', '!=', $planId)
                 : $query->whereNotNull('plan_id'))
             ->update(['plan_id' => $planId]);
-
-        return (bool) $claimed;
     }
 
     /**

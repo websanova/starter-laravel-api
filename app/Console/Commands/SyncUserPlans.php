@@ -30,7 +30,7 @@ class SyncUserPlans extends Command
 
         User::with('subscriptions')->chunkById(500, function ($users) use (&$updated) {
             foreach ($users as $user) {
-                if ($user->reconcilePlan()) {
+                if ($user->claimPlan($user->resolvePlanId())) {
                     $updated++;
                 }
             }
