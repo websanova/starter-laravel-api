@@ -38,6 +38,14 @@ class SyncSubscription
             return;
         }
 
+        /**
+         * Loaded once here rather than inside each call below. Cashier's own
+         * handler wrote the subscription row moments ago, so this is the one
+         * entry point where the relation has to be pulled fresh instead of
+         * taken as given.
+         */
+        $user->load('subscriptions');
+
         $this->subscriptions->commitPlan($user);
         $this->subscriptions->commitPaymentMethod($user);
     }

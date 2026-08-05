@@ -206,53 +206,21 @@ class SubscriptionService implements SubscriptionProvider
     }
 
     /**
-     * Commit the plan the user is entitled to and announce the move. Stripe
-     * repeats subscription events for the life of a subscription and retries
-     * anything that fails, so the comparison is made the write. Concurrent
-     * callers race on a single conditional update and only the winner sends.
+     * Commit the plan the user is entitled to and announce the move. The write
+     * itself is idempotent and only the caller that moves the plan is told so,
+     * which is what keeps a repeated webhook delivery quiet. A move to no plan
+     * at all announces nothing, since the cancellation was already announced by
+     * whatever ended the subscription.
      */
     public function commitPlan(User $user): void
     {
         $previousPlanId = $user->plan_id;
 
-        $user->load('subscriptions');
-
-        /**
-         * Cleared on its own rather than folded into the claim below. A
-         * complimentary grant on the same plan the user goes on to pay for
-         * leaves plan_id untouched, so the claim finds nothing to write and
-         * the grant would outlive the subscription that replaced it.
-         */
-        if ($user->complimentary_plan_id && $user->subscription()?->valid()) {
-            $user->update(['complimentary_plan_id' => null]);
-        }
-
-        $planId = $user->fillPlan()->plan_id;
-
-        /**
-         * The where clause is doing two jobs. It decides whether the plan
-         * actually moved, which the affected row count cannot do on its own,
-         * since MySQL counts the rows it changed while SQLite counts the rows
-         * it matched. Writing the same plan back reports zero on the first and
-         * one on the second, so production would stay quiet and the test suite
-         * would announce on every repeat. It also makes that decision under the
-         * row lock, so two webhooks landing at once cannot both conclude they
-         * moved it and both mail the user. Stripe repeats subscription events
-         * and does not order deliveries, so concurrent deliveries are ordinary.
-         * The null arm is the same test written the only way it can be, since
-         * no operator compares a column to null.
-         */
-        $claimed = User::whereKey($user->id)
-            ->where(fn ($query) => $planId
-                ? $query->whereNull('plan_id')->orWhere('plan_id', '!=', $planId)
-                : $query->whereNotNull('plan_id'))
-            ->update(['plan_id' => $planId]);
-
-        if (!$claimed || !$planId) {
+        if (!$user->reconcilePlan() || !$user->plan_id) {
             return;
         }
 
-        $plan = Plan::cached()->firstWhere('id', $planId);
+        $plan = Plan::cached()->firstWhere('id', $user->plan_id);
 
         $user->notify($previousPlanId
             ? new PlanChangedNotification($plan)

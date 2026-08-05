@@ -66,6 +66,51 @@ trait ManagesSubscription
     }
 
     /**
+     * Commit the plan the user is entitled to, reporting whether the write
+     * actually moved it. Stripe repeats subscription events for the life of a
+     * subscription and retries anything that fails, so the comparison is made
+     * the write. Concurrent callers race on a single conditional update and
+     * only the winner comes back true.
+     */
+    public function reconcilePlan(): bool
+    {
+        $this->loadMissing('subscriptions');
+
+        /**
+         * Cleared on its own rather than folded into the claim below. A
+         * complimentary grant on the same plan the user goes on to pay for
+         * leaves plan_id untouched, so the claim finds nothing to write and
+         * the grant would outlive the subscription that replaced it.
+         */
+        if ($this->complimentary_plan_id && $this->subscription()?->valid()) {
+            $this->update(['complimentary_plan_id' => null]);
+        }
+
+        $planId = $this->fillPlan()->plan_id;
+
+        /**
+         * The where clause is doing two jobs. It decides whether the plan
+         * actually moved, which the affected row count cannot do on its own,
+         * since MySQL counts the rows it changed while SQLite counts the rows
+         * it matched. Writing the same plan back reports zero on the first and
+         * one on the second, so production would stay quiet and the test suite
+         * would announce on every repeat. It also makes that decision under the
+         * row lock, so two webhooks landing at once cannot both conclude they
+         * moved it and both mail the user. Stripe repeats subscription events
+         * and does not order deliveries, so concurrent deliveries are ordinary.
+         * The null arm is the same test written the only way it can be, since
+         * no operator compares a column to null.
+         */
+        $claimed = static::whereKey($this->id)
+            ->where(fn ($query) => $planId
+                ? $query->whereNull('plan_id')->orWhere('plan_id', '!=', $planId)
+                : $query->whereNotNull('plan_id'))
+            ->update(['plan_id' => $planId]);
+
+        return (bool) $claimed;
+    }
+
+    /**
      * Get the plan the user is entitled to, falling back to the free plan.
      * Required mode has no free tier to fall back on, so a user without a
      * subscription has no plan at all.
