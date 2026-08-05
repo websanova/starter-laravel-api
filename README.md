@@ -90,7 +90,6 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Client-side payment element, with card authentication handled provider-side
 - Optional automatic tax, off by default since it has to be switched on provider-side too
 - Billing address endpoint, required before subscribing only when automatic tax is on
-- Complimentary plans for granting access without billing
 - Feature limits enforced automatically
 
 **Billing Providers (Cashier/Stripe)**
