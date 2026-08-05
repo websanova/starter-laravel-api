@@ -16,8 +16,7 @@ class ResumeRequest extends FormRequest
 
         return $this->user()->can('update', $target)
             && $subscription
-            && $subscription->onGracePeriod()
-            && !$target->onComplimentary();
+            && $subscription->onGracePeriod();
     }
 
     /**

@@ -51,17 +51,15 @@ trait ManagesSubscription
 
     /**
      * Resolve the plan the user is entitled to from the entitlement that
-     * actually grants it. A live subscription wins, a complimentary grant
-     * covers the rest, and a lapsed subscription with no grant behind it leaves
-     * nothing. Hands back the id without touching the model, so the caller
-     * decides how and when it gets written. Reads the subscriptions relation
-     * and does not load it, so an unloaded caller fails loudly rather than
-     * hiding a query per user.
+     * actually grants it, which is a live subscription and nothing else. A
+     * lapsed subscription leaves nothing. Hands back the id without touching
+     * the model, so the caller decides how and when it gets written. Reads the
+     * subscriptions relation and does not load it, so an unloaded caller fails
+     * loudly rather than hiding a query per user.
      */
     public function resolvePlanId(): ?int
     {
-        return ($this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null)
-            ?? $this->complimentary_plan_id;
+        return $this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null;
     }
 
     /**
@@ -73,17 +71,6 @@ trait ManagesSubscription
      */
     public function claimPlan(?int $planId): bool
     {
-        /**
-         * Cleared alongside the claim rather than folded into it, since it is a
-         * column with its own lifetime. Resolution already ignores it once a
-         * subscription is live, but is_complimentary and the stats queries read
-         * the column straight, so a grant left behind would keep reporting a
-         * user as complimentary after they started paying for the same plan.
-         */
-        if ($this->complimentary_plan_id && $this->subscription()?->valid()) {
-            $this->update(['complimentary_plan_id' => null]);
-        }
-
         /**
          * The affected row count cannot decide this on its own, since MySQL
          * counts the rows it changed while SQLite counts the rows it matched.
@@ -111,28 +98,6 @@ trait ManagesSubscription
         }
 
         return $this->plan ?? Plan::free();
-    }
-
-    /**
-     * Whether the user holds a complimentary grant. Paired with the
-     * is_complimentary attribute below, which serializes the same check for
-     * API responses. This method form is the one to use in guards.
-     */
-    public function onComplimentary(): bool
-    {
-        return !is_null($this->complimentary_plan_id);
-    }
-
-    /**
-     * Whether the user holds a complimentary grant, in attribute form so it
-     * serializes into responses alongside is_subscribed and is_on_trial.
-     * Same check as onComplimentary().
-     */
-    protected function isComplimentary(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => !is_null($this->complimentary_plan_id),
-        );
     }
 
     /**

@@ -23,7 +23,6 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'first_name' => $this->first_name,
             'id' => $this->id,
-            'is_complimentary' => $this->when($this->relationLoaded('plan'), fn () => $this->is_complimentary),
             'is_on_grace_period' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_grace_period),
             'is_on_trial' => $this->when($this->relationLoaded('subscriptions'), fn () => $this->is_on_trial),
             'is_password_reset_required' => $this->is_password_reset_required,

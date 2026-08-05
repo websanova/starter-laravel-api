@@ -284,21 +284,4 @@ class SubscriptionService implements SubscriptionProvider
 
         return $user->subscription();
     }
-
-    /**
-     * Assign a plan without Stripe billing, cancelling any active subscription.
-     */
-    public function assignComplimentary(User $user, Plan $plan): void
-    {
-        $subscription = $user->subscription();
-
-        if ($subscription && !$subscription->ended()) {
-            $subscription->cancelNow();
-        }
-
-        $user->complimentary_plan_id = $plan->id;
-        $user->update(['plan_id' => $user->resolvePlanId()]);
-
-        $user->notify(new PlanChangedNotification($plan));
-    }
 }

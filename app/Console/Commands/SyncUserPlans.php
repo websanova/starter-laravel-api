@@ -19,7 +19,7 @@ class SyncUserPlans extends Command
      *
      * @var string
      */
-    protected $description = 'Recompute the cached plan on every user from their complimentary grant or live subscription';
+    protected $description = 'Recompute the cached plan on every user from their live subscription';
 
     /**
      * Execute the console command.

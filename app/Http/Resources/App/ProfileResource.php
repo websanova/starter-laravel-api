@@ -26,7 +26,6 @@ class ProfileResource extends JsonResource
             'has_billing_address' => $this->hasBillingAddress(),
             'has_payment_method' => $this->hasDefaultPaymentMethod(),
             'id' => $this->id,
-            'is_complimentary' => $this->is_complimentary,
             'is_on_grace_period' => $this->is_on_grace_period,
             'is_on_trial' => $this->is_on_trial,
             'is_subscribed' => $this->is_subscribed,

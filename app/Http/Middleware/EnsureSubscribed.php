@@ -20,7 +20,7 @@ class EnsureSubscribed
 
         $hasAccess = match ($mode) {
             SubscriptionMode::Freemium => true,
-            SubscriptionMode::Trial, SubscriptionMode::Required => $user->is_complimentary || $user->is_on_trial || $user->is_subscribed,
+            SubscriptionMode::Trial, SubscriptionMode::Required => $user->is_on_trial || $user->is_subscribed,
         };
 
         if (!$hasAccess) {

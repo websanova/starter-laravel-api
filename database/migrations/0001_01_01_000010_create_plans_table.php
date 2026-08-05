@@ -41,7 +41,6 @@ return new class extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('plan_id')->nullable()->after('is_password_reset_required')->constrained()->nullOnDelete();
-            $table->foreignId('complimentary_plan_id')->nullable()->after('plan_id')->constrained('plans')->nullOnDelete();
         });
     }
 
@@ -51,9 +50,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['complimentary_plan_id']);
             $table->dropForeign(['plan_id']);
-            $table->dropColumn(['complimentary_plan_id', 'plan_id']);
+            $table->dropColumn(['plan_id']);
         });
 
         Schema::dropIfExists('prices');

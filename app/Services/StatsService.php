@@ -67,9 +67,6 @@ class StatsService
                         ->where('stripe_price', $price->stripe_price_id)
                         ->where('stripe_status', 'active'));
             }
-
-            $queries['subscriptions']["{$plan->slug}_complimentary"] = User::query()
-                ->where('complimentary_plan_id', $plan->id);
         }
 
         $queries['bookmarks']['total'] = Bookmark::query();

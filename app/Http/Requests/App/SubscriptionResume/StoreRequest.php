@@ -11,12 +11,9 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-        $subscription = $user->subscription();
+        $subscription = $this->user()->subscription();
 
-        return $subscription
-            && $subscription->onGracePeriod()
-            && !$user->onComplimentary();
+        return $subscription && $subscription->onGracePeriod();
     }
 
     /**

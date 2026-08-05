@@ -74,7 +74,6 @@ class User extends Authenticatable implements HasLocalePreference
         'billing_postal_code',
         'billing_country',
         'plan_id',
-        'complimentary_plan_id',
         'keywords',
         'last_active_at',
         'is_password_reset_required',
@@ -108,8 +107,8 @@ class User extends Authenticatable implements HasLocalePreference
 
     /**
      * Get the plan assigned to the user. The plan_id column is denormalized
-     * from the live subscription or the complimentary grant by resolvePlanId(), so
-     * it is always rebuildable and never the source of truth. It exists so
+     * from the live subscription by resolvePlanId(), so it is always
+     * rebuildable and never the source of truth. It exists so
      * admin listings and stats group on one column rather than joining through
      * subscriptions and prices. Entitlement checks read currentPlan() instead,
      * which adds the free tier fallback.

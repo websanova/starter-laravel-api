@@ -57,9 +57,4 @@ interface SubscriptionProvider
      * Resume a cancelled subscription before the period ends.
      */
     public function resume(User $user): mixed;
-
-    /**
-     * Assign a plan without billing, cancelling any active subscription.
-     */
-    public function assignComplimentary(User $user, Plan $plan): void;
 }
