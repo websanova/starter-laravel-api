@@ -55,7 +55,10 @@ class StatsService
         $queries = [];
 
         foreach (Plan::cached() as $plan) {
-            $queries['subscriptions']["signups_{$plan->slug}"] = User::query()->where('plan_id', $plan->id);
+            $priceIds = $plan->prices->pluck('stripe_price_id')->filter()->all();
+
+            $queries['subscriptions']["signups_{$plan->slug}"] = User::query()
+                ->whereHas('subscriptions', fn ($q) => $q->whereIn('stripe_price', $priceIds)->active());
 
             foreach ($plan->prices as $price) {
                 if (!$price->stripe_price_id) {
