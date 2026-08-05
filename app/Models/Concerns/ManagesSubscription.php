@@ -50,19 +50,18 @@ trait ManagesSubscription
     }
 
     /**
-     * Recompute the cached plan from the entitlement that actually grants it.
-     * A complimentary grant wins, otherwise it follows the live subscription,
-     * and a lapsed subscription leaves nothing. Sets the attribute without
-     * saving so several fills can be chained into one write.
+     * Resolve the plan the user is entitled to from the entitlement that
+     * actually grants it. A live subscription wins, a complimentary grant
+     * covers the rest, and a lapsed subscription with no grant behind it leaves
+     * nothing. Hands back the id without touching the model, so the caller
+     * decides how and when it gets written. Reads the subscriptions relation
+     * and does not load it, so an unloaded caller fails loudly rather than
+     * hiding a query per user.
      */
-    public function fillPlan(): static
+    public function resolvePlanId(): ?int
     {
-        $this->loadMissing('subscriptions');
-
-        $this->plan_id = $this->complimentary_plan_id
-            ?? ($this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null);
-
-        return $this;
+        return ($this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null)
+            ?? $this->complimentary_plan_id;
     }
 
     /**
@@ -74,19 +73,20 @@ trait ManagesSubscription
      */
     public function reconcilePlan(): bool
     {
-        $this->loadMissing('subscriptions');
-
         /**
-         * Cleared on its own rather than folded into the claim below. A
-         * complimentary grant on the same plan the user goes on to pay for
-         * leaves plan_id untouched, so the claim finds nothing to write and
-         * the grant would outlive the subscription that replaced it.
+         * Cleared on its own rather than folded into the claim below, since it
+         * is a column with its own lifetime. Resolution already ignores it once
+         * a subscription is live, but is_complimentary and the stats queries
+         * read the column straight, so a grant left behind would keep reporting
+         * a user as complimentary after they started paying for the same plan.
          */
         if ($this->complimentary_plan_id && $this->subscription()?->valid()) {
             $this->update(['complimentary_plan_id' => null]);
         }
 
-        $planId = $this->fillPlan()->plan_id;
+        $planId = $this->resolvePlanId();
+
+        $this->plan_id = $planId;
 
         /**
          * The where clause is doing two jobs. It decides whether the plan

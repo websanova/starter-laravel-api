@@ -49,7 +49,7 @@ class UserFactory extends Factory
 
     /**
      * Indicate that the user holds a complimentary grant for the given plan.
-     * Mirrors what fillPlan() writes so the cached plan_id stays in sync.
+     * Mirrors what resolvePlanId() returns so the cached plan_id stays in sync.
      */
     public function complimentary(Plan $plan): static
     {
