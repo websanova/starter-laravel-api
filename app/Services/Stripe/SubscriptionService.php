@@ -6,9 +6,7 @@ use App\Contracts\SubscriptionProvider;
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\User;
-use App\Notifications\PlanCancelledNotification;
 use App\Notifications\PlanChangedNotification;
-use App\Notifications\PlanResumedNotification;
 use App\Notifications\PlanSubscribedNotification;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Subscription;
@@ -258,8 +256,6 @@ class SubscriptionService implements SubscriptionProvider
 
         $user->update(['plan_id' => $user->resolvePlanId()]);
 
-        $user->notify(new PlanChangedNotification($plan));
-
         return $user->subscription();
     }
 
@@ -269,8 +265,6 @@ class SubscriptionService implements SubscriptionProvider
     public function cancel(User $user): void
     {
         $user->subscription()->cancel();
-
-        $user->notify(new PlanCancelledNotification);
     }
 
     /**
@@ -279,8 +273,6 @@ class SubscriptionService implements SubscriptionProvider
     public function resume(User $user): Subscription
     {
         $user->subscription()->resume();
-
-        $user->notify(new PlanResumedNotification);
 
         return $user->subscription();
     }
