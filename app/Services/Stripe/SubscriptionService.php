@@ -6,8 +6,6 @@ use App\Contracts\SubscriptionProvider;
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\User;
-use App\Notifications\PlanChangedNotification;
-use App\Notifications\PlanSubscribedNotification;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Subscription;
 use Stripe\Exception\ApiErrorException;
@@ -201,29 +199,6 @@ class SubscriptionService implements SubscriptionProvider
         }
 
         $subscription->syncStripeStatus();
-    }
-
-    /**
-     * Commit the plan the user is entitled to and announce the move. The write
-     * itself is idempotent and only the caller that moves the plan is told so,
-     * which is what keeps a repeated webhook delivery quiet. A move to no plan
-     * at all announces nothing, since the cancellation was already announced by
-     * whatever ended the subscription.
-     */
-    public function commitPlan(User $user): void
-    {
-        $hadPlan = (bool) $user->plan_id;
-        $planId = $user->resolvePlanId();
-
-        if (!$user->claimPlan($planId) || !$planId) {
-            return;
-        }
-
-        $plan = Plan::cached()->firstWhere('id', $planId);
-
-        $user->notify($hadPlan
-            ? new PlanChangedNotification($plan)
-            : new PlanSubscribedNotification($plan));
     }
 
     /**

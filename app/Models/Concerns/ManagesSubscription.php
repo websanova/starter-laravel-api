@@ -63,30 +63,6 @@ trait ManagesSubscription
     }
 
     /**
-     * Write the given plan id, reporting whether this call is the one that
-     * moved it. Stripe repeats subscription events and does not order
-     * deliveries, so two can be in here at once. Reading, comparing, then
-     * writing would let both conclude they moved it and both mail the user, so
-     * the comparison is made part of the write and decided under the row lock.
-     */
-    public function claimPlan(?int $planId): bool
-    {
-        /**
-         * The affected row count cannot decide this on its own, since MySQL
-         * counts the rows it changed while SQLite counts the rows it matched.
-         * Writing the same plan back reports zero on the first and one on the
-         * second, so the where clause has to make the decision instead. The
-         * null arm is the same test written the only way it can be, since no
-         * operator compares a column to null.
-         */
-        return (bool) static::whereKey($this->id)
-            ->where(fn ($query) => $planId
-                ? $query->whereNull('plan_id')->orWhere('plan_id', '!=', $planId)
-                : $query->whereNotNull('plan_id'))
-            ->update(['plan_id' => $planId]);
-    }
-
-    /**
      * Get the plan the user is entitled to, falling back to the free plan.
      * Required mode has no free tier to fall back on, so a user without a
      * subscription has no plan at all.
