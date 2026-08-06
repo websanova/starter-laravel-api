@@ -28,7 +28,7 @@ Three sections, in this order.
 - No essays, no long-winded explanations.
 - Do not explain how existing code works unless asked.
 - No preamble, no closing summary, no recap.
-- File references include the full path from root and the line number.
+- File references include the parent folder, file name, and line number (e.g. `Models/Plan.php:42`).
 - If unsure, say "I don't know". Never speculate about code you have not read.
 - Report the conclusion, never the reasoning trace.
 
