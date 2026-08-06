@@ -59,6 +59,7 @@
 - `/ex` - implement what was already agreed
 - `/cm` - generate a one-line commit message
 - `/co` - commit staged changes
+- `/q` - side bar question, no code scan
 - Full behavior for each is defined in `.claude/commands/`. That file governs its turn.
 - When in doubt, STOP and ask. Never assume the next step.
 - NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write.
