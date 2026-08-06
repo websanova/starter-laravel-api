@@ -31,12 +31,6 @@ interface SubscriptionProvider
     public function sync(User $user): void;
 
     /**
-     * Commit the card details shown in the account, promoting the one that paid
-     * for the subscription to the customer default.
-     */
-    public function commitPaymentMethod(User $user): void;
-
-    /**
      * Swap the subscription to a different plan or interval.
      */
     public function swap(User $user, Plan $plan, PlanInterval $interval): mixed;

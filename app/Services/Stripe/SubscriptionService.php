@@ -202,27 +202,6 @@ class SubscriptionService implements SubscriptionProvider
     }
 
     /**
-     * Commit the card details shown in the account. Stripe stamps the card on
-     * the subscription only, and Cashier reads the card columns off the
-     * customer default, so without this promotion the user row keeps a null
-     * brand and last four after a successful signup.
-     */
-    public function commitPaymentMethod(User $user): void
-    {
-        $subscription = $user->subscription();
-
-        if (!$subscription) {
-            return;
-        }
-
-        $stripeSubscription = $subscription->asStripeSubscription();
-
-        if ($stripeSubscription->default_payment_method) {
-            $user->updateDefaultPaymentMethod($stripeSubscription->default_payment_method);
-        }
-    }
-
-    /**
      * Swap to a different plan.
      */
     public function swap(User $user, Plan $plan, PlanInterval $interval): Subscription
