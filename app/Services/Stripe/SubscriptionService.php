@@ -229,7 +229,7 @@ class SubscriptionService implements SubscriptionProvider
     {
         $user->subscription()->swap($plan->priceId($interval));
 
-        $user->update(['plan_id' => $user->resolvePlanId()]);
+        $user->fillPlan()->save();
 
         return $user->subscription();
     }

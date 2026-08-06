@@ -50,16 +50,18 @@ trait ManagesSubscription
     }
 
     /**
-     * Resolve the plan the user is entitled to from the entitlement that
-     * actually grants it, which is a live subscription and nothing else. A
-     * lapsed subscription leaves nothing. Hands back the id without touching
-     * the model, so the caller decides how and when it gets written. Reads the
-     * subscriptions relation and does not load it, so an unloaded caller fails
-     * loudly rather than hiding a query per user.
+     * Recompute the cached plan from the entitlement that actually grants it,
+     * which is a live subscription and nothing else, so a lapsed one leaves
+     * nothing. Sets the attribute without saving, so the caller decides how and
+     * when it gets written. Reads the subscriptions relation and does not load
+     * it, so an unloaded caller fails loudly rather than hiding a query per
+     * user.
      */
-    public function resolvePlanId(): ?int
+    public function fillPlan(): static
     {
-        return $this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null;
+        $this->plan_id = $this->subscribed() ? Plan::forPriceId($this->subscription()?->stripe_price)?->id : null;
+
+        return $this;
     }
 
     /**

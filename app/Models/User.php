@@ -107,7 +107,7 @@ class User extends Authenticatable implements HasLocalePreference
 
     /**
      * Get the plan assigned to the user. The plan_id column is denormalized
-     * from the live subscription by resolvePlanId(), so it is always
+     * from the live subscription by fillPlan(), so it is always
      * rebuildable and never the source of truth. It exists so
      * admin listings and stats group on one column rather than joining through
      * subscriptions and prices. Entitlement checks read currentPlan() instead,

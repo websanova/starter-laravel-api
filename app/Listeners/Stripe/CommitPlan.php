@@ -11,24 +11,26 @@ use Illuminate\Notifications\Notification;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookHandled;
 
-class PlanNotifications
+class CommitPlan
 {
     /**
-     * Announce every plan move Stripe reports. Portal swaps, dunning and
-     * payments that fail their way to cancelled never touch our own write
-     * paths, so the webhook is the only signal for any of it.
+     * Commit the plan the user is entitled to and announce every move Stripe
+     * reports. Portal swaps, dunning and payments that fail their way to
+     * cancelled never touch our own write paths, so the webhook is the only
+     * signal for any of it.
      *
-     * Nothing is announced on customer.subscription.deleted. Cancelling runs
-     * to the period end, so the update carrying cancel_at_period_end already
-     * announced it and the delete only lands once the period runs out. An
-     * immediate cancel is the one flow that emits a delete without a prior
-     * update, and this API exposes no route to it.
+     * The delete is handled for the write alone. Cancelling runs to the period
+     * end, so the update carrying cancel_at_period_end announced it already
+     * while the plan itself is held through the grace period, and the delete is
+     * what finally drops it. An immediate cancel is the one flow that emits a
+     * delete without a prior update, and this API exposes no route to it.
      */
     public function handle(WebhookHandled $event): void
     {
         $events = [
             'customer.subscription.created',
             'customer.subscription.updated',
+            'customer.subscription.deleted',
         ];
 
         if (!in_array($event->payload['type'], $events)) {
@@ -43,9 +45,22 @@ class PlanNotifications
             return;
         }
 
-        $notification = $event->payload['type'] === 'customer.subscription.created'
-            ? $this->created($data)
-            : $this->updated($data, $event->payload['data']['previous_attributes'] ?? []);
+        /**
+         * Cashier's own handler wrote the subscription row moments ago, so this
+         * is the one entry point where the relation has to be pulled fresh
+         * rather than taken as given. The plan is then resolved off the live
+         * subscription instead of the payload price, which is what holds a
+         * cancelled user on their plan until the grace period runs out.
+         */
+        $user->load('subscriptions');
+
+        $user->fillPlan()->save();
+
+        $notification = match ($event->payload['type']) {
+            'customer.subscription.created' => $this->created($data),
+            'customer.subscription.updated' => $this->updated($data, $event->payload['data']['previous_attributes'] ?? []),
+            default => null,
+        };
 
         if ($notification) {
             $user->notify($notification);
