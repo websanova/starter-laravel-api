@@ -3,6 +3,7 @@ description: Brainstorm. Break down the problem, no file changes.
 argument-hint: [question or topic]
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob
+disallowed-tools: Write, Edit
 ---
 
 THINK ONLY. No writing, no file changes, no commands that modify anything.
