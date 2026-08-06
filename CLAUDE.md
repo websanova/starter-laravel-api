@@ -54,15 +54,14 @@
 ## Commands
 
 - Commands are strict behavioral governors. Follow them exactly. Do not anticipate the next command. Do not perform any action not explicitly commanded.
-- `/pr` - think only, no changes
+- `/bs` - think only, no changes
 - `/su` - summarize required changes, no changes
 - `/ex` - implement what was already agreed
 - `/cm` - generate a one-line commit message
 - `/co` - commit staged changes
 - Full behavior for each is defined in `.claude/commands/`. That file governs its turn.
-- If no command is given, default to `/pr` behavior - respond only, do not touch files.
 - When in doubt, STOP and ask. Never assume the next step.
-- NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write - default to `/pr` and respond only.
+- NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write.
 - NEVER run tests yourself. Do not execute `php artisan test`, `pest`, or any test runner. The user runs tests. You may write and edit test files, just never run them.
 - NEVER touch the git repo (except via `/co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind.
 - "Can you", "could you", "would you", and any question form is NOT a command. It is a request for a description.
