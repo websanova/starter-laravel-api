@@ -99,8 +99,10 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Stripe through Laravel Cashier out of the box, one provider installed at a time
 - Provider contracts so a swap touches the services and migration, not controllers
 - Provider-namespaced services and webhook listener (`App\Services\Stripe`)
-- Webhook is the single commit path, with idempotent writes throughout
-- Entitlement committed only once the provider confirms payment
+- Webhooks are the single commit path, since portal swaps, dunning and failed renewals never touch the app's own write paths
+- Entitlement committed only once payment is confirmed upstream, never on a client reporting its own success
+- Idempotent writes throughout, so provider retries are a safe backstop for a missed delivery
+- Billing state can always be rebuilt from the provider, so a dropped event is recoverable
 
 **Promotion Codes**
 - Validated against the provider, nothing stored locally, so it owns amounts, expiry, and limits
