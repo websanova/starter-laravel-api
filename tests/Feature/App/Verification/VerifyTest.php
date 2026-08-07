@@ -2,9 +2,12 @@
 
 uses()->group('app.verification.verify');
 
+use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 test('user can verify with correct code', function () {
     $user = User::factory()->unverified()->create();
@@ -200,4 +203,74 @@ test('validation fails with wrong length code', function () {
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['code']);
+});
+
+test('welcome is sent after email verification in required mode', function () {
+    Notification::fake();
+    config(['verification.mode.email' => VerificationMode::Required]);
+
+    $user = User::factory()->unverified()->create();
+    $code = '123456';
+
+    VerificationCode::create([
+        'user_id' => $user->id,
+        'channel' => 'email',
+        'code' => Hash::make($code),
+        'expires_at' => now()->addMinutes(15),
+    ]);
+
+    $response = $this->actingAs($user)->postJson('/verify', [
+        'code' => $code,
+        'channel' => 'email',
+    ]);
+
+    $response->assertStatus(200);
+    Notification::assertSentTo($user, WelcomeNotification::class);
+});
+
+test('welcome is not sent again when the email is already verified', function () {
+    Notification::fake();
+    config(['verification.mode.email' => VerificationMode::Required]);
+
+    $user = User::factory()->create();
+    $code = '123456';
+
+    VerificationCode::create([
+        'user_id' => $user->id,
+        'channel' => 'email',
+        'code' => Hash::make($code),
+        'expires_at' => now()->addMinutes(15),
+    ]);
+
+    $response = $this->actingAs($user)->postJson('/verify', [
+        'code' => $code,
+        'channel' => 'email',
+    ]);
+
+    $response->assertStatus(200);
+    Notification::assertNotSentTo($user, WelcomeNotification::class);
+});
+
+test('welcome is not sent when the verified channel is phone', function () {
+    Notification::fake();
+    config(['verification.mode.email' => VerificationMode::Required]);
+    config(['verification.mode.phone' => VerificationMode::Required]);
+
+    $user = User::factory()->unverified()->create(['phone' => '15551234567']);
+    $code = '123456';
+
+    VerificationCode::create([
+        'user_id' => $user->id,
+        'channel' => 'phone',
+        'code' => Hash::make($code),
+        'expires_at' => now()->addMinutes(15),
+    ]);
+
+    $response = $this->actingAs($user)->postJson('/verify', [
+        'code' => $code,
+        'channel' => 'phone',
+    ]);
+
+    $response->assertStatus(200);
+    Notification::assertNotSentTo($user, WelcomeNotification::class);
 });

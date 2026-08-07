@@ -37,7 +37,11 @@ class RegisterController extends Controller
 
         $user->startTrial();
 
-        $user->notify(new WelcomeNotification());
+        // Under required mode the welcome is deferred until the email is
+        // verified, and sent from VerificationService instead.
+        if (config('verification.mode.email') !== VerificationMode::Required) {
+            $user->notify(new WelcomeNotification());
+        }
 
         $token = $user->createToken('auth')->plainTextToken;
 

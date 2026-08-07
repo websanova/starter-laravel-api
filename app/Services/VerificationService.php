@@ -7,6 +7,7 @@ use App\Enums\VerificationMode;
 use App\Models\User;
 use App\Models\VerificationCode;
 use App\Notifications\VerificationCodeNotification;
+use App\Notifications\WelcomeNotification;
 use App\Support\ServiceResult;
 use Illuminate\Support\Facades\Hash;
 
@@ -60,8 +61,20 @@ class VerificationService
             return ServiceResult::error('verification.invalid_code');
         }
 
+        $alreadyVerified = (bool) $user->{$channel->verifiedAtField()};
+
         $record->update(['verified_at' => now()]);
         $user->update([$channel->verifiedAtField() => now()]);
+
+        // Registration skips the welcome when email verification is required,
+        // so it is sent here on the first successful email verification.
+        if (
+            $channel === VerificationChannel::Email
+            && !$alreadyVerified
+            && config('verification.mode.email') === VerificationMode::Required
+        ) {
+            $user->notify(new WelcomeNotification());
+        }
 
         return ServiceResult::success();
     }
