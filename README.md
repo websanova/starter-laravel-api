@@ -99,6 +99,9 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Stripe through Laravel Cashier out of the box, one provider installed at a time
 - Provider contracts so a swap touches the services and migration, not controllers
 - Provider-namespaced services and webhook listener (`App\Services\Stripe`)
+
+**Webhooks**
+- The Stripe CLI runs as its own service in `docker-compose.yml`, already forwarding to `php:8000/stripe/webhook`, so webhooks work locally the moment you run `docker compose up`. No tunnel, no ngrok, no dashboard endpoint for dev. Only the signing secret has to be pulled out of the container logs
 - Webhooks are the single commit path, since portal swaps, dunning and failed renewals never touch the app's own write paths
 - Entitlement committed only once payment is confirmed upstream, never on a client reporting its own success
 - Idempotent writes throughout, so provider retries are a safe backstop for a missed delivery
