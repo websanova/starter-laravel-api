@@ -38,7 +38,9 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasLocalePreference
 {
     /** @use HasFactory<UserFactory> */
-    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, ManagesSubscription, ManagesVerification, Notifiable, Searchable, SoftDeletes;
+    use Billable, HasApiTokens, HasFactory, HasRoles, HasTrashedScope, ManagesSubscription, ManagesVerification, Notifiable, Searchable, SoftDeletes {
+        ManagesSubscription::subscription insteadof Billable;
+    }
 
     protected $guard_name = 'api';
 

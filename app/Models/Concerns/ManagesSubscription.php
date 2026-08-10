@@ -7,6 +7,7 @@ use App\Enums\SubscriptionMode;
 use App\Models\Plan;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Carbon;
+use Laravel\Cashier\Subscription;
 
 trait ManagesSubscription
 {
@@ -47,6 +48,19 @@ trait ManagesSubscription
         }
 
         return null;
+    }
+
+    /**
+     * Overrides Cashier's own accessor to hand the subscription its owner.
+     * Eloquent never fills the inverse side of a hasMany, so every Cashier
+     * method that reaches Stripe through $this->owner->stripe() refetches the
+     * user we are already holding. That is a wasted query everywhere and a bug
+     * in Cashier, it just happens to be fatal here because preventLazyLoading
+     * turns it into an error instead of a silent second select.
+     */
+    public function subscription(string $type = 'default'): ?Subscription
+    {
+        return $this->subscriptions->where('type', $type)->first()?->setRelation('owner', $this);
     }
 
     /**
