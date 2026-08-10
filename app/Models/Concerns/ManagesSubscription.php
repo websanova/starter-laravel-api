@@ -57,6 +57,9 @@ trait ManagesSubscription
      * user we are already holding. That is a wasted query everywhere and a bug
      * in Cashier, it just happens to be fatal here because preventLazyLoading
      * turns it into an error instead of a silent second select.
+     *
+     * @see https://github.com/laravel/cashier-stripe/issues/1172
+     * @see https://github.com/laravel/cashier-stripe/issues/1477
      */
     public function subscription(string $type = 'default'): ?Subscription
     {
