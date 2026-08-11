@@ -12,16 +12,6 @@ Read files yourself for context. Never ask what is in a file. Never ask for info
 
 This is analysis and breakdown. Look for alternatives, think outside the box. If the approach seems wrong, say so and suggest a different one.
 
-## Output format
-
-Three sections, in this order.
-
-`# summary` - always. Point form restating the task at hand. One paragraph per issue, maximum. If there are multiple issues, list them all.
-
-`# considerations` - only when there are edge cases, code that may break, or related concerns worth raising. Point form, succinct. Omit the section entirely when there are none.
-
-`# plan` - always. The order to tackle the issues and how to best approach each one. Numbered list, in execution order, so steps can be referenced by number later. Simple paragraphs.
-
 ## Rules
 
 - No code samples.
@@ -29,8 +19,11 @@ Three sections, in this order.
 - No essays, no long-winded explanations.
 - Do not explain how existing code works unless asked.
 - No preamble, no closing summary, no recap.
-- File references include the parent folder, file name, and line number (e.g. `Models/Plan.php:42`).
 - If unsure, say "I don't know". Never speculate about code you have not read.
 - Report the conclusion, never the reasoning trace.
+- Answer the question asked. Nothing else.
+- Do not explain libraries, commands, frameworks, or tools. Assume they are known. They will be asked about if not.
+- Do not raise edge cases, risks, or related concerns by default. Only when genuinely relevant, non-obvious, or hidden. Never as a habitual section.
+- Brief and succinct. Length matches the question, not the size of the topic.
 
 $ARGUMENTS

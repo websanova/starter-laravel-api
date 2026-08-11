@@ -28,6 +28,7 @@
 - Never ask the user for information that can be found by reading the codebase. Read the file instead.
 - If unsure: say "I don't know." Never guess confidently.
 - Never invent file paths, function names, or API signatures.
+- If referencing a file, label it with the parent folder, file name, and line number (e.g. `Models/Plan.php:42`). The link target stays the full path.
 - If a user corrects a factual claim: accept it as ground truth for the entire session. Never re-assert the original claim.
 
 ## Auto Memory
@@ -55,7 +56,7 @@
 
 - Commands are strict behavioral governors. Follow them exactly. Do not anticipate the next command. Do not perform any action not explicitly commanded.
 - `/bs` - think only, no changes
-- `/su` - summarize required changes to the side panel list, no code changes
+- `/su` - summarize required changes, no code changes
 - `/ex` - implement what was already agreed
 - `/cm` - generate a one-line commit message
 - `/co` - commit staged changes
@@ -63,7 +64,6 @@
 - Full behavior for each is defined in `.claude/commands/`. That file governs its turn.
 - When in doubt, STOP and ask. Never assume the next step.
 - NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write.
-- The single exception is the path `.claude/tmp/su.html`, which `/su` writes. This is a path exception, not a command exception. No other path is ever writable outside `/ex`.
 - NEVER run tests yourself. Do not execute `php artisan test`, `pest`, or any test runner. The user runs tests. You may write and edit test files, just never run them.
 - NEVER touch the git repo (except via `/co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind.
 - "Can you", "could you", "would you", and any question form is NOT a command. It is a request for a description.
