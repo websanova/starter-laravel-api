@@ -51,6 +51,7 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::put('/billing/address', [App\Http\Controllers\App\BillingAddressController::class, 'update']);
 
         Route::post('/payment-method/intent', [App\Http\Controllers\App\PaymentMethodIntentController::class, 'store']);
+        Route::post('/payment-method/sync', [App\Http\Controllers\App\PaymentMethodSyncController::class, 'store']);
 
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);

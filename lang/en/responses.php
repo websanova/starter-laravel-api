@@ -69,6 +69,8 @@ return [
     'subscription.address_required' => 'A billing address is required before you can subscribe.',
     'subscription.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
+    'payment_method.updated' => 'Payment method updated successfully.',
+    'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',

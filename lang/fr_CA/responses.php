@@ -63,6 +63,8 @@ return [
     'subscription.cancelled' => 'Abonnement annule avec succes.',
     'subscription.resumed' => 'Abonnement repris avec succes.',
 
+    'payment_method.updated' => 'Mode de paiement mis a jour avec succes.',
+    'payment_method.nothing_to_sync' => 'Aucun nouveau mode de paiement a appliquer.',
     'payment_method.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
 
     'plan.limit_reached' => 'Vous avez atteint la limite de cette fonctionnalite pour votre forfait actuel.',
