@@ -62,6 +62,9 @@ return [
     'subscription.updated' => 'Abonnement mis a jour avec succes.',
     'subscription.cancelled' => 'Abonnement annule avec succes.',
     'subscription.resumed' => 'Abonnement repris avec succes.',
+
+    'payment_method.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
+
     'plan.limit_reached' => 'Vous avez atteint la limite de cette fonctionnalite pour votre forfait actuel.',
 
     'admin.plan.updated' => 'Forfait mis a jour avec succes.',

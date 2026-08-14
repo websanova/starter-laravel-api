@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Contracts\PaymentMethodProvider;
 use App\Contracts\PlanSyncProvider;
 use App\Contracts\PromotionCodeProvider;
 use App\Contracts\SubscriptionProvider;
+use App\Services\Stripe\PaymentMethodService;
 use App\Services\Stripe\PlanSyncService;
 use App\Services\Stripe\PromotionCodeService;
 use App\Services\Stripe\SubscriptionService;
@@ -31,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SubscriptionProvider::class, SubscriptionService::class);
         $this->app->bind(PromotionCodeProvider::class, PromotionCodeService::class);
         $this->app->bind(PlanSyncProvider::class, PlanSyncService::class);
+        $this->app->bind(PaymentMethodProvider::class, PaymentMethodService::class);
     }
 
     /**

@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Services\Stripe;
+
+use App\Contracts\PaymentMethodProvider;
+use App\Models\User;
+use App\Support\ServiceResult;
+use Stripe\Exception\ApiErrorException;
+
+class PaymentMethodService implements PaymentMethodProvider
+{
+    /**
+     * Open a session for collecting a card and hand back the secret a payment
+     * element mounts against. The setup intent hangs off the customer, so one
+     * has to exist before Stripe will take it. Nothing is charged here, so the
+     * client always confirms this as a setup.
+     */
+    public function intent(User $user): ServiceResult
+    {
+        try {
+            $user->createOrGetStripeCustomer();
+
+            /**
+             * The card is collected now and billed later on renewals, with no
+             * one at the keyboard to authenticate, so Stripe is told up front
+             * what it is for and asks the bank for the mandate while the user
+             * is still here.
+             */
+            $setupIntent = $user->createSetupIntent(['usage' => 'off_session']);
+        } catch (ApiErrorException $e) {
+            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
+        }
+
+        return ServiceResult::success(['client_secret' => $setupIntent->client_secret, 'type' => 'setup']);
+    }
+}
