@@ -19,14 +19,16 @@ The below does not even consider trials which adds additional complications with
 * Then fetch the intent, sending `{ plan, interval, promo_code, etc }` to the API. The amount will get auto computed on Stripe's side and will have to match the amount that was manually set/updated in the steps above. This follows like so:
 
   * Loads the user's Stripe customer id from your DB.
-  * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table.
-  * Creates the Subscription on Stripe with customer (stripe id), the plan's price id and payment_behavior as `default_incomplete`. Stripe returns the subscription with an id, status incomplete, its first invoice which auto computes the amount, and a PaymentIntent on that invoice.
+  * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table. Note that if tax is to be applied the customer MUST also have a billing address attached. This could be part of the subscribe button step but also adds additional complications here.
+  * If there is a promo code we also need to resolve a Stripe promo code object from stripe directly. This then gets attached to the intent not the promo code string itself.
+  * Creates the Subscription on Stripe with customer (stripe id), the plan's price id and `payment_behavior: 'default_incomplete'`, automatic_`tax: { enabled: true }`, `expand: ['latest_invoice.payment_intent']`. Stripe returns the subscription with an id, status incomplete, its first invoice which auto computes the amount, and a PaymentIntent on that invoice.
   * If there is tax here is where it gets complicated since it's computed on a few different variables:
     * Your registrations - which jurisdictions you've told Stripe you collect tax in, set in the Dashboard.
     * The customer's location - address on the Stripe customer object. Stripe can also infer from IP (customer.tax.ip_address) when there's no address, but that's a weaker signal and some jurisdictions won't accept it.
     * The product's tax code - `tax_code` on the Stripe product, which decides the rate category (SaaS is taxed differently to physical goods).
-  * Writes your local subscription row now that the Stripe id exists - stripe sub id, plan, interval, status incomplete.
-  * Returns the PaymentIntent's client secret to the client app. The amount on it must be exactly matching what the element was mounted/updated with.
+  * If successful writes your local subscription row now that the Stripe id exists - stripe sub id, plan, interval, status incomplete.
+  * If errors out (amount doesn't match, etc) this error will need to get sent back to the client for display.
+  * Returns the PaymentIntent's client secret to the client app. The amount on it must be exactly matching what the element was mounted/updated with. Also needs `confirmParams: { return_url }` and `redirect: 'if_required'`. The `return_url` is mandatory.
 * Then `stripe.confirmPayment({ elements, clientSecret })` fires immediately, same click handler, next line after the secret comes back. No second button press, no user interaction in between, the whole chain from the subscribe click runs uninterrupted with the button held in its pending state.
 * Response is success / error / 3DS. 3DS either runs in a dialog and resolves inline, or sends the browser away to the bank and back to your return url. Either way you end up at the same place - a settled intent.
 * On success, the user needs reloading with their new subscription. But your API doesn't know about it yet, nothing in the chain above told it the payment landed. Only the webhook does.
