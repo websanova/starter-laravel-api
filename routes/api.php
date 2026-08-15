@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
-Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
+// Named for cashier:webhook, which resolves this URL by route name when run without --url.
+Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
 Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 
