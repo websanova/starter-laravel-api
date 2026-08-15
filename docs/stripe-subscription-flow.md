@@ -2,7 +2,9 @@
 
 ## On Init Flow
 
-With on init flow the intent gets created before the element mounts, so the element is driven straight off a real client secret and there is no amount to keep in sync. Trials also fall out for free here, the server decides whether it's a payment or a setup and just tells the client which. The tradeoff is that a subscription gets opened on Stripe for anyone who so much as lands on the page, and anything that changes the amount afterwards means tearing it down and building a new one.
+With on init flow the intent gets created before the element mounts, so the element is driven straight off a real client secret and there is no amount to keep in sync. Trials also fall out for free here, the server decides whether it's a payment or a setup and just tells the client which. The tradeoff is that a subscription gets opened on Stripe for anyone who so much as lands on the page, and anything that changes the amount afterwards, a promo code or a billing address that changes the tax, means tearing it down and building a new one.
+
+If you go with tax or promo codes, both have to be captured before the element mounts, however you want to lay the steps out. The intent can't be created until every input to the amount is known, and once it is created the first invoice is finalized and its amount doesn't change, so neither can be applied after the fact. Re-pointing the mounted element at a new secret isn't an option either, clientSecret is fixed when elements() is created. That also means letting the user go back and change the address or promo code costs a fresh intent and a fresh mount, which wipes the card they typed. With automatic_tax: { enabled: false } and no promo codes none of this applies, there is nothing to settle and the element can mount straight away.
 
 * On page load, hit the API to get the intent, sending `{ plan, interval }`. This follows like so:
 
@@ -10,7 +12,8 @@ With on init flow the intent gets created before the element mounts, so the elem
   * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table.
   * If tax is to be applied the Stripe customer MUST have a billing address on it. This is the first problem with doing it on init, at page load the user hasn't filled anything in yet, so there is nothing to push up.
   * Works out trial eligibility on the API side, since it already knows whether this user has burned a trial before.
-  * Creates the Subscription on Stripe with customer (stripe id), the plan's price id, `trial_period_days` if eligible, `payment_behavior: 'default_incomplete'`, `automatic_tax: { enabled: true }`, `expand: ['latest_invoice.payment_intent', 'pending_setup_intent']`. No promo code, the user hasn't entered one yet.
+  * If a promo code came through it gets resolved into a Stripe promo code object. The field is optional, no code means this step is skipped entirely.
+  * Creates the Subscription on Stripe with customer (stripe id), the plan's price id, `discounts: [{ promotion_code: 'promo_xxx' }]` if there was a code, `trial_period_days` if eligible, `payment_behavior: 'default_incomplete'`, `automatic_tax: { enabled: true }`, `expand: ['latest_invoice.payment_intent', 'pending_setup_intent']`.
   * That single call creates the Subscription on Stripe at status incomplete (or trialing), plus one of two things depending on the trial:
     * No trial - a first Invoice for the full amount, and a PaymentIntent against that invoice.
     * Trial - the first invoice is $0, so there is nothing to charge. Stripe opens a SetupIntent on `pending_setup_intent` instead, which stores the card for when the trial ends.
