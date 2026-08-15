@@ -6,6 +6,46 @@ With on init flow the intent gets created before the element mounts, so the elem
 
 If you go with tax or promo codes, both have to be captured before the element mounts, however you want to lay the steps out. The intent can't be created until every input to the amount is known, and once it is created the first invoice is finalized and its amount doesn't change, so neither can be applied after the fact. Re-pointing the mounted element at a new secret isn't an option either, clientSecret is fixed when elements() is created. That also means letting the user go back and change the address or promo code costs a fresh intent and a fresh mount, which wipes the card they typed. With automatic_tax: { enabled: false } and no promo codes none of this applies, there is nothing to settle and the element can mount straight away.
 
+```mermaid
+flowchart LR
+    A[Page load] --> B{tax or<br/>promo codes?}
+
+    B -->|no| C
+    B -->|yes| B1[Collect address and<br/>promo code first]
+    B1 --> C
+
+    C["POST /subscription/intent<br/>{plan, interval, promo_code?}"] --> D["Load or create Stripe customer<br/>push billing address"]
+    D --> E["Resolve promo code<br/>(if sent)"]
+    E --> F["subscriptions.create<br/>default_incomplete"]
+    F --> G{Trial?}
+
+    G -->|no| H1["PaymentIntent on invoice<br/>type: payment"]
+    G -->|yes| H2["SetupIntent on pending_setup_intent<br/>type: setup"]
+
+    H1 --> I["Write local row<br/>status: incomplete"]
+    H2 --> I
+    I --> J[Return client_secret + type]
+
+    J --> K["stripe.elements({ clientSecret })<br/>mount element"]
+    K --> L[User hits subscribe]
+    L --> M{type}
+
+    M -->|payment| N1[stripe.confirmPayment]
+    M -->|setup| N2[stripe.confirmSetup]
+
+    N1 --> O{Result}
+    N2 --> O
+
+    O -->|declined| L
+    O -->|3DS redirect| O1["Back at return_url<br/>retrieve intent"]
+    O -->|success| P
+    O1 --> P
+
+    P[Stripe fires webhook] --> Q["Local row -> active / trialing"]
+    Q --> R[Client polls auth user]
+    R --> S[Success action]
+```
+
 * On page load, hit the API to get the intent, sending `{ plan, interval }`. This follows like so:
 
   * Loads the user's Stripe customer id from your DB.
@@ -47,6 +87,46 @@ With deferred flow the payment element needs to get its amount constantly update
 Trials work here too, but the mode has to be decided before mounting, so the client has to know trial eligibility up front rather than being told by the server. Stripe validates that mode against the intent it eventually gets, so if the client and the API disagree you get an `IntegrationError` after the user has already clicked pay.
 
 The gist of it is that whatever you set up, trial or no trial, promo, tax, whatever, the intent and the local payment element have to match. Mode, amount and currency all get compared at confirm, and if any of them disagree it throws.
+
+```mermaid
+flowchart LR
+    A[Page load] --> B{Trial eligible?<br/>decided client side}
+
+    B -->|no| C1["stripe.elements<br/>mode: payment<br/>+ amount, currency"]
+    B -->|yes| C2["stripe.elements<br/>mode: setup<br/>+ currency only"]
+
+    C1 --> D[Mount element]
+    C2 --> D
+
+    D --> E{Promo code<br/>or tax?}
+    E -->|no| G
+    E -->|yes| E1[API returns<br/>recalculated amount]
+    E1 --> E2["elements.update({ amount })"]
+    E2 --> G
+
+    G[User hits subscribe] --> H["elements.submit()<br/>first, before any await"]
+    H -->|validation error| G
+    H -->|ok| I["POST /subscription/intent<br/>{plan, interval, promo_code?}"]
+
+    I --> J["Load or create Stripe customer<br/>push billing address<br/>resolve promo code"]
+    J --> K["subscriptions.create<br/>default_incomplete<br/>write local row"]
+    K --> L[Return client_secret + type]
+
+    L --> M["stripe.confirmPayment / confirmSetup<br/>{ elements, clientSecret }"]
+    M --> N{Amount, currency<br/>and mode match?}
+
+    N -->|no| N1["IntegrationError<br/>sub already created<br/>nothing charged"]
+    N -->|yes| O{Result}
+
+    O -->|declined| G
+    O -->|3DS redirect| O1["Back at return_url<br/>mount with clientSecret<br/>retrieve intent"]
+    O -->|success| P
+    O1 --> P
+
+    P[Stripe fires webhook] --> Q["Local row -> active / trialing"]
+    Q --> R[Client polls auth user]
+    R --> S[Success action]
+```
 
 * Element mounts with amount & currency in "payment" mode. For example `stripe.elements({ mode: 'payment', amount: 3000, currency: 'usd' })`. On a trial it mounts as `stripe.elements({ mode: 'setup', currency: 'usd' })` instead, no amount at all, which means none of the amount syncing below applies.
   * `loadStripe()` downloads `js.stripe.com/v3` if it isn't already on the page.
