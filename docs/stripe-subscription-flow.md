@@ -2,7 +2,7 @@
 
 ## Deferred Flow
 
-With deferred flow the payment element needs to get its amount constantly updated to match up with the intent it will eventually create. This can be a bit cumbersome when taxes and promo codes are involved since it requires always fetching the appropriate amount from the API (API should be source of truth, do not calculate locally) to ensure it will match the intent amount later. Note that the intent is auto computing this amount on its end.
+With deferred flow the payment element needs to get its amount constantly updated to match up with the intent that eventually gets created. This can be a bit cumbersome when taxes and promo codes are involved since it requires always fetching the appropriate amount from the API (API should be source of truth, do not calculate locally) to ensure it will match the intent amount later. Note that the intent is auto computing this amount on its end.
 
 The below does not even consider trials which adds additional complications with how the intent is setup. I've left it out since it's already quite complicated as it is.
 
@@ -19,7 +19,8 @@ The below does not even consider trials which adds additional complications with
 * Then hit the API to get the intent, sending `{ plan, interval, promo_code, etc }`. This follows like so:
 
   * Loads the user's Stripe customer id from your DB.
-  * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table. Note that if tax is to be applied the customer MUST also have a billing address attached. This could be part of the subscribe button step but also adds additional complications here.
+  * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table.
+  * If tax is to be applied the Stripe customer MUST also have a billing address on it, so the address gets pushed up with a customer update on Stripe here. This means your app has to have collected it already, which could be part of the subscribe button step but adds additional complications.
   * If there is a promo code we also need to resolve a Stripe promo code object from stripe directly. The string the user typed is not what the create accepts.
   * Creates the Subscription on Stripe with customer (stripe id), the plan's price id, `discounts: [{ promotion_code: 'promo_xxx' }]` (the resolved promo code object), `payment_behavior: 'default_incomplete'`, `automatic_tax: { enabled: true }`, `expand: ['latest_invoice.payment_intent']`.
   * That single call creates three things on Stripe - the Subscription at status incomplete, its first Invoice, and a PaymentIntent against that invoice. All three come back in the one response.
@@ -28,8 +29,8 @@ The below does not even consider trials which adds additional complications with
     * Your registrations - which jurisdictions you've told Stripe you collect tax in, set in the Dashboard.
     * The customer's location - address on the Stripe customer object. Stripe can also infer from IP (customer.tax.ip_address) when there's no address, but that's a weaker signal and some jurisdictions won't accept it.
     * The product's tax code - `tax_code` on the Stripe product, which decides the rate category (SaaS is taxed differently to physical goods).
+  * If errors out (invalid promo, tax not computable, etc) this error will need to get sent back to the client for display. An amount mismatch gets caught client side on confirm, when Stripe.js compares the element amount against the intent amount.
   * If successful writes your local subscription row now that the Stripe id exists - stripe sub id, plan, interval, status incomplete.
-  * If errors out (invalid promo, tax not computable, etc) this error will need to get sent back to the client for display. Note an amount mismatch is NOT caught here, your API has no idea what the element was mounted with.
   * Returns the PaymentIntent's client secret to the client app.
 
 * Then `stripe.confirmPayment({ elements, clientSecret, confirmParams: { return_url }, redirect: 'if_required' })` fires immediately, same click handler, next line after the secret comes back. No second button press, no user interaction in between, the whole chain from the subscribe click runs uninterrupted with the button held in its pending state. The `return_url` is mandatory. This is also where a mismatched amount blows up, Stripe.js compares the intent against what elements was configured with and throws an `IntegrationError`, after the user already clicked pay.
