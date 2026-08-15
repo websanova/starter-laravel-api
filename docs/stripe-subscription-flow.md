@@ -46,6 +46,8 @@ With deferred flow the payment element needs to get its amount constantly update
 
 Trials work here too, but the mode has to be decided before mounting, so the client has to know trial eligibility up front rather than being told by the server. Stripe validates that mode against the intent it eventually gets, so if the client and the API disagree you get an `IntegrationError` after the user has already clicked pay.
 
+The gist of it is that whatever you set up, trial or no trial, promo, tax, whatever, the intent and the local payment element have to match. Mode, amount and currency all get compared at confirm, and if any of them disagree it throws.
+
 * Element mounts with amount & currency in "payment" mode. For example `stripe.elements({ mode: 'payment', amount: 3000, currency: 'usd' })`. On a trial it mounts as `stripe.elements({ mode: 'setup', currency: 'usd' })` instead, no amount at all, which means none of the amount syncing below applies.
   * `loadStripe()` downloads `js.stripe.com/v3` if it isn't already on the page.
   * `stripe.elements({ mode, amount, currency })` which builds the Elements object locally (no network calls here).
