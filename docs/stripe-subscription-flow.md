@@ -1,5 +1,42 @@
 # Stripe Subscription Flow
 
+## On Init Flow
+
+With on init flow the intent gets created before the element mounts, so the element is driven straight off a real client secret and there is no amount to keep in sync. Trials also fall out for free here, the server decides whether it's a payment or a setup and just tells the client which. The tradeoff is that a subscription gets opened on Stripe for anyone who so much as lands on the page, and anything that changes the amount afterwards means tearing it down and building a new one.
+
+* On page load, hit the API to get the intent, sending `{ plan, interval }`. This follows like so:
+
+  * Loads the user's Stripe customer id from your DB.
+  * If there isn't one, creates the customer on Stripe. Saves the returned customer id to your users table.
+  * If tax is to be applied the Stripe customer MUST have a billing address on it. This is the first problem with doing it on init, at page load the user hasn't filled anything in yet, so there is nothing to push up.
+  * Works out trial eligibility on the API side, since it already knows whether this user has burned a trial before.
+  * Creates the Subscription on Stripe with customer (stripe id), the plan's price id, `trial_period_days` if eligible, `payment_behavior: 'default_incomplete'`, `automatic_tax: { enabled: true }`, `expand: ['latest_invoice.payment_intent', 'pending_setup_intent']`. No promo code, the user hasn't entered one yet.
+  * That single call creates the Subscription on Stripe at status incomplete (or trialing), plus one of two things depending on the trial:
+    * No trial - a first Invoice for the full amount, and a PaymentIntent against that invoice.
+    * Trial - the first invoice is $0, so there is nothing to charge. Stripe opens a SetupIntent on `pending_setup_intent` instead, which stores the card for when the trial ends.
+  * The amount is computed by Stripe from price + tax. You never send one, and nothing on the client has to match it.
+  * If errors out this error will need to get sent back to the client for display.
+  * If successful writes your local subscription row now that the Stripe id exists - stripe sub id, plan, interval, status.
+  * Returns the client secret to the client app, along with a `type` of `payment` or `setup` so the client knows which confirm to call later.
+
+* Element mounts against that secret with `stripe.elements({ clientSecret })`. No mode, no amount, no currency, and no trial handling, Stripe reads all of that off the intent. The `type` is not used here at all, only at confirm.
+  * `loadStripe()` downloads `js.stripe.com/v3` if it isn't already on the page.
+  * `stripe.elements({ clientSecret })` which builds the Elements object locally (no network calls here).
+  * `paymentElement.mount(target)` creates the iframe / payment element.
+* If a promo code gets entered this is where it falls down. The first invoice is already finalized, that is how you got the PaymentIntent, and a discount applied to the subscription now only affects future invoices. To discount the first one you have to cancel the subscription on Stripe, create a new one with the promo attached, and mount a fresh element against the new secret. Same story for a billing address that arrives after init and changes the tax.
+* User hits subscribe.
+* Branch on the `type` from above - `stripe.confirmSetup()` for a trial, `stripe.confirmPayment()` otherwise.
+* Both take `{ elements, clientSecret, confirmParams: { return_url }, redirect: 'if_required' }`. The `return_url` is mandatory.
+* Response is success / error / 3DS. 3DS either runs in a dialog and resolves inline, or sends the browser away to the bank and back to your return url. Either way you end up at the same place - a settled intent. Note a trial can still hit 3DS, the bank may want the card verified even though nothing is being charged.
+* If it redirected, the user comes back to a freshly loaded page with no state. Stripe appends the secret to the return url, and which key it appends also tells you the type, so you read the pair together and call `retrievePaymentIntent` or `retrieveSetupIntent` to see how it landed rather than starting the flow over. Same mount path as the initial one since it is a client secret either way, so there is only one mode to support.
+* If confirm fails (declined card, etc) the element stays mounted against the same secret and the user can correct the card and submit again. The intent is still confirmable, no new secret needed.
+* On success, the user needs reloading with their new subscription. But your API doesn't know about it yet, nothing in the chain above told it the payment landed. Only the webhook does.
+* Assuming success, Stripe fires off the webhook. Your backend looks up the local row by Stripe sub id and flips it to active, or trialing if there was a trial. This is asynchronous and has no fixed timing, it can land before confirm even resolves in the browser, or seconds after.
+* Reload the auth user and check for the subscription. Poll this, a hit (check for is_subscribed true or something) means the webhook arrived and the API picked it up. Note the flag has to treat trialing as subscribed, otherwise a trial signup polls forever. Give up after a ceiling rather than spinning forever.
+* Note that you are at the mercy of the webhook running correctly. If it's late, fails, or never arrives, the user sits in a pending state. Show a pending state for that, and if it fails outright you need a manual sync command to reconcile against Stripe. This should be rare, but it may happen if your API has an issue and drops webhook attempts (or other scenarios).
+* Assuming the webhook finally processes and we get our flag (is_subscribed or whatever), take the success action - redirect to billing, a success page, wherever.
+* Anyone who opens the page and leaves has an incomplete subscription sitting on Stripe and an incomplete row in your DB. Stripe expires those on its own after 23 hours, but your local rows need cleaning up, and hitting the page again has to hand back the in flight subscription rather than opening another one.
+
 ## Deferred Flow
 
 With deferred flow the payment element needs to get its amount constantly updated to match up with the intent that eventually gets created. This can be a bit cumbersome when taxes and promo codes are involved since it requires always fetching the appropriate amount from the API (API should be source of truth, do not calculate locally) to ensure it will match the intent amount later. Note that the intent is auto computing this amount on its end.
