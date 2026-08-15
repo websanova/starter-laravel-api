@@ -1,5 +1,56 @@
 # Stripe Subscription Flow
 
+## Hosted Flow
+
+With hosted flow you don't render anything. Your API creates a Checkout Session and hands back a URL, the browser navigates to it, and the user completes the whole thing on `checkout.stripe.com`. Address collection, promo codes, tax, payment methods, 3DS and the trial are all Stripe's UI on Stripe's domain.
+
+There is no stripe.js on your page at all. Nothing to load, nothing to mount, no client secret, no element. The entire card surface lives off your domain, which is the smallest PCI footprint of any of these.
+
+Styling is logo, colors, fonts and border radius from the Dashboard branding settings. Beyond that it looks like Stripe, and the user can see they left your site.
+
+* User hits subscribe, hit the API to get the session URL, sending `{ plan, interval }`. This follows like so:
+
+  * Loads the user's Stripe customer id from your DB.
+  * If there isn't one, creates the customer on Stripe with the user's email and name. Nothing is strictly required by the API, but without those the Dashboard and receipts are useless. Saves the returned customer id to your users table. No billing address needed here, Stripe collects it during checkout.
+  * You can also skip that step entirely and pass `customer_email` instead of `customer` on the session below. Stripe creates the customer itself during checkout, then you read the id off the completed session and save it. One less call, and the customer only gets created for people who actually go through with it.
+  * Works out trial eligibility on the API side, since it already knows whether this user has burned a trial before.
+  * Creates a Checkout Session on Stripe with `mode: 'subscription'`, the customer, `line_items` with the plan's price id, `subscription_data: { trial_period_days }` if eligible, `allow_promotion_codes: true`, `automatic_tax: { enabled: true }`, `billing_address_collection: 'required'`, `customer_update: { address: 'auto' }`, plus a `success_url` and a `cancel_url`. No `ui_mode`, hosted is the default.
+  * The `customer_update` is easy to miss. Without it Stripe collects the address for the tax calculation but never writes it back to the customer, so you end up with nothing on file for the next renewal.
+  * Nothing else gets created. No subscription, no invoice, no intent, no local row. The session is just a container.
+  * Returns the session's `url` to the client app.
+
+* Client navigates the browser to that URL. That is the entire client side implementation.
+* Everything from here happens on Stripe's domain. The user fills in their address, applies a promo code, picks a payment method, pays, and does 3DS if the bank asks. Stripe recalculates tax and totals live, with no calls to your API at any point.
+* On completion Stripe creates the Subscription and the Invoice and charges the card, all on its own side.
+* Then it sends the browser to your `success_url` with `?session_id={CHECKOUT_SESSION_ID}` appended. If the user backs out instead they land on `cancel_url` and nothing was created.
+* The success page is a cold page load with no state, so treat it as a landing page rather than a continuation of whatever the user was doing before.
+* Your API still knows nothing at this point. Nothing in the chain above told it the payment landed, only the webhook does.
+* Stripe fires `checkout.session.completed`. Your backend reads the subscription id off the session and writes the local row. This is the first time anything lands in your DB. It is asynchronous and has no fixed timing, it can land before the browser even finishes redirecting back, or seconds after.
+* Reload the auth user and check for the subscription. Poll this, a hit (check for is_subscribed true or something) means the webhook arrived and the API picked it up. Note the flag has to treat trialing as subscribed, otherwise a trial signup polls forever. Give up after a ceiling rather than spinning forever.
+* Note that you are at the mercy of the webhook running correctly. If it's late, fails, or never arrives, the user sits in a pending state. Show a pending state for that, and if it fails outright you need a manual sync command to reconcile against Stripe. This should be rare, but it may happen if your API has an issue and drops webhook attempts (or other scenarios).
+* Assuming the webhook finally processes and we get our flag (is_subscribed or whatever), take the success action - redirect to billing, a success page, wherever.
+* Sessions expire on their own after 24 hours, so there is nothing to clean up for people who abandon.
+
+```mermaid
+flowchart LR
+    A[User hits subscribe] --> B["POST /subscription/session<br/>{plan, interval}"]
+    B --> C[Load or create<br/>Stripe customer]
+    C --> D["checkout.sessions.create<br/>mode: subscription<br/>allow_promotion_codes<br/>automatic_tax<br/>billing_address_collection<br/>success_url + cancel_url"]
+    D --> E[Return session url]
+
+    E --> F["Browser navigates to<br/>checkout.stripe.com"]
+    F --> G["On Stripe's domain:<br/>address, promo code, tax,<br/>payment method, 3DS"]
+
+    G --> H1[Stripe creates Subscription<br/>and Invoice, charges card]
+    G -->|backs out| H2["cancel_url<br/>nothing created"]
+
+    H1 --> I["Redirect to success_url<br/>?session_id="]
+    I --> J["Webhook<br/>checkout.session.completed"]
+    J --> K[Write local row<br/>status from subscription]
+    K --> L[Client polls auth user]
+    L --> M[Success action]
+```
+
 ## Embedded Flow
 
 With embedded flow you hand the whole thing to Stripe. It is a Checkout Session rendered in an iframe on your own page, so the address collection, the promo code field, the tax calculation and the trial all happen inside Stripe's UI. There is no amount to sync, no promo code to resolve, no address endpoint, and no intent to match against.
