@@ -1,5 +1,56 @@
 # Stripe Subscription Flow
 
+## Embedded Flow
+
+With embedded flow you hand the whole thing to Stripe. It is a Checkout Session rendered in an iframe on your own page, so the address collection, the promo code field, the tax calculation and the trial all happen inside Stripe's UI. There is no amount to sync, no promo code to resolve, no address endpoint, and no intent to match against.
+
+The catch is styling. You get logo, colors, fonts and border radius from the Dashboard branding settings and nothing else. The Appearance API that the Payment Element uses does not apply here.
+
+Nothing exists on Stripe until the session completes. Someone who lands on the page and leaves has cost you nothing but a session record, and those expire on their own after 24 hours.
+
+* On page load, hit the API to get the session, sending `{ plan, interval }`. This follows like so:
+
+  * Loads the user's Stripe customer id from your DB.
+  * If there isn't one, creates the customer on Stripe with the user's email and name. Nothing is strictly required by the API, but without those the Dashboard and receipts are useless. Saves the returned customer id to your users table. No billing address needed here, Stripe collects it inside the session.
+  * You can also skip that step entirely and pass `customer_email` instead of `customer` on the session below. Stripe creates the customer itself during checkout, then you read the id off the completed session and save it. One less call, and the customer only gets created for people who actually go through with it.
+  * Works out trial eligibility on the API side, since it already knows whether this user has burned a trial before.
+  * Creates a Checkout Session on Stripe with `ui_mode: 'embedded'`, `mode: 'subscription'`, the customer, `line_items` with the plan's price id, `subscription_data: { trial_period_days }` if eligible, `allow_promotion_codes: true`, `automatic_tax: { enabled: true }`, `billing_address_collection: 'required'`, `customer_update: { address: 'auto' }` and a `return_url`.
+  * The `customer_update` is easy to miss. Without it Stripe collects the address for the tax calculation but never writes it back to the customer, so you end up with nothing on file for the next renewal.
+  * Nothing else gets created. No subscription, no invoice, no intent, no local row. The session is just a container.
+  * Returns the session's `client_secret` to the client app.
+
+* Client mounts it with `stripe.initEmbeddedCheckout({ clientSecret })` then `checkout.mount('#checkout')`.
+* Everything from here happens inside the iframe. The user fills in their address, applies a promo code, picks a payment method, pays, and does 3DS if the bank asks. Stripe recalculates tax and totals live as they type, with no calls to your API at any point.
+* On completion Stripe creates the Subscription and the Invoice and charges the card, all on its own side.
+* Then either it redirects to your `return_url` with `?session_id={CHECKOUT_SESSION_ID}` appended, or if you set `redirect_on_completion: 'never'` it fires an `onComplete` callback and stays on the page.
+* Either way your API still knows nothing at this point. Nothing in the chain above told it the payment landed, only the webhook does.
+* Stripe fires `checkout.session.completed`. Your backend reads the subscription id off the session and writes the local row. This is the first time anything lands in your DB. It is asynchronous and has no fixed timing, it can land before the browser even finishes redirecting, or seconds after.
+* Reload the auth user and check for the subscription. Poll this, a hit (check for is_subscribed true or something) means the webhook arrived and the API picked it up. Note the flag has to treat trialing as subscribed, otherwise a trial signup polls forever. Give up after a ceiling rather than spinning forever.
+* Note that you are at the mercy of the webhook running correctly. If it's late, fails, or never arrives, the user sits in a pending state. Show a pending state for that, and if it fails outright you need a manual sync command to reconcile against Stripe. This should be rare, but it may happen if your API has an issue and drops webhook attempts (or other scenarios).
+* Assuming the webhook finally processes and we get our flag (is_subscribed or whatever), take the success action - redirect to billing, a success page, wherever.
+
+```mermaid
+flowchart LR
+    A[Page load] --> B["POST /subscription/session<br/>{plan, interval}"]
+    B --> C[Load or create<br/>Stripe customer]
+    C --> D["checkout.sessions.create<br/>ui_mode: embedded<br/>mode: subscription<br/>allow_promotion_codes<br/>automatic_tax<br/>billing_address_collection"]
+    D --> E[Return session client_secret]
+
+    E --> F["initEmbeddedCheckout({ clientSecret })<br/>checkout.mount()"]
+    F --> G["Inside the iframe:<br/>address, promo code, tax,<br/>payment method, 3DS"]
+    G --> H[Stripe creates Subscription<br/>and Invoice, charges card]
+
+    H --> I{redirect_on_completion}
+    I -->|default| I1["Redirect to return_url<br/>?session_id="]
+    I -->|never| I2[onComplete callback<br/>stays on page]
+    I1 --> J
+    I2 --> J
+
+    J["Webhook<br/>checkout.session.completed"] --> K[Write local row<br/>status from subscription]
+    K --> L[Client polls auth user]
+    L --> M[Success action]
+```
+
 ## On Init Flow
 
 With on init flow the intent gets created before the element mounts, so the element is driven straight off a real client secret and there is no amount to keep in sync. Trials also fall out for free here, the server decides whether it's a payment or a setup and just tells the client which. The tradeoff is that a subscription gets opened on Stripe for anyone who so much as lands on the page, and anything that changes the amount afterwards, a promo code or a billing address that changes the tax, means tearing it down and building a new one.
