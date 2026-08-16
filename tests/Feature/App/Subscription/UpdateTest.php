@@ -4,6 +4,7 @@ uses()->group('app.subscription.update');
 
 use App\Models\Plan;
 use App\Models\User;
+use Database\Factories\SubscriptionFactory;
 
 test('unauthenticated user cannot update subscription', function () {
     $response = $this->putJson('/subscription', [
@@ -17,6 +18,8 @@ test('unauthenticated user cannot update subscription', function () {
 test('plan must be public with stripe prices', function () {
     $plan = Plan::factory()->private()->create();
     $user = User::factory()->create();
+
+    SubscriptionFactory::new()->create(['user_id' => $user->id]);
 
     $response = $this->actingAs($user)->putJson('/subscription', [
         'plan' => $plan->slug,

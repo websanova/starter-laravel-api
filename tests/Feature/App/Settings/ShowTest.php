@@ -8,6 +8,7 @@ test('guest can retrieve settings', function () {
     $response->assertStatus(200)
         ->assertExactJson([
             'data' => [
+                'subscription_automatic_tax' => config('subscription.automatic_tax'),
                 'subscription_card_upfront' => config('subscription.require_card_upfront'),
                 'subscription_mode' => config('subscription.mode')->value,
                 'subscription_trial_days' => config('subscription.trial_days'),
@@ -23,6 +24,7 @@ test('settings are available on the admin path', function () {
     $response->assertStatus(200)
         ->assertExactJson([
             'data' => [
+                'subscription_automatic_tax' => config('subscription.automatic_tax'),
                 'subscription_card_upfront' => config('subscription.require_card_upfront'),
                 'subscription_mode' => config('subscription.mode')->value,
                 'subscription_trial_days' => config('subscription.trial_days'),
