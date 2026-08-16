@@ -4,6 +4,10 @@
 - No long intros or transitions between sections.
 - Short responses are correct unless depth is explicitly requested.
 
+## Explain / Restate
+- Being asked to explain means the first version failed to communicate. Rewrite it clearly - same scope, plainer words.
+- Do not add findings, fixes, or caveats that were not in the original. Unclear is not the same as incomplete.
+
 ## Typography - ASCII Only
 - No em dashes (-) - use hyphens (-)
 - No smart/curly quotes - use straight quotes (" ')
