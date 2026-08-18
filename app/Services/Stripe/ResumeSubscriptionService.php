@@ -6,7 +6,7 @@ use App\Contracts\ResumeSubscriptionProvider;
 use App\Models\User;
 use Laravel\Cashier\Subscription;
 
-class ResumeSubscription implements ResumeSubscriptionProvider
+class ResumeSubscriptionService implements ResumeSubscriptionProvider
 {
     /**
      * Resume a cancelled subscription before the period ends.

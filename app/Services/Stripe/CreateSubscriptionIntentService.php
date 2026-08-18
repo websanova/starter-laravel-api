@@ -10,7 +10,7 @@ use App\Support\ServiceResult;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
-class CreateSubscriptionIntent implements CreateSubscriptionIntentProvider
+class CreateSubscriptionIntentService implements CreateSubscriptionIntentProvider
 {
     /**
      * Open a payment session and hand back the secret a payment element mounts
@@ -88,7 +88,7 @@ class CreateSubscriptionIntent implements CreateSubscriptionIntentProvider
                 /**
                  * Stripe leaves the subscription's default payment method
                  * unset unless it is told to keep the one that paid, and
-                 * SyncPaymentMethod reads the card off exactly that field, so
+                 * SyncPaymentMethodService reads the card off exactly that field, so
                  * renewals would bill against nothing without this.
                  */
                 $options = [

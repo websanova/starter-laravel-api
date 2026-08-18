@@ -12,7 +12,7 @@ use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Price as StripePrice;
 
-class SyncPlanPrices implements SyncPlanPricesProvider
+class SyncPlanPricesService implements SyncPlanPricesProvider
 {
     /**
      * Sync a single plan's prices from Stripe. The plan's lookup keys are

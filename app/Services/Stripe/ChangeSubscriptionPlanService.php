@@ -8,7 +8,7 @@ use App\Models\Plan;
 use App\Models\User;
 use Laravel\Cashier\Subscription;
 
-class ChangeSubscriptionPlan implements ChangeSubscriptionPlanProvider
+class ChangeSubscriptionPlanService implements ChangeSubscriptionPlanProvider
 {
     /**
      * Swap to a different plan.

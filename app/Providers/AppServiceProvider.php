@@ -12,16 +12,16 @@ use App\Contracts\SyncPaymentMethodProvider;
 use App\Contracts\SyncPlanPricesProvider;
 use App\Contracts\SyncSubscriptionProvider;
 use App\Contracts\UpdateBillingAddressProvider;
-use App\Services\Stripe\CancelSubscription;
-use App\Services\Stripe\ChangeSubscriptionPlan;
-use App\Services\Stripe\CreatePaymentMethodIntent;
-use App\Services\Stripe\CreateSubscriptionIntent;
-use App\Services\Stripe\ResolvePromotionCode;
-use App\Services\Stripe\ResumeSubscription;
-use App\Services\Stripe\SyncPaymentMethod;
-use App\Services\Stripe\SyncPlanPrices;
-use App\Services\Stripe\SyncSubscription;
-use App\Services\Stripe\UpdateBillingAddress;
+use App\Services\Stripe\CancelSubscriptionService;
+use App\Services\Stripe\ChangeSubscriptionPlanService;
+use App\Services\Stripe\CreatePaymentMethodIntentService;
+use App\Services\Stripe\CreateSubscriptionIntentService;
+use App\Services\Stripe\ResolvePromotionCodeService;
+use App\Services\Stripe\ResumeSubscriptionService;
+use App\Services\Stripe\SyncPaymentMethodService;
+use App\Services\Stripe\SyncPlanPricesService;
+use App\Services\Stripe\SyncSubscriptionService;
+use App\Services\Stripe\UpdateBillingAddressService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -42,16 +42,16 @@ class AppServiceProvider extends ServiceProvider
 
         // Billing runs through one provider at a time. Swapping to another means writing
         // the implementations under App\Services\{Provider} and rebinding them here.
-        $this->app->bind(UpdateBillingAddressProvider::class, UpdateBillingAddress::class);
-        $this->app->bind(CreateSubscriptionIntentProvider::class, CreateSubscriptionIntent::class);
-        $this->app->bind(SyncSubscriptionProvider::class, SyncSubscription::class);
-        $this->app->bind(ChangeSubscriptionPlanProvider::class, ChangeSubscriptionPlan::class);
-        $this->app->bind(CancelSubscriptionProvider::class, CancelSubscription::class);
-        $this->app->bind(ResumeSubscriptionProvider::class, ResumeSubscription::class);
-        $this->app->bind(ResolvePromotionCodeProvider::class, ResolvePromotionCode::class);
-        $this->app->bind(SyncPlanPricesProvider::class, SyncPlanPrices::class);
-        $this->app->bind(CreatePaymentMethodIntentProvider::class, CreatePaymentMethodIntent::class);
-        $this->app->bind(SyncPaymentMethodProvider::class, SyncPaymentMethod::class);
+        $this->app->bind(UpdateBillingAddressProvider::class, UpdateBillingAddressService::class);
+        $this->app->bind(CreateSubscriptionIntentProvider::class, CreateSubscriptionIntentService::class);
+        $this->app->bind(SyncSubscriptionProvider::class, SyncSubscriptionService::class);
+        $this->app->bind(ChangeSubscriptionPlanProvider::class, ChangeSubscriptionPlanService::class);
+        $this->app->bind(CancelSubscriptionProvider::class, CancelSubscriptionService::class);
+        $this->app->bind(ResumeSubscriptionProvider::class, ResumeSubscriptionService::class);
+        $this->app->bind(ResolvePromotionCodeProvider::class, ResolvePromotionCodeService::class);
+        $this->app->bind(SyncPlanPricesProvider::class, SyncPlanPricesService::class);
+        $this->app->bind(CreatePaymentMethodIntentProvider::class, CreatePaymentMethodIntentService::class);
+        $this->app->bind(SyncPaymentMethodProvider::class, SyncPaymentMethodService::class);
     }
 
     /**

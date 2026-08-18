@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Support\ServiceResult;
 use Stripe\Exception\ApiErrorException;
 
-class CreatePaymentMethodIntent implements CreatePaymentMethodIntentProvider
+class CreatePaymentMethodIntentService implements CreatePaymentMethodIntentProvider
 {
     /**
      * Open a session for collecting a card and hand back the secret a payment

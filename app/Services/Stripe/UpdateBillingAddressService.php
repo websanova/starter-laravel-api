@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Support\ServiceResult;
 use Stripe\Exception\ApiErrorException;
 
-class UpdateBillingAddress implements UpdateBillingAddressProvider
+class UpdateBillingAddressService implements UpdateBillingAddressProvider
 {
     /**
      * Commit a billing address, pushing it to Stripe before storing it. The
@@ -30,7 +30,7 @@ class UpdateBillingAddress implements UpdateBillingAddressProvider
          * The first invoice is finalized the moment the subscription is
          * created and never recalculates its tax, so an attempt still in
          * flight would keep charging the old jurisdiction. Killing it makes
-         * the next CreateSubscriptionIntent build a fresh one rather than hand
+         * the next CreateSubscriptionIntentService build a fresh one rather than hand
          * back a secret for the stale invoice. Only the two fields a tax
          * location resolves from count, since anything else leaves the amount
          * untouched and tearing up a live payment session over a corrected

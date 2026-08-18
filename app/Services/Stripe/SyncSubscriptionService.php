@@ -5,7 +5,7 @@ namespace App\Services\Stripe;
 use App\Contracts\SyncSubscriptionProvider;
 use App\Models\User;
 
-class SyncSubscription implements SyncSubscriptionProvider
+class SyncSubscriptionService implements SyncSubscriptionProvider
 {
     /**
      * Pull the live status from the provider and commit it locally. Cashier's

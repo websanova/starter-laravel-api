@@ -8,7 +8,7 @@ use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 
-class SyncPaymentMethod implements SyncPaymentMethodProvider
+class SyncPaymentMethodService implements SyncPaymentMethodProvider
 {
     /**
      * Pick up a card the client confirmed but never reported back, whether the

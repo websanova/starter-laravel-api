@@ -7,7 +7,7 @@ use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 
-class ResolvePromotionCode implements ResolvePromotionCodeProvider
+class ResolvePromotionCodeService implements ResolvePromotionCodeProvider
 {
     /**
      * Resolve a promotion code string to a Stripe promotion code object.

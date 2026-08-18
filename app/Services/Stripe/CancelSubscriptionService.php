@@ -5,7 +5,7 @@ namespace App\Services\Stripe;
 use App\Contracts\CancelSubscriptionProvider;
 use App\Models\User;
 
-class CancelSubscription implements CancelSubscriptionProvider
+class CancelSubscriptionService implements CancelSubscriptionProvider
 {
     /**
      * Cancel the subscription at period end.
