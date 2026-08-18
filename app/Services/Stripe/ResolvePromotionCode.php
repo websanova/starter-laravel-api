@@ -2,17 +2,17 @@
 
 namespace App\Services\Stripe;
 
-use App\Contracts\PromotionCodeProvider;
+use App\Contracts\ResolvePromotionCodeProvider;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 
-class PromotionCodeService implements PromotionCodeProvider
+class ResolvePromotionCode implements ResolvePromotionCodeProvider
 {
     /**
      * Resolve a promotion code string to a Stripe promotion code object.
      */
-    public function resolve(string $code): ServiceResult
+    public function handle(string $code): ServiceResult
     {
         try {
             $promotionCodes = Cashier::stripe()->promotionCodes->all([

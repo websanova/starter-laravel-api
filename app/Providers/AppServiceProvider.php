@@ -2,14 +2,16 @@
 
 namespace App\Providers;
 
-use App\Contracts\PaymentMethodProvider;
-use App\Contracts\PlanSyncProvider;
-use App\Contracts\PromotionCodeProvider;
+use App\Contracts\CreatePaymentMethodIntentProvider;
+use App\Contracts\ResolvePromotionCodeProvider;
 use App\Contracts\SubscriptionProvider;
-use App\Services\Stripe\PaymentMethodService;
-use App\Services\Stripe\PlanSyncService;
-use App\Services\Stripe\PromotionCodeService;
+use App\Contracts\SyncPaymentMethodProvider;
+use App\Contracts\SyncPlanPricesProvider;
+use App\Services\Stripe\CreatePaymentMethodIntent;
+use App\Services\Stripe\ResolvePromotionCode;
 use App\Services\Stripe\SubscriptionService;
+use App\Services\Stripe\SyncPaymentMethod;
+use App\Services\Stripe\SyncPlanPrices;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -31,9 +33,10 @@ class AppServiceProvider extends ServiceProvider
         // Billing runs through one provider at a time. Swapping to another means writing
         // the implementations under App\Services\{Provider} and rebinding them here.
         $this->app->bind(SubscriptionProvider::class, SubscriptionService::class);
-        $this->app->bind(PromotionCodeProvider::class, PromotionCodeService::class);
-        $this->app->bind(PlanSyncProvider::class, PlanSyncService::class);
-        $this->app->bind(PaymentMethodProvider::class, PaymentMethodService::class);
+        $this->app->bind(ResolvePromotionCodeProvider::class, ResolvePromotionCode::class);
+        $this->app->bind(SyncPlanPricesProvider::class, SyncPlanPrices::class);
+        $this->app->bind(CreatePaymentMethodIntentProvider::class, CreatePaymentMethodIntent::class);
+        $this->app->bind(SyncPaymentMethodProvider::class, SyncPaymentMethod::class);
     }
 
     /**

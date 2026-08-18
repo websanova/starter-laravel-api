@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Contracts\PaymentMethodProvider;
+use App\Contracts\SyncPaymentMethodProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\PaymentMethodSync\StoreRequest;
 use Illuminate\Http\JsonResponse;
@@ -14,9 +14,9 @@ class PaymentMethodSyncController extends Controller
      * calls this straight after confirming so the change lands in the request
      * rather than waiting on the webhook.
      */
-    public function store(StoreRequest $request, PaymentMethodProvider $paymentMethods): JsonResponse
+    public function store(StoreRequest $request, SyncPaymentMethodProvider $paymentMethods): JsonResponse
     {
-        $result = $paymentMethods->sync($request->user());
+        $result = $paymentMethods->handle($request->user());
 
         if (!$result->success) {
             $response = ['message' => __("responses.payment_method.{$result->error}")];

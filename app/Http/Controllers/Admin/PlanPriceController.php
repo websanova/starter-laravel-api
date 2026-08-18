@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contracts\PlanSyncProvider;
+use App\Contracts\SyncPlanPricesProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PlanPrice\UpdateRequest;
 use App\Http\Resources\Admin\PriceResource;
@@ -16,11 +16,11 @@ class PlanPriceController extends Controller
     /**
      * Update a plan price's lookup key and sync it from Stripe.
      */
-    public function update(UpdateRequest $request, Plan $plan, Price $price, PlanSyncProvider $service): JsonResponse
+    public function update(UpdateRequest $request, Plan $plan, Price $price, SyncPlanPricesProvider $service): JsonResponse
     {
         $price->update($request->validated());
 
-        $result = $service->syncPrice($price);
+        $result = $service->handlePrice($price);
 
         if (!$result->success) {
             throw ValidationException::withMessages([

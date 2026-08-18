@@ -2,7 +2,7 @@
 
 namespace App\Services\Stripe;
 
-use App\Contracts\PlanSyncProvider;
+use App\Contracts\SyncPlanPricesProvider;
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\Price;
@@ -12,29 +12,13 @@ use Laravel\Cashier\Cashier;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Price as StripePrice;
 
-class PlanSyncService implements PlanSyncProvider
+class SyncPlanPrices implements SyncPlanPricesProvider
 {
-    /**
-     * Sync every plan's prices from Stripe.
-     */
-    public function syncAll(): ServiceResult
-    {
-        foreach (Plan::all() as $plan) {
-            $result = $this->sync($plan);
-
-            if (!$result->success) {
-                return $result;
-            }
-        }
-
-        return ServiceResult::success();
-    }
-
     /**
      * Sync a single plan's prices from Stripe. The plan's lookup keys are
      * fetched in one request, then applied to each price row.
      */
-    public function sync(Plan $plan): ServiceResult
+    public function handle(Plan $plan): ServiceResult
     {
         $prices = $plan->prices()->whereNotNull('lookup_key')->get();
 
@@ -60,9 +44,25 @@ class PlanSyncService implements PlanSyncProvider
     }
 
     /**
+     * Sync every plan's prices from Stripe.
+     */
+    public function handleAll(): ServiceResult
+    {
+        foreach (Plan::all() as $plan) {
+            $result = $this->handle($plan);
+
+            if (!$result->success) {
+                return $result;
+            }
+        }
+
+        return ServiceResult::success();
+    }
+
+    /**
      * Sync a single price from Stripe.
      */
-    public function syncPrice(Price $price): ServiceResult
+    public function handlePrice(Price $price): ServiceResult
     {
         if (!$price->lookup_key) {
             return ServiceResult::error('price.missing_lookup_key');

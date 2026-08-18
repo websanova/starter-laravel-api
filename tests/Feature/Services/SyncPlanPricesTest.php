@@ -5,27 +5,27 @@ uses()->group('service.plan-sync');
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\Price;
-use App\Contracts\PlanSyncProvider;
+use App\Contracts\SyncPlanPricesProvider;
 
-test('syncPrice returns an error when no lookup key is set', function () {
+test('handlePrice returns an error when no lookup key is set', function () {
     $price = Price::factory()->create(['lookup_key' => null]);
 
-    $result = app(PlanSyncProvider::class)->syncPrice($price);
+    $result = app(SyncPlanPricesProvider::class)->handlePrice($price);
 
     expect($result->success)->toBeFalse();
     expect($result->error)->toBe('price.missing_lookup_key');
 });
 
-test('sync succeeds when no prices have a lookup key', function () {
+test('handle succeeds when no prices have a lookup key', function () {
     $plan = Plan::factory()->create();
     Price::factory()->for($plan)->create(['lookup_key' => null]);
 
-    $result = app(PlanSyncProvider::class)->sync($plan);
+    $result = app(SyncPlanPricesProvider::class)->handle($plan);
 
     expect($result->success)->toBeTrue();
 });
 
-test('syncPrice populates the price id, product id, amount and currency from stripe', function () {
+test('handlePrice populates the price id, product id, amount and currency from stripe', function () {
     if (!config('cashier.secret')) {
         $this->markTestSkipped('Stripe is not configured.');
     }
@@ -41,7 +41,7 @@ test('syncPrice populates the price id, product id, amount and currency from str
         'amount' => 0,
     ]);
 
-    $result = app(PlanSyncProvider::class)->syncPrice($price);
+    $result = app(SyncPlanPricesProvider::class)->handlePrice($price);
 
     expect($result->success)->toBeTrue();
     expect($price->fresh()->stripe_price_id)->not->toBeNull();
@@ -50,20 +50,20 @@ test('syncPrice populates the price id, product id, amount and currency from str
     expect($price->fresh()->currency)->not->toBeEmpty();
 });
 
-test('syncPrice returns an error when no active stripe price matches the lookup key', function () {
+test('handlePrice returns an error when no active stripe price matches the lookup key', function () {
     if (!config('cashier.secret')) {
         $this->markTestSkipped('Stripe is not configured.');
     }
 
     $price = Price::factory()->create(['lookup_key' => 'nonexistent_lookup_key']);
 
-    $result = app(PlanSyncProvider::class)->syncPrice($price);
+    $result = app(SyncPlanPricesProvider::class)->handlePrice($price);
 
     expect($result->success)->toBeFalse();
     expect($result->error)->toBe('price.not_found');
 });
 
-test('syncPrice returns an error when the stripe price bills on a different interval', function () {
+test('handlePrice returns an error when the stripe price bills on a different interval', function () {
     if (!config('cashier.secret')) {
         $this->markTestSkipped('Stripe is not configured.');
     }
@@ -76,13 +76,13 @@ test('syncPrice returns an error when the stripe price bills on a different inte
         'interval' => PlanInterval::Yearly,
     ]);
 
-    $result = app(PlanSyncProvider::class)->syncPrice($price);
+    $result = app(SyncPlanPricesProvider::class)->handlePrice($price);
 
     expect($result->success)->toBeFalse();
     expect($result->error)->toBe('price.interval_mismatch');
 });
 
-test('sync populates every price on the plan in one pass', function () {
+test('handle populates every price on the plan in one pass', function () {
     if (!config('cashier.secret')) {
         $this->markTestSkipped('Stripe is not configured.');
     }
@@ -102,7 +102,7 @@ test('sync populates every price on the plan in one pass', function () {
         'interval' => PlanInterval::Yearly,
     ]);
 
-    $result = app(PlanSyncProvider::class)->sync($plan);
+    $result = app(SyncPlanPricesProvider::class)->handle($plan);
 
     expect($result->success)->toBeTrue();
     expect($plan->prices()->whereNull('stripe_price_id')->count())->toBe(0);
