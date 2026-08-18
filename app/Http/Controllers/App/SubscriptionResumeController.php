@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\ResumeSubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionResume\StoreRequest;
 use App\Http\Resources\App\SubscriptionResource;
@@ -13,9 +13,9 @@ class SubscriptionResumeController extends Controller
     /**
      * Resume a cancelled subscription before the period ends.
      */
-    public function store(StoreRequest $request, SubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, ResumeSubscriptionProvider $subscriptions): JsonResponse
     {
-        $subscription = $subscriptions->resume($request->user());
+        $subscription = $subscriptions->handle($request->user());
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),

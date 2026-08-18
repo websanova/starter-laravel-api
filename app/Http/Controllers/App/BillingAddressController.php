@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\UpdateBillingAddressProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\BillingAddress\UpdateRequest;
 use App\Http\Resources\App\BillingAddressResource;
@@ -15,11 +15,11 @@ class BillingAddressController extends Controller
      * automatic tax is on, since nothing in the payment flow collects one and
      * the provider needs somewhere to calculate from.
      */
-    public function update(UpdateRequest $request, SubscriptionProvider $subscriptions): JsonResponse
+    public function update(UpdateRequest $request, UpdateBillingAddressProvider $subscriptions): JsonResponse
     {
         $user = $request->user();
 
-        $result = $subscriptions->updateBillingAddress($user, $request->validated());
+        $result = $subscriptions->handle($user, $request->validated());
 
         if (!$result->success) {
             $response = ['message' => __("responses.subscription.{$result->error}")];

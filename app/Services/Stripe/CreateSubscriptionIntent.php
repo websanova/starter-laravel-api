@@ -2,72 +2,16 @@
 
 namespace App\Services\Stripe;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\CreateSubscriptionIntentProvider;
 use App\Enums\PlanInterval;
 use App\Models\Plan;
 use App\Models\User;
 use App\Support\ServiceResult;
-use Laravel\Cashier\Subscription;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
-class SubscriptionService implements SubscriptionProvider
+class CreateSubscriptionIntent implements CreateSubscriptionIntentProvider
 {
-    /**
-     * Commit a billing address, pushing it to Stripe before storing it. The
-     * provider write goes first because a local address Stripe does not know
-     * about is worse than no address at all, it would let a subscribe through
-     * that the provider then rejects for having no tax location.
-     *
-     * The address keys are Stripe's own, so they pass straight through and are
-     * only renamed on the way into the users table.
-     */
-    public function updateBillingAddress(User $user, array $address): ServiceResult
-    {
-        $address = array_filter($address);
-
-        if ($address == $user->billingAddress()) {
-            return ServiceResult::success();
-        }
-
-        /**
-         * The first invoice is finalized the moment the subscription is
-         * created and never recalculates its tax, so an attempt still in
-         * flight would keep charging the old jurisdiction. Killing it makes
-         * the next intent() build a fresh one rather than hand back a secret
-         * for the stale invoice. Only the two fields a tax location resolves
-         * from count, since anything else leaves the amount untouched and
-         * tearing up a live payment session over a corrected street name
-         * costs the user their progress for nothing.
-         */
-        $movedTaxLocation = config('subscription.automatic_tax') && (
-            ($address['country'] ?? null) !== $user->billing_country ||
-            ($address['postal_code'] ?? null) !== $user->billing_postal_code
-        );
-
-        try {
-            $user->updateOrCreateStripeCustomer(['address' => $address]);
-
-            $subscription = $user->subscription();
-
-            if ($movedTaxLocation && $subscription && $subscription->incomplete()) {
-                $subscription->cancelNow();
-            }
-        } catch (ApiErrorException $e) {
-            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
-        }
-
-        $user->update([
-            'billing_city' => $address['city'] ?? null,
-            'billing_country' => $address['country'] ?? null,
-            'billing_line1' => $address['line1'] ?? null,
-            'billing_line2' => $address['line2'] ?? null,
-            'billing_postal_code' => $address['postal_code'] ?? null,
-        ]);
-
-        return ServiceResult::success();
-    }
-
     /**
      * Open a payment session and hand back the secret a payment element mounts
      * against. The subscription is created here and up front, sitting
@@ -75,7 +19,7 @@ class SubscriptionService implements SubscriptionProvider
      * call again on a page refresh or on a second attempt after the user
      * walked away from the first one.
      */
-    public function intent(User $user, Plan $plan, PlanInterval $interval): ServiceResult
+    public function handle(User $user, Plan $plan, PlanInterval $interval): ServiceResult
     {
         /**
          * Tax is calculated from the customer's billing address, and nothing
@@ -144,8 +88,8 @@ class SubscriptionService implements SubscriptionProvider
                 /**
                  * Stripe leaves the subscription's default payment method
                  * unset unless it is told to keep the one that paid, and
-                 * sync() reads the card off exactly that field, so renewals
-                 * would bill against nothing without this.
+                 * SyncPaymentMethod reads the card off exactly that field, so
+                 * renewals would bill against nothing without this.
                  */
                 $options = [
                     'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
@@ -182,52 +126,5 @@ class SubscriptionService implements SubscriptionProvider
         }
 
         return ServiceResult::error('provider_unavailable');
-    }
-
-    /**
-     * Pull the live status from the provider and commit it locally. Cashier's
-     * own webhook handler writes the subscription row before anything here
-     * runs, so nothing calls this today. It stays as the entry point for a
-     * provider whose webhooks do not commit on their own.
-     */
-    public function sync(User $user): void
-    {
-        $subscription = $user->subscription();
-
-        if (!$subscription) {
-            return;
-        }
-
-        $subscription->syncStripeStatus();
-    }
-
-    /**
-     * Swap to a different plan.
-     */
-    public function swap(User $user, Plan $plan, PlanInterval $interval): Subscription
-    {
-        $user->subscription()->swap($plan->priceId($interval));
-
-        $user->fillPlan()->save();
-
-        return $user->subscription();
-    }
-
-    /**
-     * Cancel the subscription at period end.
-     */
-    public function cancel(User $user): void
-    {
-        $user->subscription()->cancel();
-    }
-
-    /**
-     * Resume a cancelled subscription before the period ends.
-     */
-    public function resume(User $user): Subscription
-    {
-        $user->subscription()->resume();
-
-        return $user->subscription();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\CreateSubscriptionIntentProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionIntent\StoreRequest;
 use App\Models\Plan;
@@ -17,11 +17,11 @@ class SubscriptionIntentController extends Controller
      * again for the same attempt, so a page refresh gets the same secret back
      * rather than a second subscription.
      */
-    public function store(StoreRequest $request, SubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, CreateSubscriptionIntentProvider $subscriptions): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $result = $subscriptions->intent(
+        $result = $subscriptions->handle(
             $request->user(),
             $plan,
             $request->validated('interval'),

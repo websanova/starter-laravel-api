@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\ChangeSubscriptionPlanProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\Subscription\UpdateRequest;
 use App\Http\Resources\App\SubscriptionResource;
@@ -30,11 +30,11 @@ class SubscriptionController extends Controller
     /**
      * Swap the subscription to a different plan or interval.
      */
-    public function update(UpdateRequest $request, SubscriptionProvider $subscriptions): JsonResponse
+    public function update(UpdateRequest $request, ChangeSubscriptionPlanProvider $subscriptions): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $subscription = $subscriptions->swap(
+        $subscription = $subscriptions->handle(
             $request->user(),
             $plan,
             $request->validated('interval'),

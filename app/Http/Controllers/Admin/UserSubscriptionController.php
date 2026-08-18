@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Contracts\SubscriptionProvider;
+use App\Contracts\CancelSubscriptionProvider;
+use App\Contracts\ResumeSubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSubscription\DestroyRequest;
 use App\Http\Requests\Admin\UserSubscription\ResumeRequest;
@@ -32,9 +33,9 @@ class UserSubscriptionController extends Controller
     /**
      * Cancel a user's subscription at period end.
      */
-    public function destroy(DestroyRequest $request, User $user, SubscriptionProvider $subscriptions): JsonResponse
+    public function destroy(DestroyRequest $request, User $user, CancelSubscriptionProvider $subscriptions): JsonResponse
     {
-        $subscriptions->cancel($user);
+        $subscriptions->handle($user);
 
         return response()->json([
             'message' => __('responses.admin.user.subscription_cancelled'),
@@ -44,9 +45,9 @@ class UserSubscriptionController extends Controller
     /**
      * Resume a user's cancelled subscription.
      */
-    public function resume(ResumeRequest $request, User $user, SubscriptionProvider $subscriptions): JsonResponse
+    public function resume(ResumeRequest $request, User $user, ResumeSubscriptionProvider $subscriptions): JsonResponse
     {
-        $subscription = $subscriptions->resume($user);
+        $subscription = $subscriptions->handle($user);
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),
