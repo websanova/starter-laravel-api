@@ -73,6 +73,7 @@ return [
 
     'payment_method.updated' => 'Payment method updated successfully.',
     'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
+    'payment_method.customer_required' => 'There is no payment method on file to update.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
