@@ -1,9 +1,12 @@
 <?php
 
-uses()->group('app.login.throttle');
+uses()->group('middleware.throttle-auth');
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+
+// The limiter guards the whole throttle:auth group. /login is an arbitrary
+// sample of those routes, nothing here is specific to it.
 
 beforeEach(function () {
     User::factory()->create([

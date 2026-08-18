@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('app.notification.read');
+uses()->group('app.notification-read.store');
 
 use App\Models\User;
 

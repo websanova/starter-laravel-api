@@ -5,6 +5,9 @@ uses()->group('app.login.restore');
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+// Soft-delete restore on login. Drives LoginController::store like StoreTest
+// does, kept separate so the grace period cases stay together.
+
 test('soft-deleted user within grace period is restored on login', function () {
     config(['auth.delete.grace_period' => 30]);
 

@@ -8,6 +8,11 @@ use App\Notifications\VerificationCodeNotification;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Notification;
 
+// Mode and grace period behaviour for every channel, kept in one file rather
+// than split across the three endpoints it drives (/register, /sync, /profile).
+// Nothing here calls /verify, so the directory name is about the feature, not
+// the endpoint.
+
 test('required mode does not send verification on register', function () {
     Notification::fake();
     config(['verification.mode.email' => VerificationMode::Required]);
