@@ -22,11 +22,11 @@ class SendVerificationService
         }
 
         if (config("verification.mode.{$channel->value}") === VerificationMode::Disabled) {
-            return ServiceResult::success();
+            return ServiceResult::error('verification.channel_disabled');
         }
 
         if (!$user->{$channel->field()}) {
-            return ServiceResult::success();
+            return ServiceResult::error('verification.channel_unavailable');
         }
 
         $code = $this->generateCode();

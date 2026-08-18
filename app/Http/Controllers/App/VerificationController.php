@@ -49,7 +49,13 @@ class VerificationController extends Controller
         $result = $this->sendVerificationService->handle($request->user(), $channel);
 
         if (!$result->success) {
-            throw new TooManyRequestsHttpException(null, __("responses.{$result->error}"));
+            if ($result->error === 'verification.throttled') {
+                throw new TooManyRequestsHttpException(null, __("responses.{$result->error}"));
+            }
+
+            throw ValidationException::withMessages([
+                'channel' => [__("responses.{$result->error}")],
+            ]);
         }
 
         return response()->json(['message' => __('responses.verification.sent')]);

@@ -23,6 +23,8 @@ return [
     'verification.throttled' => 'Please wait before requesting a new code.',
     'verification.invalid_code' => 'The verification code is incorrect.',
     'verification.no_valid_code' => 'No valid verification code found. Please request a new one.',
+    'verification.channel_disabled' => 'Verification is not available for this channel.',
+    'verification.channel_unavailable' => 'There is nothing to send a code to for this channel.',
 
     'email_change.sent' => 'A confirmation link has been sent to your new email address.',
     'email_change.confirmed' => 'Your email address has been updated.',

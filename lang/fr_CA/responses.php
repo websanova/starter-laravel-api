@@ -23,6 +23,8 @@ return [
     'verification.throttled' => 'Veuillez patienter avant de demander un nouveau code.',
     'verification.invalid_code' => 'Le code de verification est incorrect.',
     'verification.no_valid_code' => 'Aucun code de verification valide trouve. Veuillez en demander un nouveau.',
+    'verification.channel_disabled' => 'La verification n\'est pas disponible pour ce canal.',
+    'verification.channel_unavailable' => 'Il n\'y a rien ou envoyer un code pour ce canal.',
 
     'email_change.sent' => 'Un lien de confirmation a ete envoye a votre nouvelle adresse courriel.',
     'email_change.confirmed' => 'Votre adresse courriel a ete mise a jour.',
