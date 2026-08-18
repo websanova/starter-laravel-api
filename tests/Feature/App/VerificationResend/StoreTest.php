@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('app.verification.resend');
+uses()->group('app.verification-resend.store');
 
 use App\Enums\VerificationMode;
 use App\Models\User;

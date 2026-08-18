@@ -29,8 +29,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     Route::get('/profile', [App\Http\Controllers\App\ProfileController::class, 'show']);
 
-    Route::post('/verify', [App\Http\Controllers\App\VerificationController::class, 'verify']);
-    Route::post('/verify/resend', [App\Http\Controllers\App\VerificationController::class, 'resend']);
+    Route::post('/verify', [App\Http\Controllers\App\VerificationController::class, 'store']);
+    Route::post('/verify/resend', [App\Http\Controllers\App\VerificationResendController::class, 'store']);
 
     Route::middleware('verified')->group(function () {
         Route::patch('/password', [App\Http\Controllers\App\PasswordController::class, 'update']);
