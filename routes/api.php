@@ -103,13 +103,13 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy']);
     Route::delete('/users/{user}/avatar', [App\Http\Controllers\Admin\UserAvatarController::class, 'destroy']);
     Route::delete('/users/{user}/force', [App\Http\Controllers\Admin\UserForceDeleteController::class, 'destroy'])->withTrashed();
-    Route::patch('/users/{user}/restore', [App\Http\Controllers\Admin\UserRestoreController::class, 'update'])->withTrashed();
+    Route::post('/users/{user}/restore', [App\Http\Controllers\Admin\UserRestoreController::class, 'store'])->withTrashed();
     Route::patch('/users/{user}/role', [App\Http\Controllers\Admin\UserRoleController::class, 'update']);
     Route::post('/users/{user}/password-reset', [App\Http\Controllers\Admin\UserPasswordResetController::class, 'store']);
 
     Route::get('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show']);
     Route::delete('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'destroy']);
-    Route::patch('/users/{user}/subscription/resume', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'resume']);
+    Route::post('/users/{user}/subscription/resume', [App\Http\Controllers\Admin\UserSubscriptionResumeController::class, 'store']);
     Route::post('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'store']);
     Route::delete('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'destroy']);
 

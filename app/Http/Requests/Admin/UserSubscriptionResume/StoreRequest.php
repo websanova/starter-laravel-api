@@ -1,17 +1,22 @@
 <?php
 
-namespace App\Http\Requests\Admin\UserRestore;
+namespace App\Http\Requests\Admin\UserSubscriptionResume;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('user'));
+        $target = $this->route('user');
+        $subscription = $target->subscription();
+
+        return $this->user()->can('update', $target)
+            && $subscription
+            && $subscription->onGracePeriod();
     }
 
     /**

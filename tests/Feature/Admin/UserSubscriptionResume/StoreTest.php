@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('admin.user-subscription.resume');
+uses()->group('admin.user-subscription-resume.store');
 
 use App\Enums\UserRole;
 use App\Models\User;
@@ -9,7 +9,7 @@ test('regular user cannot resume a user subscription', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
-    $response = $this->actingAs($user)->patchJson("/admin/users/{$target->id}/subscription/resume");
+    $response = $this->actingAs($user)->postJson("/admin/users/{$target->id}/subscription/resume");
 
     $response->assertStatus(403);
 });
@@ -17,7 +17,7 @@ test('regular user cannot resume a user subscription', function () {
 test('unauthenticated user cannot resume a user subscription', function () {
     $target = User::factory()->create();
 
-    $response = $this->patchJson("/admin/users/{$target->id}/subscription/resume");
+    $response = $this->postJson("/admin/users/{$target->id}/subscription/resume");
 
     $response->assertStatus(401);
 });
@@ -29,7 +29,7 @@ test('admin cannot resume a super user subscription', function () {
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
 
-    $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/subscription/resume");
+    $response = $this->actingAs($admin)->postJson("/admin/users/{$super->id}/subscription/resume");
 
     $response->assertStatus(403);
 });

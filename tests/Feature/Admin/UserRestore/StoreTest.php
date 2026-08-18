@@ -1,6 +1,6 @@
 <?php
 
-uses()->group('admin.user-restore.update');
+uses()->group('admin.user-restore.store');
 
 use App\Enums\UserRole;
 use App\Models\User;
@@ -12,7 +12,7 @@ test('admin can restore a soft-deleted user', function () {
     $target = User::factory()->create();
     $target->delete();
 
-    $response = $this->actingAs($admin)->patchJson("/admin/users/{$target->id}/restore");
+    $response = $this->actingAs($admin)->postJson("/admin/users/{$target->id}/restore");
 
     $response->assertStatus(200)
         ->assertJsonPath('data.id', $target->id)
@@ -29,7 +29,7 @@ test('super can restore a soft-deleted admin', function () {
     $admin->assignRole(UserRole::Admin);
     $admin->delete();
 
-    $response = $this->actingAs($super)->patchJson("/admin/users/{$admin->id}/restore");
+    $response = $this->actingAs($super)->postJson("/admin/users/{$admin->id}/restore");
 
     $response->assertStatus(200);
     expect($admin->fresh()->deleted_at)->toBeNull();
@@ -43,7 +43,7 @@ test('admin cannot restore a super user', function () {
     $super->assignRole(UserRole::Super);
     $super->delete();
 
-    $response = $this->actingAs($admin)->patchJson("/admin/users/{$super->id}/restore");
+    $response = $this->actingAs($admin)->postJson("/admin/users/{$super->id}/restore");
 
     $response->assertStatus(403);
 });
@@ -53,7 +53,7 @@ test('regular user cannot restore a user', function () {
     $target = User::factory()->create();
     $target->delete();
 
-    $response = $this->actingAs($user)->patchJson("/admin/users/{$target->id}/restore");
+    $response = $this->actingAs($user)->postJson("/admin/users/{$target->id}/restore");
 
     $response->assertStatus(403);
 });
@@ -62,7 +62,7 @@ test('unauthenticated user cannot restore a user', function () {
     $target = User::factory()->create();
     $target->delete();
 
-    $response = $this->patchJson("/admin/users/{$target->id}/restore");
+    $response = $this->postJson("/admin/users/{$target->id}/restore");
 
     $response->assertStatus(401);
 });
