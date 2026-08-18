@@ -4,14 +4,14 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\ChangeEmail\StoreRequest;
-use App\Services\EmailChangeService;
+use App\Services\ConfirmEmailChangeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
 class ChangeEmailController extends Controller
 {
     public function __construct(
-        protected EmailChangeService $emailChangeService
+        protected ConfirmEmailChangeService $confirmEmailChangeService
     ) {}
 
     /**
@@ -19,7 +19,7 @@ class ChangeEmailController extends Controller
      */
     public function store(StoreRequest $request): JsonResponse
     {
-        $result = $this->emailChangeService->confirm(
+        $result = $this->confirmEmailChangeService->handle(
             $request->validated('email'),
             $request->validated('token')
         );

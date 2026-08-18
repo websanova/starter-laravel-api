@@ -9,14 +9,18 @@ use App\Support\ServiceResult;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-class EmailChangeService
+class SendEmailChangeService
 {
     /**
      * Create a token and send a confirmation email to the new address.
      */
-    public function sendConfirmation(User $user, string $email): void
+    public function handle(User $user, string $email): ServiceResult
     {
-        $this->deleteExistingTokens($user);
+        if ($this->isThrottled($user)) {
+            return ServiceResult::error('email_change.throttled');
+        }
+
+        EmailChangeToken::where('user_id', $user->id)->delete();
 
         $token = Str::random(64);
 
@@ -28,27 +32,6 @@ class EmailChangeService
         ]);
 
         $user->notify(new EmailChangeNotification($token, $email));
-    }
-
-    /**
-     * Confirm the email change using the token.
-     */
-    public function confirm(string $email, string $token): ServiceResult
-    {
-        $record = EmailChangeToken::where('email', $email)
-            ->where('created_at', '>', now()->subMinutes(config('auth.email_change.expire', 60)))
-            ->first();
-
-        if (!$record || !Hash::check($token, $record->token)) {
-            return ServiceResult::error('email_change.invalid_token');
-        }
-
-        $record->user->update([
-            'email' => $record->email,
-            'email_verified_at' => now(),
-        ]);
-
-        $this->deleteExistingTokens($record->user);
 
         return ServiceResult::success();
     }
@@ -56,7 +39,7 @@ class EmailChangeService
     /**
      * Check if the user is throttled from requesting another change.
      */
-    public function isThrottled(User $user): bool
+    protected function isThrottled(User $user): bool
     {
         $latest = EmailChangeToken::where('user_id', $user->id)
             ->latest('created_at')
@@ -67,13 +50,5 @@ class EmailChangeService
         }
 
         return $latest->created_at->diffInSeconds(now()) < config('auth.email_change.throttle', 60);
-    }
-
-    /**
-     * Delete all existing tokens for the user.
-     */
-    protected function deleteExistingTokens(User $user): void
-    {
-        EmailChangeToken::where('user_id', $user->id)->delete();
     }
 }

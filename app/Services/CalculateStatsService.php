@@ -10,12 +10,12 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 
-class StatsService
+class CalculateStatsService
 {
     /**
      * Calculate and store stats, optionally filtered by group.
      */
-    public function calculate(?string $group = null): int
+    public function handle(?string $group = null): int
     {
         $count = 0;
 

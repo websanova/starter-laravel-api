@@ -6,7 +6,8 @@ use App\Enums\VerificationChannel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\Verification\ResendRequest;
 use App\Http\Requests\App\Verification\VerifyRequest;
-use App\Services\VerificationService;
+use App\Services\ConfirmVerificationService;
+use App\Services\SendVerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -14,7 +15,8 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 class VerificationController extends Controller
 {
     public function __construct(
-        protected VerificationService $verificationService
+        protected ConfirmVerificationService $confirmVerificationService,
+        protected SendVerificationService $sendVerificationService
     ) {}
 
     /**
@@ -22,7 +24,7 @@ class VerificationController extends Controller
      */
     public function verify(VerifyRequest $request): JsonResponse
     {
-        $result = $this->verificationService->verify(
+        $result = $this->confirmVerificationService->handle(
             $request->user(),
             $request->code,
             VerificationChannel::from($request->channel)
@@ -44,11 +46,11 @@ class VerificationController extends Controller
     {
         $channel = VerificationChannel::from($request->channel);
 
-        if (!$this->verificationService->canResend($request->user(), $channel)) {
-            throw new TooManyRequestsHttpException(null, __('responses.verification.throttled'));
-        }
+        $result = $this->sendVerificationService->handle($request->user(), $channel);
 
-        $this->verificationService->send($request->user(), $channel);
+        if (!$result->success) {
+            throw new TooManyRequestsHttpException(null, __("responses.{$result->error}"));
+        }
 
         return response()->json(['message' => __('responses.verification.sent')]);
     }

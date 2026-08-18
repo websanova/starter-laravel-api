@@ -38,7 +38,7 @@ class RegisterController extends Controller
         $user->startTrial();
 
         // Under required mode the welcome is deferred until the email is
-        // verified, and sent from VerificationService instead.
+        // verified, and sent from ConfirmVerificationService instead.
         if (config('verification.mode.email') !== VerificationMode::Required) {
             $user->notify(new WelcomeNotification());
         }

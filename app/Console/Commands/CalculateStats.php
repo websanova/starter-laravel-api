@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\StatsService;
+use App\Services\CalculateStatsService;
 use Illuminate\Console\Command;
 
 class CalculateStats extends Command
@@ -24,9 +24,9 @@ class CalculateStats extends Command
     /**
      * Execute the console command.
      */
-    public function handle(StatsService $service): int
+    public function handle(CalculateStatsService $service): int
     {
-        $count = $service->calculate($this->option('group'));
+        $count = $service->handle($this->option('group'));
 
         $this->info("Calculated {$count} stat(s).");
 
