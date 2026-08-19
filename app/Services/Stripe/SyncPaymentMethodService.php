@@ -10,6 +10,10 @@ use Stripe\Exception\ApiErrorException;
 
 class SyncPaymentMethodService implements SyncPaymentMethodProvider
 {
+    public function __construct(private ReplacePaymentMethodService $paymentMethods)
+    {
+    }
+
     /**
      * Pick up a card the client confirmed but never reported back, whether the
      * call after the confirm was lost or the webhook never landed. Nothing the
@@ -39,22 +43,7 @@ class SyncPaymentMethodService implements SyncPaymentMethodProvider
                 return ServiceResult::error('nothing_to_sync');
             }
 
-            /**
-             * Stripe bills a subscription off its own default and only falls
-             * back to the customer when it has none, so this is the write that
-             * actually moves the next renewal onto the new card. It goes first
-             * because a failure part way through is better left billing the new
-             * card against a stale display than the reverse.
-             */
-            $user->loadMissing('subscriptions');
-
-            $subscription = $user->subscription();
-
-            if ($subscription) {
-                $subscription->updateStripeSubscription(['default_payment_method' => $setupIntent->payment_method]);
-            }
-
-            $user->updateDefaultPaymentMethod($setupIntent->payment_method);
+            $this->paymentMethods->handle($user, $setupIntent->payment_method);
         } catch (ApiErrorException $e) {
             return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
         }

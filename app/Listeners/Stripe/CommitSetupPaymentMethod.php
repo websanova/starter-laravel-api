@@ -2,11 +2,16 @@
 
 namespace App\Listeners\Stripe;
 
+use App\Services\Stripe\ReplacePaymentMethodService;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Events\WebhookReceived;
 
 class CommitSetupPaymentMethod
 {
+    public function __construct(private ReplacePaymentMethodService $paymentMethods)
+    {
+    }
+
     /**
      * Commit a card the user entered on its own, outside any subscription flow.
      * Confirming the setup intent only attaches the card to the customer, it
@@ -34,19 +39,6 @@ class CommitSetupPaymentMethod
             return;
         }
 
-        /**
-         * Stripe bills a subscription off its own default and only falls back
-         * to the customer when it has none, so this is the write that actually
-         * moves the next renewal onto the new card.
-         */
-        $user->loadMissing('subscriptions');
-
-        $subscription = $user->subscription();
-
-        if ($subscription) {
-            $subscription->updateStripeSubscription(['default_payment_method' => $data['payment_method']]);
-        }
-
-        $user->updateDefaultPaymentMethod($data['payment_method']);
+        $this->paymentMethods->handle($user, $data['payment_method']);
     }
 }
