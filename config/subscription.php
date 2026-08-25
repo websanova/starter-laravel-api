@@ -56,10 +56,10 @@ return [
     | on in the provider's own dashboard, and a subscription will be rejected if
     | it is enabled on only one side.
     |
-    | Tax is calculated from the customer's billing address, and nothing in the
-    | payment flow collects one, so turning this on makes a billing address a
-    | precondition of subscribing. Users without one are turned away with
-    | "subscription.address_required" before the provider is ever called.
+    | A billing address is a precondition of subscribing either way, so this
+    | flag decides nothing more than what goes on the subscription itself.
+    | Users without one are turned away with "subscription.address_required"
+    | before the provider is ever called.
     |
     */
 

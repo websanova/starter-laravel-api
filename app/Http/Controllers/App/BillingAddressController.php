@@ -11,9 +11,9 @@ use Illuminate\Http\JsonResponse;
 class BillingAddressController extends Controller
 {
     /**
-     * Replace the user's billing address. Required before subscribing when
-     * automatic tax is on, since nothing in the payment flow collects one and
-     * the provider needs somewhere to calculate from.
+     * Replace the user's billing address. Required before subscribing, tax on
+     * or off, since nothing in the payment flow collects one and the provider
+     * needs somewhere to calculate from.
      */
     public function update(UpdateRequest $request, UpdateBillingAddressProvider $subscriptions): JsonResponse
     {

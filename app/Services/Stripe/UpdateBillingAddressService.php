@@ -38,10 +38,8 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
          * untouched and tearing up a live payment session over a corrected
          * street name costs the user their progress for nothing.
          */
-        $movedTaxLocation = config('subscription.automatic_tax') && (
-            ($address['country'] ?? null) !== $user->billing_country ||
-            ($address['postal_code'] ?? null) !== $user->billing_postal_code
-        );
+        $movedTaxLocation = $address['country'] !== $user->billing_country
+            || $address['postal_code'] !== $user->billing_postal_code;
 
         try {
             if ($user->hasStripeId()) {

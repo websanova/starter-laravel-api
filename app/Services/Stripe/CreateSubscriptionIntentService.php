@@ -22,13 +22,12 @@ class CreateSubscriptionIntentService implements CreateSubscriptionIntentProvide
     public function handle(User $user, Plan $plan, PlanInterval $interval): ServiceResult
     {
         /**
-         * Tax is calculated from the customer's billing address, and nothing
-         * in this flow collects one, so it has to already be on the user.
-         * Stripe rejects the create outright without it, and a local failure
-         * that names the reason beats a provider error the client cannot act
-         * on.
+         * The customer has to carry a billing address before the subscription
+         * is created, tax on or off, and nothing in this flow collects one, so
+         * it has to already be on the user. A local failure that names the
+         * reason beats a provider error the client cannot act on.
          */
-        if (config('subscription.automatic_tax') && !$user->hasBillingAddress()) {
+        if (!$user->hasBillingAddress()) {
             return ServiceResult::error('address_required');
         }
 
