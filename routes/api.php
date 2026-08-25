@@ -8,17 +8,15 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
 Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
-
 Route::get('/settings', [App\Http\Controllers\App\SettingController::class, 'show']);
-
 Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'index']);
 
 Route::middleware('throttle:auth')->group(function () {
-    Route::post('/register', [App\Http\Controllers\App\RegisterController::class, 'store']);
-    Route::post('/login', [App\Http\Controllers\App\LoginController::class, 'store']);
-    Route::post('/forgot-password', [App\Http\Controllers\App\ForgotPasswordController::class, 'store']);
-    Route::post('/reset-password', [App\Http\Controllers\App\ResetPasswordController::class, 'store']);
     Route::post('/change-email', [App\Http\Controllers\App\ChangeEmailController::class, 'store']);
+    Route::post('/forgot-password', [App\Http\Controllers\App\ForgotPasswordController::class, 'store']);
+    Route::post('/login', [App\Http\Controllers\App\LoginController::class, 'store']);
+    Route::post('/register', [App\Http\Controllers\App\RegisterController::class, 'store']);
+    Route::post('/reset-password', [App\Http\Controllers\App\ResetPasswordController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
@@ -37,22 +35,23 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
     });
 
     Route::middleware(['verified', 'password-updated'])->group(function () {
-        Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);
 
-        Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
-        Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
-        Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
-
-        Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
-        Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
-        Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
         Route::post('/avatar', [App\Http\Controllers\App\AvatarController::class, 'store']);
         Route::delete('/avatar', [App\Http\Controllers\App\AvatarController::class, 'destroy']);
 
         Route::put('/billing/address', [App\Http\Controllers\App\BillingAddressController::class, 'update']);
 
+        Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
+
+        Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
+        Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
+        Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
+
         Route::post('/payment-method/intent', [App\Http\Controllers\App\PaymentMethodIntentController::class, 'store']);
         Route::post('/payment-method/sync', [App\Http\Controllers\App\PaymentMethodSyncController::class, 'store']);
+
+        Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
+        Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
 
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
@@ -60,21 +59,24 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/subscription/cancel', [App\Http\Controllers\App\SubscriptionCancelController::class, 'store']);
         Route::post('/subscription/resume', [App\Http\Controllers\App\SubscriptionResumeController::class, 'store']);
 
+        Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);
+
         Route::middleware('subscribed')->group(function () {
             Route::get('/categories', [App\Http\Controllers\App\CategoryController::class, 'index']);
             Route::post('/categories', [App\Http\Controllers\App\CategoryController::class, 'store']);
             Route::put('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'update']);
             Route::delete('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'destroy']);
 
+            Route::get('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'index']);
+            Route::post('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'store']);
+            Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
+            Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'destroy']);
+
             Route::get('/tags', [App\Http\Controllers\App\TagController::class, 'index']);
             Route::post('/tags', [App\Http\Controllers\App\TagController::class, 'store']);
             Route::put('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'update']);
             Route::delete('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'destroy']);
 
-            Route::get('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'index']);
-            Route::post('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'store']);
-            Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
-            Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'destroy']);
         });
     });
 });
