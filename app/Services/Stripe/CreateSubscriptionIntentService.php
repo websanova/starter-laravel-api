@@ -37,6 +37,19 @@ class CreateSubscriptionIntentService implements CreateSubscriptionIntentProvide
 
         try {
             /**
+             * Tax is computed off the customer's address and the first invoice
+             * locks its amount the moment the subscription is created, so this
+             * is the last point the address can reach Stripe. Pushed on every
+             * attempt rather than checked first, since reading the customer
+             * back costs the same call as writing it, and a customer created
+             * outside this flow carries whatever address it came with.
+             */
+            $user->updateOrCreateStripeCustomer([
+                'address' => $user->billingAddress(),
+                'tax' => ['validate_location' => 'immediately'],
+            ]);
+
+            /**
              * The local status is only as fresh as the last webhook, and this
              * is hit again the moment the payment page reloads. Pull the real
              * status before deciding anything, or a subscription paid seconds

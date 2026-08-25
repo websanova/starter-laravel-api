@@ -13,7 +13,9 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
      * Commit a billing address, pushing it to Stripe before storing it. The
      * provider write goes first because a local address Stripe does not know
      * about is worse than no address at all, it would let a subscribe through
-     * that the provider then rejects for having no tax location.
+     * that the provider then rejects for having no tax location. No customer
+     * id means the user never subscribed, so there is nothing to push to and
+     * the write is local only.
      *
      * The address keys are Stripe's own, so they pass straight through and are
      * only renamed on the way into the users table.
@@ -42,7 +44,12 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
         );
 
         try {
-            $user->updateOrCreateStripeCustomer(['address' => $address]);
+            if ($user->hasStripeId()) {
+                $user->updateStripeCustomer([
+                    'address' => $address,
+                    'tax' => ['validate_location' => 'immediately'],
+                ]);
+            }
 
             $subscription = $user->subscription();
 
