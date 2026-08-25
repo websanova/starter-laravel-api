@@ -14,6 +14,7 @@
 - No ellipsis character - use three dots (...)
 - No Unicode bullets - use hyphens (-) or asterisks (*)
 - No non-breaking spaces
+- No hard wrapping in markdown - one line per paragraph, let the editor soft wrap
 
 ## Sycophancy - Zero Tolerance
 - Never open with any form of agreement, acknowledgment, or affirmation.

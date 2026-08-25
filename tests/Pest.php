@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Cashier\Cashier;
+use Stripe\PaymentMethod as StripePaymentMethod;
 use Tests\TestCase;
 
 /*
@@ -44,7 +47,50 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Helpers for the tests in the stripe group, which run against a real Stripe
+ * sandbox rather than a fake. See docs/testing.md for the sandbox setup.
+ */
+function stripeSandboxUser(): User
 {
-    // ..
+    $user = User::factory()->create();
+
+    $user->createAsStripeCustomer(['metadata' => ['suite' => 'feature']]);
+
+    stripeSandboxTrack($user->stripe_id);
+
+    return $user;
+}
+
+function stripeSandboxCard(User $user, string $card = 'pm_card_visa'): StripePaymentMethod
+{
+    return Cashier::stripe()->paymentMethods->attach($card, ['customer' => $user->stripe_id]);
+}
+
+/**
+ * Customers created during a test, held until it ends. Deleting a customer
+ * takes its cards and subscriptions with it, so this is the whole cleanup.
+ */
+function stripeSandboxTrack(?string $customer = null): array
+{
+    static $customers = [];
+
+    if ($customer) {
+        $customers[] = $customer;
+
+        return $customers;
+    }
+
+    $tracked = $customers;
+
+    $customers = [];
+
+    return $tracked;
+}
+
+function stripeSandboxFlush(): void
+{
+    foreach (stripeSandboxTrack() as $customer) {
+        Cashier::stripe()->customers->delete($customer);
+    }
 }
