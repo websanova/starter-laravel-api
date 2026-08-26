@@ -34,7 +34,7 @@ class CreatePaymentMethodIntentService implements CreatePaymentMethodIntentProvi
              * place only defers the failure to the subscribe call, where the
              * remedy is the same and the user has further to walk back.
              */
-            $customer = $user->asStripeCustomer();
+            $customer = $user->asStripeCustomer(['tax']);
 
             $automaticTax = $customer->tax->automatic_tax ?? null;
 
