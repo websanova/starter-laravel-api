@@ -9,18 +9,19 @@ class CommitSubscriptionPaymentMethod
 {
     /**
      * Promote the card that pays the subscription to the customer default.
-     * Stripe is told to save the payment method on the subscription, so it
-     * never reaches the customer on its own, and Cashier reads the card columns
-     * off the customer default. Without this the user row keeps a null brand
-     * and last four after a successful signup.
+     *
+     * Nothing this API creates needs it. The card is stored and made the
+     * customer default before the subscription exists, and the subscription is
+     * created without a default of its own so Stripe falls back to the
+     * customer's. What is left is a subscription started from the Stripe
+     * dashboard, which arrives carrying a card that never reached the customer.
+     * Cashier reads the card columns off the customer default, so without this
+     * those users keep a null brand and last four.
      *
      * Cashier already handles the customer side, customer.updated for a card
      * changed through the portal and payment_method.automatically_updated for a
      * network reissue, and both land back here as no ops once the default
      * matches.
-     *
-     * The subscription is where the card came from, so its own default is
-     * already correct and only the customer side is missing.
      */
     public function handle(WebhookHandled $event): void
     {

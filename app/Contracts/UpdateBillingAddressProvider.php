@@ -9,8 +9,10 @@ interface UpdateBillingAddressProvider
 {
     /**
      * Commit a billing address, pushing it to the provider before storing it
-     * locally. Cancels any payment attempt still in flight, since a finalized
-     * invoice never recalculates its tax against the new address.
+     * locally and creating the customer when there isn't one. Touches no
+     * subscription. An attempt already in flight is reconciled where the
+     * subscription is created, which is the only place that knows what the new
+     * address means for it.
      */
     public function handle(User $user, array $address): ServiceResult;
 }

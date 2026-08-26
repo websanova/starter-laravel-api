@@ -25,10 +25,12 @@ class ReplacePaymentMethodService
     {
         /**
          * Stripe bills a subscription off its own default and only falls back
-         * to the customer when it has none, so this is the write that actually
-         * moves the next renewal onto the new card. It goes first because a
-         * failure part way through is better left billing the new card against
-         * a stale display than the reverse.
+         * to the customer when it has none. Nothing this API creates sets one,
+         * so this is here for a subscription started from the Stripe dashboard
+         * that arrived carrying a card, where leaving it pointed at the old one
+         * would bill it on the next renewal. It goes first because a failure
+         * part way through is better left billing the new card against a stale
+         * display than the reverse.
          */
         $user->loadMissing('subscriptions');
 

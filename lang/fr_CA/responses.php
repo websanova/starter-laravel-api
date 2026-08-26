@@ -59,15 +59,24 @@ return [
     'bookmark.updated' => 'Signet mis a jour avec succes.',
     'bookmark.deleted' => 'Signet supprime avec succes.',
 
+    'billing.address_invalid' => 'Cette adresse n a pas pu etre verifiee. Veuillez la corriger et reessayer.',
+    'billing.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
+
     'subscription.required' => 'Un abonnement actif est requis pour acceder a cette ressource.',
     'subscription.created' => 'Abonnement cree avec succes.',
     'subscription.updated' => 'Abonnement mis a jour avec succes.',
     'subscription.cancelled' => 'Abonnement annule avec succes.',
     'subscription.resumed' => 'Abonnement repris avec succes.',
+    'subscription.payment_method_required' => 'Un mode de paiement est requis avant de vous abonner.',
+    'subscription.payment_failed' => 'Votre mode de paiement a ete refuse. Mettez le a jour et reessayez.',
 
     'payment_method.updated' => 'Mode de paiement mis a jour avec succes.',
     'payment_method.nothing_to_sync' => 'Aucun nouveau mode de paiement a appliquer.',
+    'payment_method.address_required' => 'Une adresse de facturation est requise avant d ajouter un mode de paiement.',
+    'payment_method.tax_location_invalid' => 'Votre adresse de facturation n a pas pu etre verifiee. Veuillez la corriger et reessayer.',
     'payment_method.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
+
+    'promotion_code.valid' => 'Code promotionnel applique.',
 
     'plan.limit_reached' => 'Vous avez atteint la limite de cette fonctionnalite pour votre forfait actuel.',
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Requests\App\PaymentMethodSync;
+namespace App\Http\Requests\App\PromotionCodeVerify;
 
+use App\Rules\SubscriptionRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -12,7 +13,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'setup_intent' => ['required', 'string', 'max:255'],
+            'promotion_code' => SubscriptionRules::promotionCode(required: true),
         ];
     }
 }

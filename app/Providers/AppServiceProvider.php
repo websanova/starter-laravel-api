@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Contracts\CancelSubscriptionProvider;
 use App\Contracts\ChangeSubscriptionPlanProvider;
 use App\Contracts\CreatePaymentMethodIntentProvider;
-use App\Contracts\CreateSubscriptionIntentProvider;
+use App\Contracts\CreateSubscriptionProvider;
 use App\Contracts\ResolvePromotionCodeProvider;
 use App\Contracts\ResumeSubscriptionProvider;
 use App\Contracts\SyncPaymentMethodProvider;
@@ -15,7 +15,7 @@ use App\Contracts\UpdateBillingAddressProvider;
 use App\Services\Stripe\CancelSubscriptionService;
 use App\Services\Stripe\ChangeSubscriptionPlanService;
 use App\Services\Stripe\CreatePaymentMethodIntentService;
-use App\Services\Stripe\CreateSubscriptionIntentService;
+use App\Services\Stripe\CreateSubscriptionService;
 use App\Services\Stripe\ResolvePromotionCodeService;
 use App\Services\Stripe\ResumeSubscriptionService;
 use App\Services\Stripe\SyncPaymentMethodService;
@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
         // Billing runs through one provider at a time. Swapping to another means writing
         // the implementations under App\Services\{Provider} and rebinding them here.
         $this->app->bind(UpdateBillingAddressProvider::class, UpdateBillingAddressService::class);
-        $this->app->bind(CreateSubscriptionIntentProvider::class, CreateSubscriptionIntentService::class);
+        $this->app->bind(CreateSubscriptionProvider::class, CreateSubscriptionService::class);
         $this->app->bind(SyncSubscriptionProvider::class, SyncSubscriptionService::class);
         $this->app->bind(ChangeSubscriptionPlanProvider::class, ChangeSubscriptionPlanService::class);
         $this->app->bind(CancelSubscriptionProvider::class, CancelSubscriptionService::class);

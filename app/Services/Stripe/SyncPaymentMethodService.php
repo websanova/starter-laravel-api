@@ -15,34 +15,42 @@ class SyncPaymentMethodService implements SyncPaymentMethodProvider
     }
 
     /**
-     * Pick up a card the client confirmed but never reported back, whether the
-     * call after the confirm was lost or the webhook never landed. Nothing the
-     * client holds is needed, the confirm already attached the card to the
-     * customer, so the setup intent it came from is asked for instead.
+     * Put a card the client just confirmed in place, without waiting on the
+     * webhook. Confirming the setup intent only attaches the card, so until
+     * this runs it sits on the customer and nothing bills it.
+     *
+     * The client hands over the intent it confirmed rather than this hunting
+     * for it, because the webhook already covers every path where the client
+     * cannot report back, and guessing which of the customer's intents was
+     * meant is only needed once that is no longer true.
      */
-    public function handle(User $user): ServiceResult
+    public function handle(User $user, string $setupIntentId): ServiceResult
     {
         if (!$user->hasStripeId()) {
             return ServiceResult::error('nothing_to_sync');
         }
 
         try {
-            /**
-             * Stripe lists newest first, so the first succeeded one is the card
-             * the user just entered. The limit covers the intents abandoned
-             * before confirming that can sit ahead of it.
-             */
-            $setupIntents = Cashier::stripe()->setupIntents->all([
-                'customer' => $user->stripe_id,
-                'limit' => 10,
-            ]);
+            $setupIntent = Cashier::stripe()->setupIntents->retrieve($setupIntentId);
+        } catch (ApiErrorException $e) {
+            return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
+        }
 
-            $setupIntent = collect($setupIntents->data)->firstWhere('status', 'succeeded');
+        /**
+         * The id came off the request, so it is only trustworthy once it is
+         * shown to belong to this customer. An intent that does not is treated
+         * as nothing to sync rather than named, since the caller has no
+         * business knowing whether it exists.
+         */
+        if ($setupIntent->customer !== $user->stripe_id) {
+            return ServiceResult::error('nothing_to_sync');
+        }
 
-            if (!$setupIntent || !$setupIntent->payment_method) {
-                return ServiceResult::error('nothing_to_sync');
-            }
+        if ($setupIntent->status !== 'succeeded' || !$setupIntent->payment_method) {
+            return ServiceResult::error('nothing_to_sync');
+        }
 
+        try {
             $this->paymentMethods->handle($user, $setupIntent->payment_method);
         } catch (ApiErrorException $e) {
             return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);

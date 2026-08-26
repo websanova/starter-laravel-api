@@ -60,6 +60,8 @@ return [
     'bookmark.deleted' => 'Bookmark deleted successfully.',
 
     'billing.address_updated' => 'Billing address updated successfully.',
+    'billing.address_invalid' => 'This address could not be verified. Please check it and try again.',
+    'billing.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'subscription.required' => 'An active subscription is required to access this resource.',
     'subscription.created' => 'Subscription created successfully.',
@@ -69,12 +71,17 @@ return [
     'subscription.already_subscribed' => 'You already have an active subscription.',
     'subscription.payment_required' => 'Your subscription has an outstanding payment. Update your payment method to continue.',
     'subscription.address_required' => 'A billing address is required before you can subscribe.',
+    'subscription.payment_method_required' => 'A payment method is required before you can subscribe.',
+    'subscription.payment_failed' => 'Your payment method was declined. Update it and try again.',
     'subscription.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'payment_method.updated' => 'Payment method updated successfully.',
     'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
-    'payment_method.customer_required' => 'There is no payment method on file to update.',
+    'payment_method.address_required' => 'A billing address is required before you can add a payment method.',
+    'payment_method.tax_location_invalid' => 'Your billing address could not be verified. Please correct it and try again.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
+
+    'promotion_code.valid' => 'Promotion code applied.',
 
     'plan.limit_reached' => 'You have reached the limit for this feature on your current plan.',
 

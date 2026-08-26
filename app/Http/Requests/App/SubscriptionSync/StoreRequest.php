@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\App\PaymentMethodSync;
+namespace App\Http\Requests\App\SubscriptionSync;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -11,8 +11,6 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'setup_intent' => ['required', 'string', 'max:255'],
-        ];
+        return [];
     }
 }

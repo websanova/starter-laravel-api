@@ -16,7 +16,7 @@ class PaymentMethodSyncController extends Controller
      */
     public function store(StoreRequest $request, SyncPaymentMethodProvider $paymentMethods): JsonResponse
     {
-        $result = $paymentMethods->handle($request->user());
+        $result = $paymentMethods->handle($request->user(), $request->validated('setup_intent'));
 
         if (!$result->success) {
             $response = ['message' => __("responses.payment_method.{$result->error}")];

@@ -8,13 +8,16 @@ use App\Models\User;
 class SyncSubscriptionService implements SyncSubscriptionProvider
 {
     /**
-     * Pull the live status from the provider and commit it locally. Cashier's
-     * own webhook handler writes the subscription row before anything here
-     * runs, so nothing calls this today. It stays as the entry point for a
-     * provider whose webhooks do not commit on their own.
+     * Pull the live status from the provider and commit it locally. Called
+     * after a challenge clears on the first invoice, where the row was written
+     * before the challenge ran and still reads incomplete. The webhook commits
+     * the same thing on its own, this is only what saves the user waiting for
+     * it.
      */
     public function handle(User $user): void
     {
+        $user->loadMissing('subscriptions');
+
         $subscription = $user->subscription();
 
         if (!$subscription) {
@@ -22,5 +25,12 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
         }
 
         $subscription->syncStripeStatus();
+
+        /**
+         * The cached plan is written by the webhook off the same status flip,
+         * so without this the row reads active while the user is still holding
+         * no plan until it lands.
+         */
+        $user->fillPlan()->save();
     }
 }
