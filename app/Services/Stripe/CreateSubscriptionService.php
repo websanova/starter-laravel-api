@@ -44,7 +44,7 @@ class CreateSubscriptionService implements CreateSubscriptionProvider
 
         try {
             if ($subscription) {
-                $result = $this->reconcile($user, $subscription, $priceId);
+                $result = $this->reconcile($user, $subscription, $priceId, $promotionCodeId);
 
                 /**
                  * A result means the existing subscription answered the
@@ -104,7 +104,7 @@ class CreateSubscriptionService implements CreateSubscriptionProvider
      * A result answers the request outright, null means it was cancelled and
      * the caller should build a fresh one.
      */
-    protected function reconcile(User $user, Subscription $subscription, ?string $priceId): ?ServiceResult
+    protected function reconcile(User $user, Subscription $subscription, ?string $priceId, ?string $promotionCodeId): ?ServiceResult
     {
         if ($subscription->valid()) {
             /**
@@ -133,14 +133,23 @@ class CreateSubscriptionService implements CreateSubscriptionProvider
 
         /**
          * An incomplete subscription is a first charge that was refused. Its
-         * invoice can still be paid as it stands, but only while it is for what
-         * the user is asking for now and was priced where they are now. A
-         * finalized invoice never recalculates its tax, and Stripe will not
-         * repoint an incomplete subscription at a different price.
+         * invoice is a snapshot of what priced it and never recalculates, so it
+         * is payable only while every input still matches, the price, the tax
+         * location and the promotion code. Anything else would charge the old
+         * amount, and Stripe will not repoint an incomplete subscription at a
+         * different price anyway.
+         *
+         * The discount is expanded so it comes back on the call the address
+         * already costs, rather than reading it off the subscription later.
          */
-        $invoice = $subscription->latestInvoice();
+        $invoice = $subscription->latestInvoice(['discounts']);
 
-        if (!$invoice || !$subscription->hasPrice($priceId) || $this->taxLocationMoved($user, $invoice->customer_address)) {
+        $changed = !$invoice
+            || !$subscription->hasPrice($priceId)
+            || $this->taxLocationMoved($user, $invoice->customer_address)
+            || $this->promotionCodeChanged($invoice->discounts, $promotionCodeId);
+
+        if ($changed) {
             $subscription->cancelNow();
 
             return null;
@@ -176,6 +185,28 @@ class CreateSubscriptionService implements CreateSubscriptionProvider
 
         return $invoiceAddress->country !== $user->billing_country
             || $invoiceAddress->postal_code !== $user->billing_postal_code;
+    }
+
+    /**
+     * Whether the discount an invoice was finalized with is still the one being
+     * asked for. Both sides carrying nothing counts as unchanged, and so does
+     * the same code arriving again on a resubmit. A discount an admin applied
+     * as a bare coupon has no promotion code to read, which reads as nothing.
+     */
+    protected function promotionCodeChanged(mixed $invoiceDiscounts, ?string $promotionCodeId): bool
+    {
+        $applied = $invoiceDiscounts[0]->promotion_code ?? null;
+
+        /**
+         * Expanding the discount does not expand the promotion code hanging off
+         * it, so this is an id already. It is only an object when something
+         * else asked for it, and the id is what gets compared either way.
+         */
+        if (is_object($applied)) {
+            $applied = $applied->id;
+        }
+
+        return $applied !== $promotionCodeId;
     }
 
     /**
