@@ -53,6 +53,7 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
             'billing_line1' => $address['line1'] ?? null,
             'billing_line2' => $address['line2'] ?? null,
             'billing_postal_code' => $address['postal_code'] ?? null,
+            'billing_state' => $address['state'] ?? null,
         ]);
 
         return ServiceResult::success();

@@ -56,10 +56,10 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/promotion-code/verify', [App\Http\Controllers\App\PromotionCodeVerifyController::class, 'store']);
 
         Route::get('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'show']);
-        Route::post('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'store']);
         Route::put('/subscription', [App\Http\Controllers\App\SubscriptionController::class, 'update']);
         Route::post('/subscription/cancel', [App\Http\Controllers\App\SubscriptionCancelController::class, 'store']);
         Route::post('/subscription/resume', [App\Http\Controllers\App\SubscriptionResumeController::class, 'store']);
+        Route::post('/subscription/session', [App\Http\Controllers\App\SubscriptionSessionController::class, 'store']);
         Route::post('/subscription/sync', [App\Http\Controllers\App\SubscriptionSyncController::class, 'store']);
 
         Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);

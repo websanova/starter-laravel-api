@@ -20,46 +20,35 @@ The initial migrations contain a plan seed, however this will only run once in p
 > ./dev artisan plans:sync
 ```
 
-## Webhooks (Prod)
+## Webhooks (Docker)
 
-The API registers a webhook endpoint at `POST /stripe/webhook`. Stripe needs a matching endpoint pointed at that URL, set up either way below.
-
-The event list lives in `config/cashier.php` and adds to Cashier's defaults, because the API listens for events Cashier doesn't handle on its own.
-
-### Artisan
-
-Creates the endpoint with the full event list straight from config.
-
-```bash
-> docker compose exec php php artisan cashier:webhook
-> ./dev artisan cashier:webhook
-```
-
-It only ever creates, it never updates an existing endpoint, so this is an init step. Adding an event later means deleting the endpoint and running it again, or going the manual route below.
-
-### Manual
-
-Create the endpoint in the Stripe dashboard, point it at the URL, and tick off the events listed in `config/cashier.php`. This is also how you add an event to an endpoint that already exists.
-
-### Secret
-
-Either way, copy the signing secret into your `.env`.
-
-```env
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-```
-
-For local dev the webhook can be fetched from the logs.
+The `stripe` container handles the webhooks, and its secret comes from the logs.
 
 ```bash
 > docker compose logs -f stripe
 > ./dev logs stripe
 ```
 
-Set the webhook secret and clear cache if necessary.
+```env
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+Clear the cache if necessary.
 
 ```bash
 > docker compose exec php php artisan config:clear
 > ./dev artisan config:clear
 ```
 
+## Webhooks (Deploy)
+
+The API registers a webhook endpoint at `POST /stripe/webhook`. Stripe needs a matching endpoint pointed at that URL, either with artisan or by hand in the dashboard, ticking off the events listed in `config/cashier.php`. Copy the signing secret into that environment's `.env`.
+
+```bash
+> docker compose exec php php artisan cashier:webhook
+> ./dev artisan cashier:webhook
+```
+
+The event list adds to Cashier's defaults, because the API listens for events Cashier doesn't handle on its own.
+
+The command only ever creates, it never updates an existing endpoint, so this is an init step. Adding an event later means deleting the endpoint and creating it again, and so does a Cashier upgrade, since the API version is fixed when the endpoint is created.

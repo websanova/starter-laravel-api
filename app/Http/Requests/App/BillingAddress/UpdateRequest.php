@@ -20,6 +20,7 @@ class UpdateRequest extends FormRequest
             'line1' => AddressRules::line1(required: false),
             'line2' => AddressRules::line2(),
             'city' => AddressRules::city(required: false),
+            'state' => AddressRules::state(),
             'postal_code' => AddressRules::postalCode(),
             'country' => AddressRules::country(),
         ];

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('billing_line1')->nullable();
             $table->string('billing_line2')->nullable();
             $table->string('billing_city')->nullable();
+            $table->string('billing_state')->nullable();
             $table->string('billing_postal_code')->nullable();
             $table->string('billing_country', 2)->nullable();
             $table->boolean('is_password_reset_required')->default(false);

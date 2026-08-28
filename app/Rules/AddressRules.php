@@ -49,6 +49,15 @@ class AddressRules
     }
 
     /**
+     * Validation rules for the state field. Free text rather than a per country
+     * list, since the shape of a subdivision code is the provider's to police.
+     */
+    public static function state(): array
+    {
+        return ['nullable', 'string', 'max:255'];
+    }
+
+    /**
      * Validation rules for the country field. Two letter ISO 3166-1 alpha-2,
      * which is what billing providers expect. The list itself is not checked
      * here since the provider rejects anything that is not a real code, and

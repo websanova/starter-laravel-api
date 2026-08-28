@@ -140,5 +140,5 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 **Dev Environment**
 - Dockerized (PHP-FPM + MySQL)
-- `./run` script for container commands
+- `./dev` script for container commands
 - Pest test suite

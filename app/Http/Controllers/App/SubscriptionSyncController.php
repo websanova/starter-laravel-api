@@ -11,24 +11,29 @@ use Illuminate\Http\JsonResponse;
 class SubscriptionSyncController extends Controller
 {
     /**
-     * Pick up a status the webhook has not landed yet. The client calls this
-     * once a challenge on the first invoice clears, since the subscription was
-     * written before the challenge ran and still reads incomplete.
+     * Write the local rows for a checkout session the client just completed.
+     * Everything is already correct at Stripe by the time this runs, only the
+     * local side is behind, so an error here is worth showing and worth
+     * retrying. The webhook lands regardless.
      */
     public function store(StoreRequest $request, SyncSubscriptionProvider $subscriptions): JsonResponse
     {
         $user = $request->user();
 
-        $subscriptions->handle($user);
+        $result = $subscriptions->handle($user, $request->validated('session'));
 
-        $subscription = $user->subscription();
+        if (!$result->success) {
+            $response = ['message' => __("responses.subscription.{$result->error}")];
 
-        if (!$subscription) {
-            return response()->json(['data' => null]);
+            if (config('app.debug') && isset($result->data['debug'])) {
+                $response['debug'] = $result->data['debug'];
+            }
+
+            return response()->json($response, 409);
         }
 
         return response()->json([
-            'data' => new SubscriptionResource($subscription),
+            'data' => new SubscriptionResource($user->subscription()),
         ]);
     }
 }

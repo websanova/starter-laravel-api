@@ -73,6 +73,7 @@ class User extends Authenticatable implements HasLocalePreference
         'billing_line1',
         'billing_line2',
         'billing_city',
+        'billing_state',
         'billing_postal_code',
         'billing_country',
         'plan_id',
@@ -254,9 +255,8 @@ class User extends Authenticatable implements HasLocalePreference
 
     /**
      * The billing address handed to the billing provider. Country and postal
-     * code are the pair automatic tax resolves a location from, and a state is
-     * derivable from those two, so the rest is only carried so that invoices
-     * read properly.
+     * code are the pair automatic tax resolves a location from, so the rest is
+     * only carried so that invoices read properly.
      */
     public function billingAddress(): array
     {
@@ -266,6 +266,7 @@ class User extends Authenticatable implements HasLocalePreference
             'line1' => $this->billing_line1,
             'line2' => $this->billing_line2,
             'postal_code' => $this->billing_postal_code,
+            'state' => $this->billing_state,
         ]);
     }
 

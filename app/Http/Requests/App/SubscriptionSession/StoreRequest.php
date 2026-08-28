@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\App\Subscription;
+namespace App\Http\Requests\App\SubscriptionSession;
 
 use App\Enums\PlanInterval;
 use App\Rules\SubscriptionRules;
@@ -11,15 +11,14 @@ class StoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * No payment method reference of any kind. The customer already carries a
-     * default by the time this is called.
+     * What to subscribe to and nothing else. The address, the card and any
+     * promotion code are collected inside the checkout session this opens.
      */
     public function rules(): array
     {
         return [
             'plan' => SubscriptionRules::planPublic(),
             'interval' => SubscriptionRules::interval(),
-            'promotion_code' => SubscriptionRules::promotionCode(),
         ];
     }
 
