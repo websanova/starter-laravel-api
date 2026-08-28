@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Support\ServiceResult;
 use Laravel\Cashier\Cashier;
+use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
@@ -28,35 +29,39 @@ class CreateSessionService implements CreateSessionProvider
     {
         $user->loadMissing('subscriptions');
 
-        $subscription = $user->subscription();
-
-        if ($subscription) {
-            /**
-             * Past due and unpaid are named apart from a live subscription so
-             * the client can send the user to the card page rather than tell
-             * them they are already subscribed. Both still refuse, since the
-             * subscription exists at Stripe either way and a second one is wrong
-             * regardless. Checked first because whether a past due subscription
-             * counts as valid is a Cashier setting, and this does not depend on
-             * how it is set.
-             */
-            if ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID) {
-                return ServiceResult::error('payment_required');
-            }
-
-            if ($subscription->valid()) {
-                return ServiceResult::error('already_subscribed');
-            }
-        }
-
         try {
             /**
              * The customer is created here when there isn't one, since a
-             * session has nothing to hang off otherwise. Passing it is also
-             * what satisfies the session's email requirement, so no contact
-             * details element is needed.
+             * session has nothing to hang off otherwise. It goes first because
+             * the sweep below is addressed to a customer, and one made a moment
+             * ago has nothing to sweep. Passing it is also what satisfies the
+             * session's email requirement, so no contact details element is
+             * needed.
              */
             $customer = $user->createOrGetStripeCustomer();
+
+            $this->expireOpenSessions($customer->id);
+
+            $subscription = $user->subscription();
+
+            if ($subscription) {
+                /**
+                 * Past due and unpaid are named apart from a live subscription
+                 * so the client can send the user to the card page rather than
+                 * tell them they are already subscribed. Both still refuse,
+                 * since the subscription exists at Stripe either way and a
+                 * second one is wrong regardless. Checked first because whether
+                 * a past due subscription counts as valid is a Cashier setting,
+                 * and this does not depend on how it is set.
+                 */
+                if ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID) {
+                    return ServiceResult::error('payment_required');
+                }
+
+                if ($subscription->valid()) {
+                    return ServiceResult::error('already_subscribed');
+                }
+            }
 
             $payload = [
                 'ui_mode' => 'elements',
@@ -107,5 +112,33 @@ class CreateSessionService implements CreateSessionProvider
             'id' => $session->id,
             'client_secret' => $session->client_secret,
         ]);
+    }
+
+    /**
+     * Close every session the customer still has open, so the one about to be
+     * handed out is the only one that can be confirmed. Without this a tab left
+     * open on another device stays good for up to a day and buys a second
+     * subscription when the user comes back to it.
+     *
+     * Running before the subscription check is what makes that check useful,
+     * since a session swept here can no longer complete behind it.
+     */
+    protected function expireOpenSessions(string $customerId): void
+    {
+        $stripe = Cashier::stripe();
+
+        $sessions = $stripe->checkout->sessions->all([
+            'customer' => $customerId,
+            'status' => Session::STATUS_OPEN,
+        ]);
+
+        foreach ($sessions->data as $session) {
+            try {
+                $stripe->checkout->sessions->expire($session->id);
+            } catch (ApiErrorException) {
+                // Only an open session can be expired, and one that completed
+                // between the list and here is no longer open.
+            }
+        }
     }
 }
