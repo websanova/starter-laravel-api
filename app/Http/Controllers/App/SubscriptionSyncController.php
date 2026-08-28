@@ -23,13 +23,7 @@ class SubscriptionSyncController extends Controller
         $result = $subscriptions->handle($user, $request->validated('session'));
 
         if (!$result->success) {
-            $response = ['message' => __("responses.subscription.{$result->error}")];
-
-            if (config('app.debug') && isset($result->data['debug'])) {
-                $response['debug'] = $result->data['debug'];
-            }
-
-            return response()->json($response, 409);
+            return $this->error($result, 'subscription');
         }
 
         return response()->json([

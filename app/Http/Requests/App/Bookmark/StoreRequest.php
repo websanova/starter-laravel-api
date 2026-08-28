@@ -6,6 +6,7 @@ use App\Enums\PlanFeature;
 use App\Rules\BookmarkRules;
 use App\Rules\TagRules;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreRequest extends FormRequest
 {
@@ -14,11 +15,19 @@ class StoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if (!$this->user()->canUsePlanFeature(PlanFeature::Bookmarks)) {
-            abort(403, __('responses.plan.limit_reached'));
-        }
+        return $this->user()->canUsePlanFeature(PlanFeature::Bookmarks);
+    }
 
-        return true;
+    /**
+     * Refuse with the plan code rather than the bare message abort() produces,
+     * so the client can tell a plan limit from any other 403.
+     */
+    protected function failedAuthorization(): void
+    {
+        throw new HttpResponseException(response()->json([
+            'error' => 'plan_limit_reached',
+            'message' => __('responses.plan.limit_reached'),
+        ], 403));
     }
 
     /**

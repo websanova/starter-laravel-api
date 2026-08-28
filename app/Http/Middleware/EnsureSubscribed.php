@@ -25,6 +25,7 @@ class EnsureSubscribed
 
         if (!$hasAccess) {
             return response()->json([
+                'error' => 'subscription_required',
                 'message' => __('responses.subscription.required'),
             ], 403);
         }

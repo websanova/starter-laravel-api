@@ -22,13 +22,7 @@ class BillingAddressController extends Controller
         $result = $subscriptions->handle($user, $request->validated());
 
         if (!$result->success) {
-            $response = ['message' => __("responses.billing.{$result->error}")];
-
-            if (config('app.debug') && isset($result->data['debug'])) {
-                $response['debug'] = $result->data['debug'];
-            }
-
-            return response()->json($response, 409);
+            return $this->error($result, 'billing');
         }
 
         return response()->json([

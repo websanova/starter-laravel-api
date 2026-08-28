@@ -15,6 +15,7 @@ class EnsurePasswordUpdated
     {
         if ($request->user()->is_password_reset_required) {
             return response()->json([
+                'error' => 'password_reset_required',
                 'message' => __('responses.auth.password_reset_required'),
             ], 403);
         }

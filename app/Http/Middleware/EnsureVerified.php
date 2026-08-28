@@ -15,6 +15,7 @@ class EnsureVerified
     {
         if ($request->user()->is_verification_required) {
             return response()->json([
+                'error' => 'unverified',
                 'message' => __('responses.auth.unverified'),
             ], 403);
         }

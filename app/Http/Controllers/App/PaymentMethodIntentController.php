@@ -19,13 +19,7 @@ class PaymentMethodIntentController extends Controller
         $result = $paymentMethods->handle($request->user());
 
         if (!$result->success) {
-            $response = ['message' => __("responses.payment_method.{$result->error}")];
-
-            if (config('app.debug') && isset($result->data['debug'])) {
-                $response['debug'] = $result->data['debug'];
-            }
-
-            return response()->json($response, 409);
+            return $this->error($result, 'payment_method');
         }
 
         return response()->json(['data' => $result->data]);

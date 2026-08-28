@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->renderable(function (AuthorizationException $e) {
+            return response()->json([
+                'error' => 'forbidden',
+                'message' => __('responses.auth.forbidden'),
+            ], 403);
+        });
+
         $exceptions->renderable(function (ThrottleRequestsException $e) {
             return response()->json([
                 'message' => __('responses.throttle', ['seconds' => $e->getHeaders()['Retry-After']]),
