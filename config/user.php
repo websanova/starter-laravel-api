@@ -24,6 +24,8 @@ return [
     | The locales a user is allowed to store as their preference. These are
     | BCP 47 language tags surfaced to the client and validated on update.
     | Distinct from app.supported_locales, which drives translation lookup.
+    | Adding a locale here also needs a Stripe locale mapping added to
+    | App\Services\Stripe\CreateSessionService.
     |
     */
 

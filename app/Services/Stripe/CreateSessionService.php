@@ -15,6 +15,21 @@ use Stripe\Subscription as StripeSubscription;
 class CreateSessionService implements CreateSessionProvider
 {
     /**
+     * The Checkout Elements SDK takes no locale option, so unlike a plain
+     * Elements integration the locale can only be set on the session.
+     *
+     * Stripe's locale enum carries no region for English, so the tags stored
+     * in config('user.supported_locales') have to be mapped onto it. Adding a
+     * locale there means adding it here too, otherwise it falls through to
+     * auto and the session follows the browser rather than the user.
+     */
+    private const LOCALES = [
+        'en-US' => 'en',
+        'en-CA' => 'en',
+        'fr-CA' => 'fr-CA',
+    ];
+
+    /**
      * Open a Checkout Session and hand back the secret the client mounts its
      * address and payment elements against. Nothing else is created here. The
      * address, the card, the promotion code, the tax and the subscription all
@@ -66,6 +81,7 @@ class CreateSessionService implements CreateSessionProvider
             $payload = [
                 'ui_mode' => 'elements',
                 'mode' => 'subscription',
+                'locale' => self::LOCALES[$user->locale] ?? 'auto',
                 'customer' => $customer->id,
                 'line_items' => [
                     ['price' => $plan->priceId($interval), 'quantity' => 1],
