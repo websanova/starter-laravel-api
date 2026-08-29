@@ -61,6 +61,7 @@ return [
 
     'billing.address_updated' => 'Billing address updated successfully.',
     'billing.address_invalid' => 'This address could not be verified. Please check it and try again.',
+    'billing.customer_missing' => 'No billing account was found for your account. Please contact support.',
     'billing.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'subscription.required' => 'An active subscription is required to access this resource.',
