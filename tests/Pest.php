@@ -4,6 +4,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Cashier\Cashier;
 use Stripe\PaymentMethod as StripePaymentMethod;
+use Stripe\SetupIntent as StripeSetupIntent;
 use Tests\TestCase;
 
 /*
@@ -65,6 +66,21 @@ function stripeSandboxUser(): User
 function stripeSandboxCard(User $user, string $card = 'pm_card_visa'): StripePaymentMethod
 {
     return Cashier::stripe()->paymentMethods->attach($card, ['customer' => $user->stripe_id]);
+}
+
+/**
+ * A setup intent in the state the client leaves one in, confirmed and carrying
+ * a card. The browser does the confirming in the real flow, so it is done here
+ * on the create rather than in two calls.
+ */
+function stripeSandboxSetupIntent(User $user, StripePaymentMethod $paymentMethod, bool $confirm = true): StripeSetupIntent
+{
+    return Cashier::stripe()->setupIntents->create([
+        'customer' => $user->stripe_id,
+        'payment_method' => $paymentMethod->id,
+        'usage' => 'off_session',
+        'confirm' => $confirm,
+    ]);
 }
 
 /**

@@ -3,6 +3,7 @@
 namespace App\Services\Stripe;
 
 use App\Models\User;
+use Stripe\Subscription as StripeSubscription;
 
 class ReplacePaymentMethodService
 {
@@ -25,18 +26,21 @@ class ReplacePaymentMethodService
     {
         /**
          * Stripe bills a subscription off its own default and only falls back
-         * to the customer when it has none. Nothing this API creates sets one,
-         * so this is here for a subscription started from the Stripe dashboard
-         * that arrived carrying a card, where leaving it pointed at the old one
-         * would bill it on the next renewal. It goes first because a failure
-         * part way through is better left billing the new card against a stale
-         * display than the reverse.
+         * to the customer when it has none. Checkout sets that default when it
+         * creates the subscription, so every subscription here carries one and
+         * leaving it pointed at the old card bills the old card on the next
+         * renewal. It goes first because a failure part way through is better
+         * left billing the new card against a stale display than the reverse.
+         *
+         * A canceled subscription is skipped. Stripe refuses an update on one,
+         * and the throw would take the rest of the repoint with it and leave
+         * the user unable to replace a card at all.
          */
         $user->loadMissing('subscriptions');
 
         $subscription = $user->subscription();
 
-        if ($subscription) {
+        if ($subscription && $subscription->stripe_status !== StripeSubscription::STATUS_CANCELED) {
             $subscription->updateStripeSubscription(['default_payment_method' => $paymentMethodId]);
         }
 

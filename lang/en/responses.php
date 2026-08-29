@@ -79,8 +79,7 @@ return [
 
     'payment_method.updated' => 'Payment method updated successfully.',
     'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
-    'payment_method.address_required' => 'A billing address is required before you can add a payment method.',
-    'payment_method.tax_location_invalid' => 'Your billing address could not be verified. Please correct it and try again.',
+    'payment_method.customer_missing' => 'No billing account was found for your account. Please contact support.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'promotion_code.valid' => 'Promotion code applied.',

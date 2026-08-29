@@ -14,34 +14,18 @@ class CreatePaymentMethodIntentService implements CreatePaymentMethodIntentProvi
      * element mounts against. Nothing is charged, so the client always confirms
      * this as a setup.
      *
-     * Serves both the subscribe wizard and a straight card replacement. The
-     * customer is a precondition either way, made when the address was saved
-     * rather than here, so no customer means the address was never settled.
+     * Only ever a replacement. Subscribe collects the first card inside its own
+     * checkout session and that session is what creates the customer, so no
+     * customer means the user never subscribed rather than something to make
+     * here.
      */
     public function handle(User $user): ServiceResult
     {
         if (!$user->hasStripeId()) {
-            return ServiceResult::error('address_required');
+            return ServiceResult::error('customer_missing');
         }
 
         try {
-            /**
-             * Stripe stamps the customer with whether it can place them in a
-             * tax jurisdiction, and it does that when the address is pushed. So
-             * the state of the last address save is readable here for the cost
-             * of a retrieve, without re-sending an address this step never
-             * collected. Collecting a card against a customer Stripe cannot
-             * place only defers the failure to the subscribe call, where the
-             * remedy is the same and the user has further to walk back.
-             */
-            $customer = $user->asStripeCustomer(['tax']);
-
-            $automaticTax = $customer->tax->automatic_tax ?? null;
-
-            if (!in_array($automaticTax, ['supported', 'not_collecting'])) {
-                return ServiceResult::error('tax_location_invalid');
-            }
-
             /**
              * The card is collected now and billed later on renewals, with no
              * one at the keyboard to authenticate, so Stripe is told up front
