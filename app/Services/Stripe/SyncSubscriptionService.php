@@ -72,7 +72,7 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
         DB::transaction(function () use ($user, $session) {
             $this->commitSubscription($user, $session->subscription);
 
-            $this->commitUser($user, $session->customer_details->address ?? null);
+            $this->commitUser($user, $session->customer_details ?? null);
         });
 
         return ServiceResult::success();
@@ -110,24 +110,25 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
     }
 
     /**
-     * Write the address Stripe collected in the session and the plan the new
-     * subscription entitles the user to. The address is only pushed to the
+     * Write the name and address Stripe collected in the session and the plan
+     * the new subscription entitles the user to. Both are only pushed to the
      * provider by the session itself, so this side is the copy rather than the
      * source, and it is skipped rather than blanked when the session carries
-     * none.
+     * no address.
      */
-    protected function commitUser(User $user, mixed $address): void
+    protected function commitUser(User $user, mixed $customerDetails): void
     {
         $user->load('subscriptions');
 
-        if ($address) {
+        if ($customerDetails?->address) {
             $user->fill([
-                'billing_city' => $address->city,
-                'billing_country' => $address->country,
-                'billing_line1' => $address->line1,
-                'billing_line2' => $address->line2,
-                'billing_postal_code' => $address->postal_code,
-                'billing_state' => $address->state,
+                'billing_city' => $customerDetails->address->city,
+                'billing_country' => $customerDetails->address->country,
+                'billing_line1' => $customerDetails->address->line1,
+                'billing_line2' => $customerDetails->address->line2,
+                'billing_name' => $customerDetails->name,
+                'billing_postal_code' => $customerDetails->address->postal_code,
+                'billing_state' => $customerDetails->address->state,
             ]);
         }
 

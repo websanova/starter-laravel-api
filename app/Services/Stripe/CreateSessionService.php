@@ -80,7 +80,7 @@ class CreateSessionService implements CreateSessionProvider
                  * calculate from. Stripe also refuses the create without it
                  * once automatic tax is on and a customer is passed.
                  */
-                'customer_update' => ['address' => 'auto'],
+                'customer_update' => ['address' => 'auto', 'name' => 'auto'],
             ];
 
             if (config('subscription.automatic_tax')) {

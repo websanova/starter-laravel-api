@@ -28,10 +28,19 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
      */
     public function handle(User $user, array $address): ServiceResult
     {
+        /**
+         * The name is a sibling of the address on the customer rather than a
+         * field inside it, so it comes out before the rest is passed through.
+         */
+        $name = $address['name'] ?? null;
+
+        unset($address['name']);
+
         $address = array_filter($address);
 
         try {
             $user->updateOrCreateStripeCustomer([
+                'name' => $name,
                 'address' => $address,
                 'tax' => ['validate_location' => 'immediately'],
             ]);
@@ -52,6 +61,7 @@ class UpdateBillingAddressService implements UpdateBillingAddressProvider
             'billing_country' => $address['country'] ?? null,
             'billing_line1' => $address['line1'] ?? null,
             'billing_line2' => $address['line2'] ?? null,
+            'billing_name' => $name,
             'billing_postal_code' => $address['postal_code'] ?? null,
             'billing_state' => $address['state'] ?? null,
         ]);

@@ -5,6 +5,15 @@ namespace App\Rules;
 class AddressRules
 {
     /**
+     * Validation rules for the name field. The name the invoice is made out
+     * to, which is not the user's own name.
+     */
+    public static function name(): array
+    {
+        return ['nullable', 'string', 'max:255'];
+    }
+
+    /**
      * Validation rules for the line1 field.
      */
     public static function line1(bool $required = true): array

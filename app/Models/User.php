@@ -70,6 +70,7 @@ class User extends Authenticatable implements HasLocalePreference
         'phone_verified_at',
         'password',
         'avatar',
+        'billing_name',
         'billing_line1',
         'billing_line2',
         'billing_city',
@@ -251,6 +252,17 @@ class User extends Authenticatable implements HasLocalePreference
         }
 
         return config('app.fallback_locale');
+    }
+
+    /**
+     * The name handed to the billing provider. Overridden because Cashier
+     * reads a "name" attribute this model does not have, which leaves the
+     * customer nameless, and because the billing name is its own field rather
+     * than the user's own name.
+     */
+    public function stripeName(): ?string
+    {
+        return $this->billing_name;
     }
 
     /**

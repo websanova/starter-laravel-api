@@ -17,6 +17,7 @@ class BillingAddressResource extends JsonResource
             'country' => $this->billing_country,
             'line1' => $this->billing_line1,
             'line2' => $this->billing_line2,
+            'name' => $this->billing_name,
             'postal_code' => $this->billing_postal_code,
             'state' => $this->billing_state,
         ];

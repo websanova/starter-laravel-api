@@ -24,6 +24,7 @@ return new class extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('password');
             $table->string('avatar')->nullable();
+            $table->string('billing_name')->nullable();
             $table->string('billing_line1')->nullable();
             $table->string('billing_line2')->nullable();
             $table->string('billing_city')->nullable();
