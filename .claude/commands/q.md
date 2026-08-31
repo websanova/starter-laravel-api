@@ -3,6 +3,7 @@ description: Side bar question. General knowledge, no code scan.
 argument-hint: [question]
 disable-model-invocation: true
 allowed-tools: WebSearch, WebFetch
+disallowed-tools: Write, Edit, NotebookEdit, Bash, Read, Grep, Glob
 ---
 
 ANSWER ONLY. This is a general question, unrelated to the codebase.

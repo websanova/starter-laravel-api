@@ -1,7 +1,9 @@
 ---
 description: Summarize required changes. No code changes.
+argument-hint: [clarification, optional]
 disable-model-invocation: true
 allowed-tools: Read, Grep, Glob
+disallowed-tools: Write, Edit, NotebookEdit, Bash
 ---
 
 SUMMARIZE ONLY. List the changes required based on the current discussion. No coding, no source file changes, no terminal commands.

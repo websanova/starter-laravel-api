@@ -9,7 +9,7 @@
 - Do not add findings, fixes, or caveats that were not in the original. Unclear is not the same as incomplete.
 
 ## Typography - ASCII Only
-- No em dashes (-) - use hyphens (-)
+- No em dashes or en dashes (unicode U+2014 and U+2013) - use hyphens (-)
 - No smart/curly quotes - use straight quotes (" ')
 - No ellipsis character - use three dots (...)
 - No Unicode bullets - use hyphens (-) or asterisks (*)
@@ -33,7 +33,7 @@
 - Never ask the user for information that can be found by reading the codebase. Read the file instead.
 - If unsure: say "I don't know." Never guess confidently.
 - Never invent file paths, function names, or API signatures.
-- If referencing a file, label it with the parent folder, file name, and line number (e.g. `Models/Plan.php:42`). The link target stays the full path.
+- If referencing a file, label it with the parent folder, file name, and line number (e.g. `stores/user.ts:42`). The link target stays the full path.
 - If a user corrects a factual claim: accept it as ground truth for the entire session. Never re-assert the original claim.
 
 ## Auto Memory
@@ -52,23 +52,21 @@
 - Do not delete comments.
 - Never reformat, reindent, or rearrange existing code that is not directly related to the change being made.
 - Never align variable assignments or object properties with extra spaces.
-
-## Code Format
-
 - One space on each side of `=` and `:`.
 
 ## Commands
 
 - Commands are strict behavioral governors. Follow them exactly. Do not anticipate the next command. Do not perform any action not explicitly commanded.
-- `/bs` - think only, no changes
+- `/bs` - brainstorm, break down the problem, no changes
 - `/su` - summarize required changes, no code changes
 - `/ex` - implement what was already agreed
 - `/cm` - generate a one-line commit message
 - `/co` - commit staged changes
 - `/q` - side bar question, no code scan
-- Full behavior for each is defined in `.claude/commands/`. That file governs its turn.
+- Full behavior for each is defined in `.claude/commands/`. Each command file governs the turn it is invoked in.
+- If no command is given, respond only. Never touch files.
 - When in doubt, STOP and ask. Never assume the next step.
 - NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write.
 - NEVER run tests yourself. Do not execute `php artisan test`, `pest`, or any test runner. The user runs tests. You may write and edit test files, just never run them.
-- NEVER touch the git repo (except via `/co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging, no `git` commands of any kind.
+- NEVER change the state of the git repo (except via `/co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging. Read-only inspection is allowed: `git diff`, `git status`, `git log`, `git show`.
 - "Can you", "could you", "would you", and any question form is NOT a command. It is a request for a description.
