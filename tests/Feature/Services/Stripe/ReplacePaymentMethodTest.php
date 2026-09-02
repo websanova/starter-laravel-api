@@ -23,7 +23,7 @@ test('the new card becomes the default and the old one is detached', function ()
     expect($user->pm_type)->toBe('mastercard')
         ->and($user->pm_last_four)->toBe('4444')
         ->and($user->asStripeCustomer()->invoice_settings->default_payment_method)->toBe($new->id)
-        ->and($user->paymentMethods()->pluck('id')->all())->toBe([$new->id]);
+        ->and($user->paymentMethods()->map(fn ($paymentMethod) => $paymentMethod->id)->all())->toBe([$new->id]);
 })->group('stripe');
 
 test('the subscription is repointed at the new card', function () {
@@ -110,5 +110,5 @@ test('a second run over the same card changes nothing', function () {
 
     expect($user->pm_type)->toBe('visa')
         ->and($user->pm_last_four)->toBe('4242')
-        ->and($user->paymentMethods()->pluck('id')->all())->toBe([$card->id]);
+        ->and($user->paymentMethods()->map(fn ($paymentMethod) => $paymentMethod->id)->all())->toBe([$card->id]);
 })->group('stripe');

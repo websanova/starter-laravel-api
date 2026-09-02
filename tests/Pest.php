@@ -72,15 +72,25 @@ function stripeSandboxCard(User $user, string $card = 'pm_card_visa'): StripePay
  * A setup intent in the state the client leaves one in, confirmed and carrying
  * a card. The browser does the confirming in the real flow, so it is done here
  * on the create rather than in two calls.
+ *
+ * The return url is what that browser would supply. Stripe demands one from
+ * anything confirming an intent that accepts a payment method able to redirect,
+ * and which methods those are is decided in the dashboard rather than here.
  */
 function stripeSandboxSetupIntent(User $user, StripePaymentMethod $paymentMethod, bool $confirm = true): StripeSetupIntent
 {
-    return Cashier::stripe()->setupIntents->create([
+    $payload = [
         'customer' => $user->stripe_id,
         'payment_method' => $paymentMethod->id,
         'usage' => 'off_session',
         'confirm' => $confirm,
-    ]);
+    ];
+
+    if ($confirm) {
+        $payload['return_url'] = config('app.frontend_url') . '/payment-method';
+    }
+
+    return Cashier::stripe()->setupIntents->create($payload);
 }
 
 /**
