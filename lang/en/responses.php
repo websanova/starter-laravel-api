@@ -80,7 +80,6 @@ return [
     'payment_method.updated' => 'Payment method updated successfully.',
     'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
     'payment_method.customer_missing' => 'No billing account was found for your account. Please contact support.',
-    'payment_method.invoice_declined' => 'Your card was saved, but the outstanding invoice could not be paid with it.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'promotion_code.valid' => 'Promotion code applied.',
