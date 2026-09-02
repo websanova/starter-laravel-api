@@ -10,10 +10,10 @@ class CommitSubscriptionPaymentMethod
     /**
      * Promote the card that pays the subscription to the customer default.
      *
-     * Nothing this API creates needs it. The card is stored and made the
-     * customer default before the subscription exists, and the subscription is
-     * created without a default of its own so Stripe falls back to the
-     * customer's. What is left is a subscription started from the Stripe
+     * Nothing this API creates needs it. Checkout sets the subscription's own
+     * default when it creates it, and the sync reads that same card off the
+     * session and makes it the customer default, so both levels are already
+     * pointed at it. What is left is a subscription started from the Stripe
      * dashboard, which arrives carrying a card that never reached the customer.
      * Cashier reads the card columns off the customer default, so without this
      * those users keep a null brand and last four.

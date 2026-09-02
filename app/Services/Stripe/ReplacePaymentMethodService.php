@@ -3,6 +3,7 @@
 namespace App\Services\Stripe;
 
 use App\Models\User;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Subscription as StripeSubscription;
 
 class ReplacePaymentMethodService
@@ -19,8 +20,9 @@ class ReplacePaymentMethodService
      * pass inert.
      *
      * The exception is two detaches colliding inside that re-read window, where
-     * Stripe throws on the second. The webhook retries into a clean no op, the
-     * sync hands the client a provider error on work that actually landed.
+     * Stripe throws on the second. That throw is swallowed at the sweep, since
+     * the card is gone either way and everything that decides what gets billed
+     * has already been written by then.
      */
     public function handle(User $user, string $paymentMethodId): void
     {
@@ -32,15 +34,23 @@ class ReplacePaymentMethodService
          * renewal. It goes first because a failure part way through is better
          * left billing the new card against a stale display than the reverse.
          *
-         * A canceled subscription is skipped. Stripe refuses an update on one,
-         * and the throw would take the rest of the repoint with it and leave
-         * the user unable to replace a card at all.
+         * A canceled or incomplete_expired subscription is skipped. Stripe
+         * refuses an update on either, and the throw would take the rest of the
+         * repoint with it and leave the user unable to replace a card at all.
+         * Incomplete expired is the checkout whose first invoice never cleared,
+         * which still leaves a card on file for the user to come back and
+         * replace.
          */
         $user->loadMissing('subscriptions');
 
         $subscription = $user->subscription();
 
-        if ($subscription && $subscription->stripe_status !== StripeSubscription::STATUS_CANCELED) {
+        $terminal = [
+            StripeSubscription::STATUS_CANCELED,
+            StripeSubscription::STATUS_INCOMPLETE_EXPIRED,
+        ];
+
+        if ($subscription && !in_array($subscription->stripe_status, $terminal)) {
             $subscription->updateStripeSubscription(['default_payment_method' => $paymentMethodId]);
         }
 
@@ -58,7 +68,13 @@ class ReplacePaymentMethodService
          */
         foreach ($user->paymentMethods() as $paymentMethod) {
             if ($paymentMethod->id !== $paymentMethodId) {
-                $user->deletePaymentMethod($paymentMethod->id);
+                try {
+                    $user->deletePaymentMethod($paymentMethod->id);
+                } catch (ApiErrorException) {
+                    // The other writer detached it first. Cleanup either way,
+                    // so it is not worth failing a request that has already
+                    // done everything that matters.
+                }
             }
         }
     }

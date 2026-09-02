@@ -28,9 +28,44 @@ class PaymentMethodSyncController extends Controller
             return $this->error($result, 'payment_method');
         }
 
-        return response()->json([
+        $response = [
             'data' => $user->refresh()->payment_method,
             'message' => __('responses.payment_method.updated'),
-        ]);
+        ];
+
+        if ($result->data) {
+            $response['invoice'] = $this->invoice($result->data);
+        }
+
+        return response()->json($response);
+    }
+
+    /**
+     * Shape the attempt made on an invoice the failed renewal left open. Only
+     * present when there was one to charge, so a user who is not in dunning
+     * sees the same response as before.
+     *
+     * A challenge carries the secret the client confirms against, since the
+     * user is on the page and can clear it there. A refusal carries a message
+     * to show, with the provider's own text held back for debug like every
+     * other failure the client is handed.
+     */
+    protected function invoice(array $invoice): array
+    {
+        $payload = ['status' => $invoice['status']];
+
+        if ($invoice['status'] === 'declined') {
+            $payload['message'] = __('responses.payment_method.invoice_declined');
+        }
+
+        if (isset($invoice['client_secret'])) {
+            $payload['client_secret'] = $invoice['client_secret'];
+        }
+
+        if (config('app.debug') && isset($invoice['debug'])) {
+            $payload['debug'] = $invoice['debug'];
+        }
+
+        return $payload;
     }
 }
