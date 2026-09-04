@@ -2,7 +2,7 @@
 description: Implement exactly what was agreed. No commits, no tests.
 argument-hint: [clarification, optional]
 disable-model-invocation: true
-allowed-tools: Read, Edit, Write, Grep, Glob
+allowed-tools: Read, Edit, Write, Grep, Glob, Bash(mv:*), Bash(rm:*), Bash(rmdir:*), Bash(mkdir:*)
 ---
 
 CODE ONLY. Implement exactly what was discussed and agreed in a PREVIOUS message. Proposals made in the same response as this command are not authorized.
