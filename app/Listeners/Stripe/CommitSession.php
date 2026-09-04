@@ -9,7 +9,7 @@ use Stripe\Checkout\Session;
 
 class CommitSession
 {
-    public function __construct(private SyncSubscriptionProvider $subscriptions)
+    public function __construct(private SyncSubscriptionProvider $syncSubscription)
     {
     }
 
@@ -42,6 +42,6 @@ class CommitSession
             return;
         }
 
-        $this->subscriptions->handle($user, $data['id']);
+        $this->syncSubscription->handle($user, $data['id']);
     }
 }

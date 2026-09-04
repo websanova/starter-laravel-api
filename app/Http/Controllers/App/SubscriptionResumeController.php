@@ -13,9 +13,9 @@ class SubscriptionResumeController extends Controller
     /**
      * Resume a cancelled subscription before the period ends.
      */
-    public function store(StoreRequest $request, ResumeSubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, ResumeSubscriptionProvider $resumeSubscription): JsonResponse
     {
-        $subscription = $subscriptions->handle($request->user());
+        $subscription = $resumeSubscription->handle($request->user());
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),

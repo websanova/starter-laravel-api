@@ -14,9 +14,9 @@ class PaymentMethodIntentController extends Controller
      * mounts its own payment form against, along with the kind of intent it
      * belongs to so the response matches what the subscription intent returns.
      */
-    public function store(StoreRequest $request, CreatePaymentMethodIntentProvider $paymentMethods): JsonResponse
+    public function store(StoreRequest $request, CreatePaymentMethodIntentProvider $createPaymentMethodIntent): JsonResponse
     {
-        $result = $paymentMethods->handle($request->user());
+        $result = $createPaymentMethodIntent->handle($request->user());
 
         if (!$result->success) {
             return $this->error($result, 'payment_method');

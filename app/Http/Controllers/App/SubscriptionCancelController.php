@@ -13,9 +13,9 @@ class SubscriptionCancelController extends Controller
     /**
      * Cancel the subscription at period end.
      */
-    public function store(StoreRequest $request, CancelSubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, CancelSubscriptionProvider $cancelSubscription): JsonResponse
     {
-        $result = $subscriptions->handle($request->user());
+        $result = $cancelSubscription->handle($request->user());
 
         if (!$result->success) {
             return $this->error($result, 'subscription');

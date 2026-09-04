@@ -31,9 +31,9 @@ class UserSubscriptionController extends Controller
     /**
      * Cancel a user's subscription at period end.
      */
-    public function destroy(DestroyRequest $request, User $user, CancelSubscriptionProvider $subscriptions): JsonResponse
+    public function destroy(DestroyRequest $request, User $user, CancelSubscriptionProvider $cancelSubscription): JsonResponse
     {
-        $result = $subscriptions->handle($user);
+        $result = $cancelSubscription->handle($user);
 
         if (!$result->success) {
             return $this->error($result, 'subscription');

@@ -17,11 +17,11 @@ class SubscriptionSessionController extends Controller
      * confirms. The session is the whole response, there is no subscription to
      * hand back yet.
      */
-    public function store(StoreRequest $request, CreateSessionProvider $sessions): JsonResponse
+    public function store(StoreRequest $request, CreateSessionProvider $createSession): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $result = $sessions->handle(
+        $result = $createSession->handle(
             $request->user(),
             $plan,
             $request->validated('interval'),

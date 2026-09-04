@@ -30,11 +30,11 @@ class SubscriptionController extends Controller
     /**
      * Swap the subscription to a different plan or interval.
      */
-    public function update(UpdateRequest $request, ChangeSubscriptionPlanProvider $subscriptions): JsonResponse
+    public function update(UpdateRequest $request, ChangeSubscriptionPlanProvider $changeSubscriptionPlan): JsonResponse
     {
         $plan = Plan::cached()->firstWhere('slug', $request->validated('plan'));
 
-        $subscription = $subscriptions->handle(
+        $subscription = $changeSubscriptionPlan->handle(
             $request->user(),
             $plan,
             $request->validated('interval'),

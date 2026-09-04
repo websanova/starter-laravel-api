@@ -16,11 +16,11 @@ class PlanPriceController extends Controller
     /**
      * Update a plan price's lookup key and sync it from Stripe.
      */
-    public function update(UpdateRequest $request, Plan $plan, Price $price, SyncPlanPricesProvider $service): JsonResponse
+    public function update(UpdateRequest $request, Plan $plan, Price $price, SyncPlanPricesProvider $syncPlanPrices): JsonResponse
     {
         $price->update($request->validated());
 
-        $result = $service->handlePrice($price);
+        $result = $syncPlanPrices->handlePrice($price);
 
         if (!$result->success) {
             throw ValidationException::withMessages([

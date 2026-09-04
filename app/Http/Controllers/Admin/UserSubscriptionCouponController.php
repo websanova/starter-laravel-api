@@ -16,9 +16,9 @@ class UserSubscriptionCouponController extends Controller
     /**
      * Apply a promotion code to a user's existing subscription.
      */
-    public function store(StoreRequest $request, User $user, ResolvePromotionCodeProvider $promotionCodeService): JsonResponse
+    public function store(StoreRequest $request, User $user, ResolvePromotionCodeProvider $resolvePromotionCode): JsonResponse
     {
-        $result = $promotionCodeService->handle($request->validated('promotion_code'));
+        $result = $resolvePromotionCode->handle($request->validated('promotion_code'));
 
         if (!$result->success) {
             throw ValidationException::withMessages([

@@ -25,13 +25,13 @@ class SyncPlans extends Command
     /**
      * Execute the console command.
      */
-    public function handle(SyncPlanPricesProvider $service): int
+    public function handle(SyncPlanPricesProvider $syncPlanPrices): int
     {
         $synced = 0;
         $failed = 0;
 
         foreach (Plan::all() as $plan) {
-            $result = $service->handle($plan);
+            $result = $syncPlanPrices->handle($plan);
 
             if ($result->success) {
                 $synced++;

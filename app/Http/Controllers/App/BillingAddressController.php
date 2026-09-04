@@ -15,11 +15,11 @@ class BillingAddressController extends Controller
      * or off, since nothing in the payment flow collects one and the provider
      * needs somewhere to calculate from.
      */
-    public function update(UpdateRequest $request, UpdateBillingAddressProvider $subscriptions): JsonResponse
+    public function update(UpdateRequest $request, UpdateBillingAddressProvider $updateBillingAddress): JsonResponse
     {
         $user = $request->user();
 
-        $result = $subscriptions->handle($user, $request->validated());
+        $result = $updateBillingAddress->handle($user, $request->validated());
 
         if (!$result->success) {
             return $this->error($result, 'billing');

@@ -18,11 +18,11 @@ class PaymentMethodSyncController extends Controller
      * landed first wrote the columns against its own copy and left the one held
      * here a card behind.
      */
-    public function store(StoreRequest $request, SyncPaymentMethodProvider $paymentMethods): JsonResponse
+    public function store(StoreRequest $request, SyncPaymentMethodProvider $syncPaymentMethod): JsonResponse
     {
         $user = $request->user();
 
-        $result = $paymentMethods->handle($user, $request->validated('setup_intent'));
+        $result = $syncPaymentMethod->handle($user, $request->validated('setup_intent'));
 
         if (!$result->success) {
             return $this->error($result, 'payment_method');

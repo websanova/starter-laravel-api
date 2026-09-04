@@ -17,9 +17,9 @@ class PaymentMethodController extends Controller
      * bank challenge, so unlike the update there is nothing for the client to
      * poll afterwards.
      */
-    public function destroy(DestroyRequest $request, DeletePaymentMethodProvider $paymentMethods): JsonResponse
+    public function destroy(DestroyRequest $request, DeletePaymentMethodProvider $deletePaymentMethod): JsonResponse
     {
-        $result = $paymentMethods->handle($request->user());
+        $result = $deletePaymentMethod->handle($request->user());
 
         if (!$result->success) {
             return $this->error($result, 'payment_method');

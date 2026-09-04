@@ -16,9 +16,9 @@ class PromotionCodeVerifyController extends Controller
      * This only saves the user finding out it was bad after their card is
      * already stored.
      */
-    public function store(StoreRequest $request, ResolvePromotionCodeProvider $promotionCodes): JsonResponse
+    public function store(StoreRequest $request, ResolvePromotionCodeProvider $resolvePromotionCode): JsonResponse
     {
-        $result = $promotionCodes->handle($request->validated('promotion_code'));
+        $result = $resolvePromotionCode->handle($request->validated('promotion_code'));
 
         if (!$result->success) {
             throw ValidationException::withMessages([

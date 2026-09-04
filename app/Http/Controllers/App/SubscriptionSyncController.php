@@ -16,11 +16,11 @@ class SubscriptionSyncController extends Controller
      * local side is behind, so an error here is worth showing and worth
      * retrying. The webhook lands regardless.
      */
-    public function store(StoreRequest $request, SyncSubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, SyncSubscriptionProvider $syncSubscription): JsonResponse
     {
         $user = $request->user();
 
-        $result = $subscriptions->handle($user, $request->validated('session'));
+        $result = $syncSubscription->handle($user, $request->validated('session'));
 
         if (!$result->success) {
             return $this->error($result, 'subscription');

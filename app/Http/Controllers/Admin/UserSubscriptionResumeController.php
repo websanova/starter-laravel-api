@@ -14,9 +14,9 @@ class UserSubscriptionResumeController extends Controller
     /**
      * Resume a user's cancelled subscription.
      */
-    public function store(StoreRequest $request, User $user, ResumeSubscriptionProvider $subscriptions): JsonResponse
+    public function store(StoreRequest $request, User $user, ResumeSubscriptionProvider $resumeSubscription): JsonResponse
     {
-        $subscription = $subscriptions->handle($user);
+        $subscription = $resumeSubscription->handle($user);
 
         return response()->json([
             'data' => new SubscriptionResource($subscription),
