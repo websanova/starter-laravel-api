@@ -79,6 +79,7 @@ return [
 
     'payment_method.updated' => 'Payment method updated successfully.',
     'payment_method.nothing_to_sync' => 'There is no new payment method to apply.',
+    'payment_method.subscription_active' => 'Your payment method cannot be removed while your subscription is still renewing.',
     'payment_method.customer_missing' => 'No billing account was found for your account. Please contact support.',
     'payment_method.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 

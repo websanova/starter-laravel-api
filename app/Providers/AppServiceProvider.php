@@ -6,6 +6,7 @@ use App\Contracts\CancelSubscriptionProvider;
 use App\Contracts\ChangeSubscriptionPlanProvider;
 use App\Contracts\CreatePaymentMethodIntentProvider;
 use App\Contracts\CreateSessionProvider;
+use App\Contracts\DeletePaymentMethodProvider;
 use App\Contracts\ResolvePromotionCodeProvider;
 use App\Contracts\ResumeSubscriptionProvider;
 use App\Contracts\SyncPaymentMethodProvider;
@@ -16,6 +17,7 @@ use App\Services\Stripe\CancelSubscriptionService;
 use App\Services\Stripe\ChangeSubscriptionPlanService;
 use App\Services\Stripe\CreatePaymentMethodIntentService;
 use App\Services\Stripe\CreateSessionService;
+use App\Services\Stripe\DeletePaymentMethodService;
 use App\Services\Stripe\ResolvePromotionCodeService;
 use App\Services\Stripe\ResumeSubscriptionService;
 use App\Services\Stripe\SyncPaymentMethodService;
@@ -52,6 +54,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SyncPlanPricesProvider::class, SyncPlanPricesService::class);
         $this->app->bind(CreatePaymentMethodIntentProvider::class, CreatePaymentMethodIntentService::class);
         $this->app->bind(SyncPaymentMethodProvider::class, SyncPaymentMethodService::class);
+        $this->app->bind(DeletePaymentMethodProvider::class, DeletePaymentMethodService::class);
     }
 
     /**

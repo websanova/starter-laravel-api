@@ -47,6 +47,7 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
         Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
 
+        Route::delete('/payment-method', [App\Http\Controllers\App\PaymentMethodController::class, 'destroy']);
         Route::post('/payment-method/intent', [App\Http\Controllers\App\PaymentMethodIntentController::class, 'store']);
         Route::post('/payment-method/sync', [App\Http\Controllers\App\PaymentMethodSyncController::class, 'store']);
 
