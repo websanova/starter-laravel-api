@@ -75,6 +75,7 @@ return [
     'subscription.payment_method_required' => 'A payment method is required before you can subscribe.',
     'subscription.payment_failed' => 'Your payment method was declined. Update it and try again.',
     'subscription.nothing_to_sync' => 'There is no completed checkout to apply.',
+    'subscription.nothing_to_cancel' => 'There is no subscription to cancel.',
     'subscription.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
 
     'payment_method.updated' => 'Payment method updated successfully.',
