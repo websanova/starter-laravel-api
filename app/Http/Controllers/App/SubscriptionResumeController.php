@@ -15,10 +15,14 @@ class SubscriptionResumeController extends Controller
      */
     public function store(StoreRequest $request, ResumeSubscriptionProvider $resumeSubscription): JsonResponse
     {
-        $subscription = $resumeSubscription->handle($request->user());
+        $result = $resumeSubscription->handle($request->user());
+
+        if (!$result->success) {
+            return $this->error($result, 'subscription');
+        }
 
         return response()->json([
-            'data' => new SubscriptionResource($subscription),
+            'data' => new SubscriptionResource($result->data),
             'message' => __('responses.subscription.resumed'),
         ]);
     }

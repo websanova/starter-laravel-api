@@ -71,6 +71,8 @@ return [
     'subscription.payment_method_required' => 'Un mode de paiement est requis avant de vous abonner.',
     'subscription.payment_failed' => 'Votre mode de paiement a ete refuse. Mettez le a jour et reessayez.',
     'subscription.nothing_to_sync' => 'Aucun paiement complete a appliquer.',
+    'subscription.nothing_to_resume' => 'Il n y a aucun abonnement a reprendre.',
+    'subscription.payment_method_missing' => 'Un mode de paiement est requis avant de reprendre votre abonnement.',
 
     'payment_method.updated' => 'Mode de paiement mis a jour avec succes.',
     'payment_method.nothing_to_sync' => 'Aucun nouveau mode de paiement a appliquer.',
