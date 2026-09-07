@@ -61,7 +61,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/subscription/session', [App\Http\Controllers\App\SubscriptionSessionController::class, 'store']);
         Route::post('/subscription/sync', [App\Http\Controllers\App\SubscriptionSyncController::class, 'store']);
         Route::post('/subscription/update', [App\Http\Controllers\App\SubscriptionUpdateController::class, 'store']);
-        Route::get('/subscription/update-preview', [App\Http\Controllers\App\SubscriptionUpdatePreviewController::class, 'show']);
 
         Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);
 
