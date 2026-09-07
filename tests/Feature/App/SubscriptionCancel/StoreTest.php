@@ -47,11 +47,9 @@ test('cancelling runs the subscription to the end of the term', function () {
 
     $response = $this->actingAs($user)->postJson('/subscription/cancel');
 
-    $response->assertStatus(200)
-        ->assertJsonPath('data.stripe_status', 'active')
-        ->assertJsonPath('data.on_grace_period', true);
+    $response->assertStatus(200);
 
-    expect($response->json('data.ends_at'))->not->toBeNull()
+    expect($user->subscriptions()->first()->ends_at)->not->toBeNull()
         ->and(Cashier::stripe()->subscriptions->retrieve($stripeSubscription->id)->cancel_at_period_end)->toBeTrue();
 })->group('stripe');
 
@@ -67,8 +65,7 @@ test('cancelling an already cancelled subscription changes nothing', function ()
 
     $response = $this->actingAs($user)->postJson('/subscription/cancel');
 
-    $response->assertStatus(200)
-        ->assertJsonPath('data.on_grace_period', true);
+    $response->assertStatus(200);
 
     expect($subscription->refresh()->ends_at->eq($endsAt))->toBeTrue();
 });

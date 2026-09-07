@@ -23,7 +23,7 @@ class SyncPlanPricesService implements SyncPlanPricesProvider
         $prices = $plan->prices()->whereNotNull('lookup_key')->get();
 
         if ($prices->isEmpty()) {
-            return ServiceResult::success($plan);
+            return ServiceResult::success(['plan' => $plan]);
         }
 
         $result = $this->fetch($prices->pluck('lookup_key')->all());
@@ -33,14 +33,14 @@ class SyncPlanPricesService implements SyncPlanPricesProvider
         }
 
         foreach ($prices as $price) {
-            $applied = $this->apply($price, $result->data);
+            $applied = $this->apply($price, $result->data['prices']);
 
             if (!$applied->success) {
                 return $applied;
             }
         }
 
-        return ServiceResult::success($plan);
+        return ServiceResult::success(['plan' => $plan]);
     }
 
     /**
@@ -74,7 +74,7 @@ class SyncPlanPricesService implements SyncPlanPricesProvider
             return $result;
         }
 
-        return $this->apply($price, $result->data);
+        return $this->apply($price, $result->data['prices']);
     }
 
     /**
@@ -95,9 +95,9 @@ class SyncPlanPricesService implements SyncPlanPricesProvider
             return ServiceResult::error('price.sync_failed');
         }
 
-        return ServiceResult::success(
-            Collection::make($prices->data)->keyBy(fn (StripePrice $price) => $price->lookup_key)
-        );
+        return ServiceResult::success([
+            'prices' => Collection::make($prices->data)->keyBy(fn (StripePrice $price) => $price->lookup_key),
+        ]);
     }
 
     /**
@@ -124,7 +124,7 @@ class SyncPlanPricesService implements SyncPlanPricesProvider
             'currency' => $stripePrice->currency,
         ]);
 
-        return ServiceResult::success($price);
+        return ServiceResult::success(['price' => $price]);
     }
 
     /**

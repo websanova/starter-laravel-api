@@ -23,7 +23,7 @@ class UserSubscriptionResumeController extends Controller
         }
 
         return response()->json([
-            'data' => new SubscriptionResource($result->data),
+            'data' => new SubscriptionResource($result->data['subscription']),
             'message' => __('responses.admin.user.subscription_resumed'),
         ]);
     }

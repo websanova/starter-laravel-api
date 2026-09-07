@@ -30,7 +30,7 @@ class CancelSubscriptionService implements CancelSubscriptionProvider
          * second tab and a direct call all land here.
          */
         if ($subscription->canceled()) {
-            return ServiceResult::success($subscription);
+            return ServiceResult::success(['subscription' => $subscription]);
         }
 
         try {
@@ -54,6 +54,6 @@ class CancelSubscriptionService implements CancelSubscriptionProvider
             'ends_at' => Carbon::createFromTimestamp($stripeSubscription->cancel_at),
         ])->save();
 
-        return ServiceResult::success($subscription);
+        return ServiceResult::success(['subscription' => $subscription]);
     }
 }

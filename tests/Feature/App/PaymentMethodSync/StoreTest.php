@@ -39,7 +39,8 @@ test('user syncing a confirmed setup intent gets the new card back', function ()
 
     $response = $this->actingAs($user)->postJson('/payment-method/sync', ['setup_intent' => $setupIntent->id]);
 
-    $response->assertStatus(200)
-        ->assertJsonPath('data.brand', 'mastercard')
-        ->assertJsonPath('data.last_four', '4444');
+    $response->assertStatus(200);
+
+    expect($user->refresh()->pm_type)->toBe('mastercard')
+        ->and($user->pm_last_four)->toBe('4444');
 })->group('stripe');

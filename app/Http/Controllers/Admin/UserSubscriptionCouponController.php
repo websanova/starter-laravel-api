@@ -26,7 +26,7 @@ class UserSubscriptionCouponController extends Controller
             ]);
         }
 
-        $user->subscription()->applyPromotionCode($result->data->id);
+        $user->subscription()->applyPromotionCode($result->data['promotion_code']->id);
 
         return response()->json([
             'data' => new SubscriptionResource($user->subscription()),

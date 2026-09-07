@@ -5,7 +5,6 @@ namespace App\Http\Controllers\App;
 use App\Contracts\ResumeSubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionResume\StoreRequest;
-use App\Http\Resources\App\SubscriptionResource;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionResumeController extends Controller
@@ -22,7 +21,6 @@ class SubscriptionResumeController extends Controller
         }
 
         return response()->json([
-            'data' => new SubscriptionResource($result->data),
             'message' => __('responses.subscription.resumed'),
         ]);
     }

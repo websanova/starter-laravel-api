@@ -57,7 +57,10 @@ class ChangeSubscriptionPlanService implements ChangeSubscriptionPlanProvider
          * that is not about to be billed is never refused over a card.
          */
         if ($subscription->stripe_price === $priceId) {
-            return ServiceResult::success(['subscription' => $subscription, 'payment' => null]);
+            return ServiceResult::success([
+                'subscription' => $subscription,
+                'payment' => ['status' => 'paid'],
+            ]);
         }
 
         try {
@@ -84,7 +87,10 @@ class ChangeSubscriptionPlanService implements ChangeSubscriptionPlanProvider
 
         $user->fillPlan()->save();
 
-        return ServiceResult::success(['subscription' => $subscription, 'payment' => null]);
+        return ServiceResult::success([
+            'subscription' => $subscription,
+            'payment' => ['status' => 'paid'],
+        ]);
     }
 
     /**
@@ -98,14 +104,12 @@ class ChangeSubscriptionPlanService implements ChangeSubscriptionPlanProvider
     {
         if ($e->payment->requiresPaymentMethod()) {
             return [
-                'type' => 'invoice',
                 'status' => 'failed',
                 'invoice_id' => $subscription->latestInvoice()?->id,
             ];
         }
 
         return [
-            'type' => 'invoice',
             'status' => 'requires_action',
             'client_secret' => $e->payment->clientSecret(),
         ];

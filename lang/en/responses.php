@@ -69,6 +69,7 @@ return [
     'subscription.updated' => 'Subscription updated successfully.',
     'subscription.cancelled' => 'Subscription cancelled successfully.',
     'subscription.resumed' => 'Subscription resumed successfully.',
+    'subscription.synced' => 'Subscription synced successfully.',
     'subscription.already_subscribed' => 'You already have an active subscription.',
     'subscription.payment_required' => 'Your subscription has an outstanding payment. Update your payment method to continue.',
     'subscription.address_required' => 'A billing address is required before you can subscribe.',

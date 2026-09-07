@@ -33,7 +33,7 @@ class ResumeSubscriptionService implements ResumeSubscriptionProvider
          * about to be billed on.
          */
         if (!$subscription->canceled()) {
-            return ServiceResult::success($subscription);
+            return ServiceResult::success(['subscription' => $subscription]);
         }
 
         try {
@@ -59,7 +59,7 @@ class ResumeSubscriptionService implements ResumeSubscriptionProvider
             'ends_at' => null,
         ])->save();
 
-        return ServiceResult::success($subscription);
+        return ServiceResult::success(['subscription' => $subscription]);
     }
 
     /**

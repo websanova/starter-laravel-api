@@ -5,7 +5,6 @@ namespace App\Http\Controllers\App;
 use App\Contracts\SyncSubscriptionProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionSync\StoreRequest;
-use App\Http\Resources\App\SubscriptionResource;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionSyncController extends Controller
@@ -27,7 +26,7 @@ class SubscriptionSyncController extends Controller
         }
 
         return response()->json([
-            'data' => new SubscriptionResource($user->subscription()),
+            'message' => __('responses.subscription.synced'),
         ]);
     }
 }

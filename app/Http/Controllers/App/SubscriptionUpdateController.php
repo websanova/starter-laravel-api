@@ -5,17 +5,17 @@ namespace App\Http\Controllers\App;
 use App\Contracts\ChangeSubscriptionPlanProvider;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubscriptionUpdate\StoreRequest;
-use App\Http\Resources\App\SubscriptionResource;
 use App\Models\Plan;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionUpdateController extends Controller
 {
     /**
-     * Swap the subscription to a different plan or interval. The payment field
-     * carries the proration invoice when it did not settle on its own, since
-     * the price change stands either way and an error would read as though
-     * nothing happened.
+     * Swap the subscription to a different plan or interval. What comes back is
+     * the proration invoice's outcome, since the price change stands whether or
+     * not it settled and an error would read as though nothing happened. The
+     * subscription itself is not returned, the client refreshes the auth user
+     * on every branch anyway.
      */
     public function store(StoreRequest $request, ChangeSubscriptionPlanProvider $changeSubscriptionPlan): JsonResponse
     {
@@ -32,8 +32,7 @@ class SubscriptionUpdateController extends Controller
         }
 
         return response()->json([
-            'data' => new SubscriptionResource($result->data['subscription']),
-            'payment' => $result->data['payment'],
+            'data' => $result->data['payment'],
             'message' => __('responses.subscription.updated'),
         ]);
     }

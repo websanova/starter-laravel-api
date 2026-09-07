@@ -42,6 +42,6 @@ class ResolvePromotionCodeService implements ResolvePromotionCodeProvider
             return ServiceResult::error('promotion_code.expired');
         }
 
-        return ServiceResult::success($promotionCode);
+        return ServiceResult::success(['promotion_code' => $promotionCode]);
     }
 }
