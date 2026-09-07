@@ -1,23 +1,13 @@
 <?php
 
-namespace App\Http\Requests\App\Subscription;
+namespace App\Http\Requests\App\SubscriptionUpdate;
 
 use App\Enums\PlanInterval;
 use App\Rules\SubscriptionRules;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request. Swapping only
-     * applies to a live subscription, a user without one starts a new
-     * subscription through the store endpoint instead.
-     */
-    public function authorize(): bool
-    {
-        return $this->user()->subscribed();
-    }
-
     /**
      * Get the validation rules that apply to the request.
      */

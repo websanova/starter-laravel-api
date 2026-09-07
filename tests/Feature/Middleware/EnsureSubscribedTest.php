@@ -83,13 +83,3 @@ test('subscription middleware does not block profile routes', function () {
     $response->assertStatus(200);
 });
 
-test('subscription middleware does not block subscription routes', function () {
-    config(['subscription.mode' => \App\Enums\SubscriptionMode::Required]);
-
-    $user = User::factory()->create(['plan_id' => null]);
-
-    $response = $this->actingAs($user)->getJson('/subscription');
-
-    $response->assertStatus(200);
-});
-

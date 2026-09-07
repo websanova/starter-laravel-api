@@ -7,10 +7,10 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Support\ServiceResult;
 
-interface ChangeSubscriptionPlanProvider
+interface PreviewSubscriptionUpdateProvider
 {
     /**
-     * Swap the subscription to a different plan or interval.
+     * Quote what changing to the given plan and interval costs.
      */
     public function handle(User $user, Plan $plan, PlanInterval $interval): ServiceResult;
 }
