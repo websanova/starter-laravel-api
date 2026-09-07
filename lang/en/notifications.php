@@ -36,6 +36,7 @@ return [
 
     'plan_changed.subject' => 'Plan Updated',
     'plan_changed.line1' => 'Your plan has been changed to :plan.',
+    'plan_changed.line1_from' => 'Your plan has been changed from :from to :to.',
 
     'plan_cancelled.subject' => 'Plan Cancelled',
     'plan_cancelled.line1' => 'Your plan has been cancelled and will remain active until the end of your billing period.',

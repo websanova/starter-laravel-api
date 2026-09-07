@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\PlanInterval;
 use App\Models\Plan;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,10 +13,15 @@ class PlanChangedNotification extends Notification
     use Queueable;
 
     /**
-     * Create a new notification instance.
+     * Create a new notification instance. The plan and interval moved from are
+     * optional, since a webhook that reports the change without carrying the
+     * previous price leaves nothing to name on that side.
      */
     public function __construct(
         protected Plan $plan,
+        protected ?PlanInterval $interval = null,
+        protected ?Plan $fromPlan = null,
+        protected ?PlanInterval $fromInterval = null,
     ) {}
 
     /**
@@ -33,7 +39,7 @@ class PlanChangedNotification extends Notification
     {
         return (new MailMessage)
             ->subject(__('notifications.plan_changed.subject'))
-            ->line(__('notifications.plan_changed.line1', ['plan' => $this->plan->display_name]));
+            ->line($this->body());
     }
 
     /**
@@ -43,7 +49,31 @@ class PlanChangedNotification extends Notification
     {
         return [
             'title' => __('notifications.plan_changed.subject'),
-            'body' => __('notifications.plan_changed.line1', ['plan' => $this->plan->display_name]),
+            'body' => $this->body(),
         ];
+    }
+
+    /**
+     * The line naming the move, falling back to the plan alone when there is no
+     * previous plan and interval to name.
+     */
+    protected function body(): string
+    {
+        if (!$this->fromPlan || !$this->fromInterval || !$this->interval) {
+            return __('notifications.plan_changed.line1', ['plan' => $this->plan->display_name]);
+        }
+
+        return __('notifications.plan_changed.line1_from', [
+            'from' => $this->label($this->fromPlan, $this->fromInterval),
+            'to' => $this->label($this->plan, $this->interval),
+        ]);
+    }
+
+    /**
+     * Name a plan and the interval it bills on.
+     */
+    protected function label(Plan $plan, PlanInterval $interval): string
+    {
+        return $plan->display_name . ' (' . $interval->displayName() . ')';
     }
 }

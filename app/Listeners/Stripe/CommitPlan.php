@@ -113,9 +113,18 @@ class CommitPlan
             return new PlanSubscribedNotification($plan);
         }
 
-        return array_key_exists('items', $previous)
-            ? new PlanChangedNotification($plan)
-            : null;
+        if (!array_key_exists('items', $previous)) {
+            return null;
+        }
+
+        $fromPriceId = $previous['items']['data'][0]['price']['id'] ?? null;
+
+        return new PlanChangedNotification(
+            $plan,
+            Plan::intervalForPriceId($this->priceId($data)),
+            Plan::forPriceId($fromPriceId),
+            Plan::intervalForPriceId($fromPriceId),
+        );
     }
 
     /**
@@ -131,6 +140,14 @@ class CommitPlan
      */
     protected function plan(array $data): ?Plan
     {
-        return Plan::forPriceId($data['items']['data'][0]['price']['id'] ?? null);
+        return Plan::forPriceId($this->priceId($data));
+    }
+
+    /**
+     * The Stripe price the subscription now carries.
+     */
+    protected function priceId(array $data): ?string
+    {
+        return $data['items']['data'][0]['price']['id'] ?? null;
     }
 }
