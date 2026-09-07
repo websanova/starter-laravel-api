@@ -13,11 +13,6 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - [Dev Commands](docs/dev-commands.md)
 - [Markdown Viewer](docs/markdown-viewer.md)
 
-**Subscriptions:**
-
-- [Susbcription Summary](docs/subscription-summary.md)
-- [Susbcription Flows](docs/subscription-flows.md)
-
 ## Notes
 
 - The commands are experimental and I'm still tinkering with the format. The main idea is to not have the agent run wild without explicit go aheads and to remove reptitive explanations to help stream line workflow. Open to suggestions and feedback.

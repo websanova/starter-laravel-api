@@ -42,13 +42,10 @@ Clear the cache if necessary.
 
 ## Webhooks (Deploy)
 
-The API registers a webhook endpoint at `POST /stripe/webhook`. Stripe needs a matching endpoint pointed at that URL, either with artisan or by hand in the dashboard, ticking off the events listed in `config/cashier.php`. Copy the signing secret into that environment's `.env`.
+The API registers a webhook endpoint at `POST /stripe/webhook`. Stripe needs a matching endpoint pointed at that URL, manually using artisan or by hand in the dashboard. Note that there are additional events registered in `config/cashier.php` which are are automatically included in the artisan command. If doing it manually make sure to include the events at `cahsier.webhook.events`.
 
 ```bash
-> docker compose exec php php artisan cashier:webhook
-> ./dev artisan cashier:webhook
+> php artisan cashier:webhook
 ```
-
-The event list adds to Cashier's defaults, because the API listens for events Cashier doesn't handle on its own.
 
 The command only ever creates, it never updates an existing endpoint, so this is an init step. Adding an event later means deleting the endpoint and creating it again, and so does a Cashier upgrade, since the API version is fixed when the endpoint is created.
