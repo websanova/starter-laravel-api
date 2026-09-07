@@ -90,6 +90,13 @@ class CreateSessionService implements CreateSessionProvider
                 'billing_address_collection' => 'required',
                 'allow_promotion_codes' => true,
                 /**
+                 * The payment element only looks the customer's saved cards up
+                 * when this is on. Without it the user is handed blank card
+                 * fields with a card already on file, and it also turns on the
+                 * element's own save consent checkbox.
+                 */
+                'saved_payment_method_options' => ['payment_method_save' => 'enabled'],
+                /**
                  * The address the user enters in the session only reaches the
                  * customer through this, and it has to reach it, otherwise the
                  * renewals after the first invoice have no tax location to

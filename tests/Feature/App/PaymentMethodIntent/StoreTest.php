@@ -12,19 +12,14 @@ test('unauthenticated user cannot open a setup intent', function () {
     $response->assertStatus(401);
 });
 
-test('user without a stripe customer has one created and can open a setup intent', function () {
+test('user without a stripe customer cannot open a setup intent', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/payment-method/intent');
 
-    stripeSandboxTrack($user->refresh()->stripe_id);
-
-    $response->assertStatus(200)
-        ->assertJsonPath('data.type', 'setup');
-
-    expect($user->stripe_id)->not->toBeNull();
-    expect($response->json('data.client_secret'))->toStartWith('seti_');
-})->group('stripe');
+    $response->assertStatus(409)
+        ->assertJsonPath('error', 'customer_missing');
+});
 
 test('user with a stripe customer can open a setup intent', function () {
     $user = stripeSandboxUser();
