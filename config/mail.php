@@ -132,8 +132,8 @@ return [
     */
 
     'to' => [
-        'address' => env('MAIL_TO_ADDRESS'),
-        'name' => env('MAIL_TO_NAME'),
+        'address' => env('MAIL_TO_ADDRESS') ?: null,
+        'name' => env('MAIL_TO_NAME') ?: null,
     ],
 
 ];
