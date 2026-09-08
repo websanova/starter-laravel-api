@@ -23,7 +23,7 @@ The container boots but won't serve the app yet. Dependencies aren't installed a
 ./dev artisan plan:sync
 ```
 
-Migration creates roles, permissions, and three users (`super@starter.com`, `admin@starter.com`, `user@starter.com`, all `initinit`). All three require a password change on first login.
+Migration creates roles, permissions, and three users. The super account (`super@starter.com` / `initinit`) requires a password change on first login. The other two (`admin@starter.com`, `user@starter.com`, both `testtest`) don't.
 
 On subsequent runs, just start the containers. The entrypoint detects `vendor/` and serves automatically.
 

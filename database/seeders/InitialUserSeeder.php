@@ -21,8 +21,8 @@ class InitialUserSeeder extends Seeder
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'email_verified_at' => now(),
-                'password' => Hash::make('initinit'),
-                'is_password_reset_required' => true,
+                'password' => Hash::make('testtest'),
+                'is_password_reset_required' => false,
             ],
         );
 
@@ -34,8 +34,8 @@ class InitialUserSeeder extends Seeder
                 'first_name' => 'Test',
                 'last_name' => 'User',
                 'email_verified_at' => now(),
-                'password' => Hash::make('initinit'),
-                'is_password_reset_required' => true,
+                'password' => Hash::make('testtest'),
+                'is_password_reset_required' => false,
             ],
         );
     }
