@@ -137,3 +137,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Dockerized (PHP-FPM + MySQL)
 - `./dev` script for container commands
 - Pest test suite
+
+## License
+
+MIT - see [LICENSE](LICENSE).
