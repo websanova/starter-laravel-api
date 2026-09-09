@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "websanova/starter-laravel-api",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A Laravel API starter with a full auth system, account management, and production-ready integrations.",
+    "keywords": ["laravel", "api", "starter"],
     "license": "MIT",
     "require": {
         "php": "^8.4",
