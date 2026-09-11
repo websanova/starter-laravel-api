@@ -6,12 +6,17 @@ A Laravel API starter with a full auth system, account management, and productio
 
 Full documentation at [websanova.com/docs/starter-api](https://websanova.com/docs/starter-api).
 
-**Dev:**
-
 - [Docker Setup](docs/docker-setup.md)
 - [Stripe Setup](docs/stripe-setup.md)
-- [Dev Commands](docs/dev-commands.md)
-- [Markdown Viewer](docs/markdown-viewer.md)
+- [Testing](docs/testing.md)
+
+## Projects
+
+| Project | Repo | Demo |
+| ------- | ---- | ---- |
+| Starter Flows | [starter-flows](https://github.com/websanova/starter-flows) | [flows](https://starter-flows.websanova.com) |
+| Starter Laravel API | [starter-laravel-api](https://github.com/websanova/starter-laravel-api) | [api](https://starter-laravel-api.websanova.com) |
+| Starter Vue SPA | [starter-vue-spa](https://github.com/websanova/starter-vue-spa) | [app](https://starter-vue-spa-app.websanova.com), [admin](https://starter-vue-spa-admin.websanova.com) |
 
 ## Notes
 
