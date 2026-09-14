@@ -102,6 +102,19 @@ test('user cannot attach another user tag', function () {
         ->assertJsonValidationErrors('tag_ids.0');
 });
 
+test('user cannot attach more than the max tags', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+    $tags = Tag::factory()->count(config('bookmark.max_tags') + 1)->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+        'tag_ids' => $tags->pluck('id')->all(),
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_ids');
+});
+
 test('unauthenticated user cannot update a bookmark', function () {
     $bookmark = Bookmark::factory()->create();
 

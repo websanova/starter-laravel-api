@@ -52,7 +52,7 @@ class BookmarkRules
      */
     public static function tagIds(): array
     {
-        return ['sometimes', 'array', 'max:5'];
+        return ['sometimes', 'array', 'max:' . config('bookmark.max_tags')];
     }
 
     /**

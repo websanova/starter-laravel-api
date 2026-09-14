@@ -97,6 +97,48 @@ test('user cannot attach another user tag', function () {
         ->assertJsonValidationErrors('tag_ids.0');
 });
 
+test('user can attach up to the max tags', function () {
+    $user = User::factory()->create();
+    $tags = Tag::factory()->count(config('bookmark.max_tags'))->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'tag_ids' => $tags->pluck('id')->all(),
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJsonCount(config('bookmark.max_tags'), 'data.tags');
+});
+
+test('user cannot attach more than the max tags', function () {
+    $user = User::factory()->create();
+    $tags = Tag::factory()->count(config('bookmark.max_tags') + 1)->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'tag_ids' => $tags->pluck('id')->all(),
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_ids');
+});
+
+test('tag ids must be distinct', function () {
+    $user = User::factory()->create();
+    $tag = Tag::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'tag_ids' => [$tag->id, $tag->id],
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_ids.1');
+});
+
 test('unauthenticated user cannot create a bookmark', function () {
     $response = $this->postJson('/bookmarks', [
         'url' => 'https://example.com',
