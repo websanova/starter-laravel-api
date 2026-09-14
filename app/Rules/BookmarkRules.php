@@ -3,6 +3,8 @@
 namespace App\Rules;
 
 use App\Enums\BookmarkSort;
+use App\Models\Bookmark;
+use Closure;
 use Illuminate\Validation\Rule;
 
 class BookmarkRules
@@ -70,13 +72,24 @@ class BookmarkRules
     /**
      * Validation rules for the url field.
      */
-    public static function url(bool $required = true): array
+    public static function url(int $userId, ?int $ignoreId = null, bool $required = true): array
     {
         return [
+            'bail',
             $required ? 'required' : 'sometimes',
             'string',
             'url',
             'max:2048',
+            function (string $attribute, mixed $value, Closure $fail) use ($userId, $ignoreId) {
+                $exists = Bookmark::where('user_id', $userId)
+                    ->where('url_hash', Bookmark::hashUrl($value))
+                    ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+                    ->exists();
+
+                if ($exists) {
+                    $fail(__('validation.bookmark_url_duplicate'));
+                }
+            },
         ];
     }
 }

@@ -159,6 +159,8 @@ return [
 
     'tag_name_format' => 'Doit commencer par une lettre ou un chiffre. Autorises : lettres, chiffres, espaces, points (.), tirets (-), plus (+), diese (#).',
 
+    'bookmark_url_duplicate' => 'Vous avez deja enregistre cette URL.',
+
     'promotion_code.invalid' => 'Le code promotionnel est invalide.',
     'promotion_code.expired' => 'Le code promotionnel a expire.',
     'promotion_code.max_redemptions' => 'Le code promotionnel a atteint son nombre maximal d utilisations.',

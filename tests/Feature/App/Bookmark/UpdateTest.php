@@ -30,6 +30,32 @@ test('user cannot update another user bookmark', function () {
     $response->assertStatus(403);
 });
 
+test('user cannot change url to one they already saved', function () {
+    $user = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com']);
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://other.com']);
+
+    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+        'url' => 'https://example.com',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('url');
+});
+
+test('user can resend their bookmark url unchanged', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com']);
+
+    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+        'url' => 'https://example.com',
+        'title' => 'Updated',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.title', 'Updated');
+});
+
 test('user can add tags to a bookmark', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);

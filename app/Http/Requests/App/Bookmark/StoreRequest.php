@@ -35,7 +35,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'url' => BookmarkRules::url(),
+            'url' => BookmarkRules::url($this->user()->id),
             'title' => BookmarkRules::title(),
             'description' => BookmarkRules::description(),
             'is_favorited' => BookmarkRules::isFavorited(),

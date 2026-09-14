@@ -42,6 +42,20 @@ class Bookmark extends Model
     }
 
     /**
+     * Bootstrap the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (Bookmark $bookmark) {
+            if ($bookmark->isDirty('url')) {
+                $bookmark->url_hash = static::hashUrl($bookmark->url);
+            }
+        });
+    }
+
+    /**
      * Get the user that owns the bookmark.
      */
     public function user(): BelongsTo
@@ -90,5 +104,48 @@ class Bookmark extends Model
             ($column ?? BookmarkSort::CreatedAt)->value,
             ($direction ?? SortDirection::Desc)->value
         );
+    }
+
+    /**
+     * Normalize a URL and hash it for duplicate detection. Only differences
+     * that never change the target page are normalized away: scheme and host
+     * case, fragment, default port, trailing slash, and query parameter order.
+     * Query parameters are sorted as raw strings so their encoding is untouched.
+     */
+    public static function hashUrl(string $url): string
+    {
+        $parts = parse_url($url);
+
+        if ($parts === false) {
+            return hash('sha256', $url);
+        }
+
+        $scheme = strtolower($parts['scheme'] ?? '');
+        $host = strtolower($parts['host'] ?? '');
+        $port = $parts['port'] ?? null;
+        $path = rtrim($parts['path'] ?? '', '/');
+
+        $defaultPorts = ['http' => 80, 'https' => 443];
+
+        if (!is_null($port) && ($defaultPorts[$scheme] ?? null) === $port) {
+            $port = null;
+        }
+
+        $params = array_filter(explode('&', $parts['query'] ?? ''), fn ($param) => $param !== '');
+        sort($params);
+
+        $normalized = $scheme . '://' . $host;
+
+        if (!is_null($port)) {
+            $normalized .= ':' . $port;
+        }
+
+        $normalized .= $path;
+
+        if (count($params) > 0) {
+            $normalized .= '?' . implode('&', $params);
+        }
+
+        return hash('sha256', $normalized);
     }
 }

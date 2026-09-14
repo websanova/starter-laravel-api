@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('url');
+            $table->char('url_hash', 64);
             $table->string('title');
             $table->text('description')->nullable();
             $table->boolean('is_favorited')->default(false);
             $table->timestamps();
+
+            $table->unique(['user_id', 'url_hash']);
 
             // Filtering indexes
             $table->index('is_favorited');

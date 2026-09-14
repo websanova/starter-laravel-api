@@ -2,6 +2,7 @@
 
 uses()->group('app.bookmark.store');
 
+use App\Models\Bookmark;
 use App\Models\Tag;
 use App\Models\User;
 
@@ -63,6 +64,45 @@ test('url must be valid', function () {
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors('url');
+});
+
+test('url must be unique for the user', function () {
+    $user = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com']);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('url');
+});
+
+test('normalized url variant counts as a duplicate', function () {
+    $user = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com/path?a=1&b=2']);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://Example.com:443/path/?b=2&a=1#section',
+        'title' => 'Example',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('url');
+});
+
+test('user can save a url another user already saved', function () {
+    $user = User::factory()->create();
+    $other = User::factory()->create();
+    Bookmark::factory()->create(['user_id' => $other->id, 'url' => 'https://example.com']);
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+    ]);
+
+    $response->assertStatus(201);
 });
 
 test('user can create a bookmark with tags', function () {
