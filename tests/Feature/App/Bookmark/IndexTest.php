@@ -3,6 +3,7 @@
 uses()->group('app.bookmark.index');
 
 use App\Models\Bookmark;
+use App\Models\Tag;
 use App\Models\User;
 
 test('user can list their bookmarks', function () {
@@ -30,6 +31,28 @@ test('user only sees their own bookmarks', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
+});
+
+test('user can filter bookmarks by tag', function () {
+    $user = User::factory()->create();
+    $tag = Tag::factory()->create(['user_id' => $user->id]);
+
+    Bookmark::factory()->count(2)->hasAttached($tag)->create(['user_id' => $user->id]);
+    Bookmark::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->getJson("/bookmarks?tag_id={$tag->id}");
+
+    $response->assertStatus(200)
+        ->assertJsonCount(2, 'data');
+});
+
+test('invalid tag_id value returns validation error', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->getJson('/bookmarks?tag_id=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_id');
 });
 
 test('can set per page limit', function () {

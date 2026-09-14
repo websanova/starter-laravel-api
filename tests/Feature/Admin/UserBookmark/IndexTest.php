@@ -4,6 +4,7 @@ uses()->group('admin.user-bookmark.index');
 
 use App\Enums\UserRole;
 use App\Models\Bookmark;
+use App\Models\Tag;
 use App\Models\User;
 
 test('super can list a user\'s bookmarks', function () {
@@ -82,6 +83,34 @@ test('can filter by favorited', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
+});
+
+test('can filter by tag', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $target = User::factory()->create();
+    $tag = Tag::factory()->create(['user_id' => $target->id]);
+
+    Bookmark::factory()->count(2)->hasAttached($tag)->create(['user_id' => $target->id]);
+    Bookmark::factory()->create(['user_id' => $target->id]);
+
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/bookmarks?tag_id={$tag->id}");
+
+    $response->assertStatus(200)
+        ->assertJsonCount(2, 'data');
+});
+
+test('invalid tag_id value returns validation error', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $target = User::factory()->create();
+
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/bookmarks?tag_id=invalid");
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_id');
 });
 
 test('can set per page limit', function () {
