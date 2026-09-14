@@ -20,6 +20,7 @@ class UserBookmarkController extends Controller
         $bookmarks = $user->bookmarks()
             ->with('tags')
             ->forFavorited($request->validated('favorited'))
+            ->forTag($request->validated('tag_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 

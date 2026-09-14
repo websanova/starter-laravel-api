@@ -17,6 +17,7 @@ class IndexRequest extends FormRequest
     {
         return [
             'favorited' => BookmarkRules::isFavorited(),
+            'tag_id' => SharedRules::id(),
             'sort_by' => BookmarkRules::sortBy(),
             'sort_dir' => SharedRules::sortDir(),
             'per_page' => SharedRules::perPage(),

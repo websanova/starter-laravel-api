@@ -70,6 +70,18 @@ class Bookmark extends Model
     }
 
     /**
+     * Filter by tag.
+     */
+    public function scopeForTag(Builder $query, ?int $tagId): void
+    {
+        if (is_null($tagId)) {
+            return;
+        }
+
+        $query->whereHas('tags', fn ($q) => $q->where('tags.id', $tagId));
+    }
+
+    /**
      * Sort by the given column and direction.
      */
     public function scopeSortBy(Builder $query, ?BookmarkSort $column = null, ?SortDirection $direction = null): void
