@@ -2,9 +2,9 @@
 
 return [
 
-    'tag_name_format' => 'Must start with a letter or number. Allowed: letters, numbers, spaces, dots (.), hyphens (-), plus (+), hash (#).',
+    'tag.name_format' => 'Must start with a letter or number. Allowed: letters, numbers, spaces, dots (.), hyphens (-), plus (+), hash (#).',
 
-    'bookmark_url_duplicate' => 'You have already saved this URL.',
+    'bookmark.url_duplicate' => 'You have already saved this URL.',
 
     'promotion_code.invalid' => 'The promotion code is invalid.',
     'promotion_code.expired' => 'The promotion code has expired.',

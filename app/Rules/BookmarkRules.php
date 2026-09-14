@@ -87,7 +87,7 @@ class BookmarkRules
                     ->exists();
 
                 if ($exists) {
-                    $fail(__('validation.bookmark_url_duplicate'));
+                    $fail(__('validation.bookmark.url_duplicate'));
                 }
             },
         ];

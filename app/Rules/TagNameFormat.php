@@ -13,7 +13,7 @@ class TagNameFormat implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (!preg_match('/^[\pL\pN][\pL\pN \.\-\+\#]*$/u', $value)) {
-            $fail(__('validation.tag_name_format'));
+            $fail(__('validation.tag.name_format'));
         }
     }
 }
