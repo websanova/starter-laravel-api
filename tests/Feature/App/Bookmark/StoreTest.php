@@ -2,6 +2,7 @@
 
 uses()->group('app.bookmark.store');
 
+use App\Models\Tag;
 use App\Models\User;
 
 test('user can create a bookmark', function () {
@@ -66,11 +67,13 @@ test('url must be valid', function () {
 
 test('user can create a bookmark with tags', function () {
     $user = User::factory()->create();
+    $laravel = Tag::factory()->create(['user_id' => $user->id, 'name' => 'laravel']);
+    $php = Tag::factory()->create(['user_id' => $user->id, 'name' => 'php']);
 
     $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
-        'tags' => ['Laravel', 'PHP'],
+        'tag_ids' => [$laravel->id, $php->id],
     ]);
 
     $response->assertStatus(201)
@@ -79,38 +82,19 @@ test('user can create a bookmark with tags', function () {
         ->assertJsonPath('data.tags.1.name', 'php');
 });
 
-test('tags are created if they do not exist', function () {
+test('user cannot attach another user tag', function () {
     $user = User::factory()->create();
+    $other = User::factory()->create();
+    $tag = Tag::factory()->create(['user_id' => $other->id]);
 
-    $this->actingAs($user)->postJson('/bookmarks', [
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
         'title' => 'Example',
-        'tags' => ['new-tag'],
+        'tag_ids' => [$tag->id],
     ]);
 
-    $this->assertDatabaseHas('tags', [
-        'user_id' => $user->id,
-        'name' => 'new-tag',
-        'slug' => 'new-tag',
-    ]);
-});
-
-test('existing tags are reused', function () {
-    $user = User::factory()->create();
-
-    $this->actingAs($user)->postJson('/bookmarks', [
-        'url' => 'https://example.com',
-        'title' => 'First',
-        'tags' => ['laravel'],
-    ]);
-
-    $this->actingAs($user)->postJson('/bookmarks', [
-        'url' => 'https://example2.com',
-        'title' => 'Second',
-        'tags' => ['Laravel'],
-    ]);
-
-    expect(\App\Models\Tag::where('user_id', $user->id)->where('slug', 'laravel')->count())->toBe(1);
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('tag_ids.0');
 });
 
 test('unauthenticated user cannot create a bookmark', function () {

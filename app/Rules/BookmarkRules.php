@@ -36,6 +36,17 @@ class BookmarkRules
     }
 
     /**
+     * Validation rules for each tag_ids item.
+     */
+    public static function tagId(int $userId): array
+    {
+        return [
+            'integer',
+            Rule::exists('tags', 'id')->where('user_id', $userId),
+        ];
+    }
+
+    /**
      * Validation rules for the title field.
      */
     public static function title(bool $required = true): array

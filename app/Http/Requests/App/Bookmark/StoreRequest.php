@@ -4,7 +4,6 @@ namespace App\Http\Requests\App\Bookmark;
 
 use App\Enums\PlanFeature;
 use App\Rules\BookmarkRules;
-use App\Rules\TagRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -40,8 +39,8 @@ class StoreRequest extends FormRequest
             'title' => BookmarkRules::title(),
             'description' => BookmarkRules::description(),
             'is_favorited' => BookmarkRules::isFavorited(),
-            'tags' => ['sometimes', 'array'],
-            'tags.*' => TagRules::name(),
+            'tag_ids' => ['sometimes', 'array'],
+            'tag_ids.*' => BookmarkRules::tagId($this->user()->id),
         ];
     }
 }

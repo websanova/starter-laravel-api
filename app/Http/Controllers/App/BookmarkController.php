@@ -33,7 +33,7 @@ class BookmarkController extends Controller
     public function store(StoreRequest $request): JsonResponse
     {
         $bookmark = $request->user()->bookmarks()->create($request->validated());
-        $bookmark->syncTags($request->validated('tags'));
+        $bookmark->tags()->sync($request->validated('tag_ids', []));
 
         return response()->json([
             'data' => new BookmarkResource($bookmark->load('tags')),
@@ -46,7 +46,10 @@ class BookmarkController extends Controller
     public function update(UpdateRequest $request, Bookmark $bookmark): JsonResponse
     {
         $bookmark->update($request->validated());
-        $bookmark->syncTags($request->validated('tags'));
+
+        if ($request->has('tag_ids')) {
+            $bookmark->tags()->sync($request->validated('tag_ids'));
+        }
 
         return response()->json([
             'data' => new BookmarkResource($bookmark->load('tags')),
