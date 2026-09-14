@@ -42,7 +42,7 @@ App runs at `http://localhost:8000`.
 | `redis` | Redis 7 on port 6379 |
 | `stripe` | Stripe CLI, forwarding webhooks to `php:8000/stripe/webhook` |
 
-The Stripe container needs `STRIPE_SECRET` in your `.env` or it won't authenticate. See [Stripe Setup](stripe-guide.md).
+The Stripe container needs `STRIPE_SECRET` in your `.env` or it won't authenticate. See [Stripe Guide](stripe-guide.md).
 
 ## Shortcuts
 

@@ -49,7 +49,7 @@ Follow logs for all services or just one, and run commands inside the php contai
 ./dev composer <args>
 ```
 
-See [Docker Setup](docker-guide.md) for services and the full list of shortcuts.
+See [Docker Guide](docker-guide.md) for services and the full list of shortcuts.
 
 ## Stripe
 
@@ -80,7 +80,7 @@ Create a product in Stripe with prices using the lookup keys `pro_monthly` and `
 ./dev artisan plans:sync
 ```
 
-See [Stripe Setup](stripe-guide.md) for lookup keys, archiving prices and deploy webhooks.
+See [Stripe Guide](stripe-guide.md) for lookup keys, archiving prices and deploy webhooks.
 
 ## Testing
 
@@ -94,4 +94,4 @@ The `stripe` group is excluded by default and runs against a dedicated sandbox c
 ./dev artisan test --group stripe
 ```
 
-See [Testing](testing-guide.md) for sandbox setup, lookup keys and cleanup.
+See [Testing Guide](testing-guide.md) for sandbox setup, lookup keys and cleanup.
