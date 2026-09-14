@@ -47,10 +47,6 @@ return [
     'admin.user.subscription_coupon_applied' => 'Coupon applique a l abonnement de l utilisateur avec succes.',
     'admin.user.subscription_coupon_removed' => 'Coupon retire de l abonnement de l utilisateur avec succes.',
 
-    'category.created' => 'Categorie creee avec succes.',
-    'category.updated' => 'Categorie mise a jour avec succes.',
-    'category.deleted' => 'Categorie supprimee avec succes.',
-
     'tag.created' => 'Etiquette creee avec succes.',
     'tag.updated' => 'Etiquette mise a jour avec succes.',
     'tag.deleted' => 'Etiquette supprimee avec succes.',

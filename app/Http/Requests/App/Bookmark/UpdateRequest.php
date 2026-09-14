@@ -22,7 +22,6 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => BookmarkRules::categoryId($this->user()->id),
             'url' => BookmarkRules::url(required: false),
             'title' => BookmarkRules::title(required: false),
             'description' => BookmarkRules::description(),

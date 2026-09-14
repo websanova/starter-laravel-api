@@ -5,7 +5,6 @@ namespace App\Enums;
 enum PlanFeature: string
 {
     case Bookmarks = 'bookmarks';
-    case Categories = 'categories';
     case Tags = 'tags';
 
     /**
@@ -15,7 +14,6 @@ enum PlanFeature: string
     {
         return match ($this) {
             self::Bookmarks => 'bookmarks',
-            self::Categories => 'categories',
             self::Tags => 'tags',
         };
     }

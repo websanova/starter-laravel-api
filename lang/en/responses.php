@@ -47,10 +47,6 @@ return [
     'admin.user.subscription_coupon_applied' => 'Coupon applied to user subscription successfully.',
     'admin.user.subscription_coupon_removed' => 'Coupon removed from user subscription successfully.',
 
-    'category.created' => 'Category created successfully.',
-    'category.updated' => 'Category updated successfully.',
-    'category.deleted' => 'Category deleted successfully.',
-
     'tag.created' => 'Tag created successfully.',
     'tag.updated' => 'Tag updated successfully.',
     'tag.deleted' => 'Tag deleted successfully.',

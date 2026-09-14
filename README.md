@@ -58,8 +58,8 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Models override `forSearch` to add column-specific clauses (e.g. email)
 
 **Sample CRUD (Bookmarks)**
-- Bookmarks with optional flat categories
-- Demonstrates: relationships, ownership scoping, filtering, nullable foreign keys
+- Bookmarks with tags
+- Demonstrates: relationships, ownership scoping, filtering
 
 **Rate Limiting**
 - Global throttle on all routes
@@ -130,7 +130,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 **Stats**
 - Scheduled stat calculation with date range breakdowns (all, today, yesterday, day before)
-- Grouped by resource type (subscriptions, bookmarks, categories, tags)
+- Grouped by resource type (subscriptions, bookmarks, tags)
 - Subscription stats per plan and billing interval
 - Admin endpoint to retrieve stats with optional group filter
 

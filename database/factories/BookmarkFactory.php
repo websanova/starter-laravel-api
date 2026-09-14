@@ -20,7 +20,6 @@ class BookmarkFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'category_id' => null,
             'url' => fake()->url(),
             'title' => fake()->sentence(3),
             'description' => fake()->optional()->sentence(),

@@ -14,14 +14,13 @@ use Illuminate\Http\JsonResponse;
 class BookmarkController extends Controller
 {
     /**
-     * List the authenticated user's bookmarks with optional category filter.
+     * List the authenticated user's bookmarks with optional filtering and sorting.
      */
     public function index(IndexRequest $request): JsonResponse
     {
         $bookmarks = $request->user()->bookmarks()
             ->with('tags')
             ->forFavorited($request->validated('favorited'))
-            ->forCategory($request->validated('category_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 

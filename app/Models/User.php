@@ -123,14 +123,6 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
-     * Get the user's categories.
-     */
-    public function categories(): HasMany
-    {
-        return $this->hasMany(Category::class);
-    }
-
-    /**
      * Get the user's bookmarks.
      */
     public function bookmarks(): HasMany

@@ -14,7 +14,7 @@ paths:
 - REST convention: nested resources for direct ownership (`/admin/users/{user}/bookmarks`) rather than flat with query filters (`/admin/bookmarks?user_id=`). Both styles can coexist if a flat filter endpoint is needed, but nested is the default for direct parent-child access.
 - `scopeBindings()` on nested resource routes to ensure child belongs to parent.
 - `withTrashed()` on routes that need to resolve soft-deleted models.
-- Stack order on the authenticated App routes: `auth:sanctum`, `track-active`, then `verified` and `password-updated` on inner routes. Gated resources (bookmarks, categories, tags) add `subscribed` middleware.
+- Stack order on the authenticated App routes: `auth:sanctum`, `track-active`, then `verified` and `password-updated` on inner routes. Gated resources (bookmarks, tags) add `subscribed` middleware.
 - Stack order on `/admin`: `auth:sanctum`, `track-active`, `verified`, `password-updated`, `admin`.
 - Subscription routes: `/subscription` (CRUD + resume) for self-management, `/admin/users/{user}/subscription` (CRUD + resume) for admin management. `/admin/plans` for plan CRUD, with `PATCH /admin/plans/{plan}/prices/{price}` (scoped binding) for price updates.
 - Notification routes: `GET /notifications` (list, filterable by `read`), `PATCH /notifications/{notification}` (mark read/unread), `POST /notifications/read` (mark all read).

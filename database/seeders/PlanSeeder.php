@@ -20,7 +20,6 @@ class PlanSeeder extends Seeder
                 'name' => 'Free',
                 'features' => [
                     'bookmarks' => 10,
-                    'categories' => 3,
                     'tags' => 10,
                 ],
                 'is_active' => true,
@@ -35,7 +34,6 @@ class PlanSeeder extends Seeder
                 'name' => 'Pro',
                 'features' => [
                     'bookmarks' => null,
-                    'categories' => null,
                     'tags' => null,
                 ],
                 'is_active' => true,

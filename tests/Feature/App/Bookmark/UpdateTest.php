@@ -3,7 +3,6 @@
 uses()->group('app.bookmark.update');
 
 use App\Models\Bookmark;
-use App\Models\Category;
 use App\Models\User;
 
 test('user can update their bookmark', function () {
@@ -16,49 +15,6 @@ test('user can update their bookmark', function () {
 
     $response->assertStatus(200)
         ->assertJsonPath('data.title', 'Updated Title');
-});
-
-test('user can update bookmark category', function () {
-    $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
-    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
-
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
-        'category_id' => $category->id,
-    ]);
-
-    $response->assertStatus(200)
-        ->assertJsonPath('data.category_id', $category->id);
-});
-
-test('user can remove bookmark category', function () {
-    $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
-    $bookmark = Bookmark::factory()->create([
-        'user_id' => $user->id,
-        'category_id' => $category->id,
-    ]);
-
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
-        'category_id' => null,
-    ]);
-
-    $response->assertStatus(200)
-        ->assertJsonPath('data.category_id', null);
-});
-
-test('user cannot assign another user category', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $other->id]);
-    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
-
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
-        'category_id' => $category->id,
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors('category_id');
 });
 
 test('user cannot update another user bookmark', function () {

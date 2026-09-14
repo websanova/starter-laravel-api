@@ -3,7 +3,6 @@
 uses()->group('middleware.plan-limit');
 
 use App\Models\Bookmark;
-use App\Models\Category;
 use App\Models\Plan;
 use App\Models\Tag;
 use App\Models\User;
@@ -52,21 +51,6 @@ test('user with unlimited bookmarks can always create', function () {
     ]);
 
     $response->assertStatus(201);
-});
-
-test('user at category limit cannot create a category', function () {
-    config(['subscription.mode' => \App\Enums\SubscriptionMode::Freemium]);
-
-    $plan = Plan::factory()->create(['features' => ['categories' => 1]]);
-    $user = User::factory()->create(['plan_id' => $plan->id]);
-
-    Category::factory()->create(['user_id' => $user->id]);
-
-    $response = $this->actingAs($user)->postJson('/categories', [
-        'name' => 'New Category',
-    ]);
-
-    $response->assertStatus(403);
 });
 
 test('user at tag limit cannot create a tag', function () {

@@ -8,18 +8,6 @@ use Illuminate\Validation\Rule;
 class BookmarkRules
 {
     /**
-     * Validation rules for the category_id field.
-     */
-    public static function categoryId(int $userId): array
-    {
-        return [
-            'nullable',
-            'integer',
-            Rule::exists('categories', 'id')->where('user_id', $userId),
-        ];
-    }
-
-    /**
      * Validation rules for the description field.
      */
     public static function description(): array

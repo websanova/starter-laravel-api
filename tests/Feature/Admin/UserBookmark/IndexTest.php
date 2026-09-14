@@ -4,7 +4,6 @@ uses()->group('admin.user-bookmark.index');
 
 use App\Enums\UserRole;
 use App\Models\Bookmark;
-use App\Models\Category;
 use App\Models\User;
 
 test('super can list a user\'s bookmarks', function () {
@@ -19,7 +18,7 @@ test('super can list a user\'s bookmarks', function () {
     $response->assertStatus(200)
         ->assertJsonCount(3, 'data')
         ->assertJsonStructure([
-            'data' => [['id', 'user_id', 'category_id', 'url', 'title', 'description', 'is_favorited', 'created_at', 'updated_at']],
+            'data' => [['id', 'user_id', 'url', 'title', 'description', 'is_favorited', 'created_at', 'updated_at']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
@@ -68,38 +67,6 @@ test('returns only the target user\'s bookmarks', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
-});
-
-test('can filter by category', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole(UserRole::Admin);
-
-    $target = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $target->id]);
-
-    Bookmark::factory()->count(2)->create(['user_id' => $target->id, 'category_id' => $category->id]);
-    Bookmark::factory()->create(['user_id' => $target->id, 'category_id' => null]);
-
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/bookmarks?category_id={$category->id}");
-
-    $response->assertStatus(200)
-        ->assertJsonCount(2, 'data');
-});
-
-test('can filter uncategorized bookmarks', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole(UserRole::Admin);
-
-    $target = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $target->id]);
-
-    Bookmark::factory()->count(2)->create(['user_id' => $target->id, 'category_id' => $category->id]);
-    Bookmark::factory()->create(['user_id' => $target->id, 'category_id' => null]);
-
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/bookmarks?category_id=0");
-
-    $response->assertStatus(200)
-        ->assertJsonCount(1, 'data');
 });
 
 test('can filter by favorited', function () {

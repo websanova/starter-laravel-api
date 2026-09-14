@@ -2,7 +2,6 @@
 
 uses()->group('app.bookmark.store');
 
-use App\Models\Category;
 use App\Models\User;
 
 test('user can create a bookmark', function () {
@@ -15,22 +14,7 @@ test('user can create a bookmark', function () {
 
     $response->assertStatus(201)
         ->assertJsonPath('data.url', 'https://example.com')
-        ->assertJsonPath('data.title', 'Example')
-        ->assertJsonPath('data.category_id', null);
-});
-
-test('user can create a bookmark with a category', function () {
-    $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
-
-    $response = $this->actingAs($user)->postJson('/bookmarks', [
-        'url' => 'https://example.com',
-        'title' => 'Example',
-        'category_id' => $category->id,
-    ]);
-
-    $response->assertStatus(201)
-        ->assertJsonPath('data.category_id', $category->id);
+        ->assertJsonPath('data.title', 'Example');
 });
 
 test('user can create a bookmark with a description', function () {
@@ -44,21 +28,6 @@ test('user can create a bookmark with a description', function () {
 
     $response->assertStatus(201)
         ->assertJsonPath('data.description', 'A test bookmark');
-});
-
-test('user cannot assign another user category', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $other->id]);
-
-    $response = $this->actingAs($user)->postJson('/bookmarks', [
-        'url' => 'https://example.com',
-        'title' => 'Example',
-        'category_id' => $category->id,
-    ]);
-
-    $response->assertStatus(422)
-        ->assertJsonValidationErrors('category_id');
 });
 
 test('url is required', function () {

@@ -65,11 +65,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::get('/sync', [App\Http\Controllers\App\SyncController::class, 'show']);
 
         Route::middleware('subscribed')->group(function () {
-            Route::get('/categories', [App\Http\Controllers\App\CategoryController::class, 'index']);
-            Route::post('/categories', [App\Http\Controllers\App\CategoryController::class, 'store']);
-            Route::put('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'update']);
-            Route::delete('/categories/{category}', [App\Http\Controllers\App\CategoryController::class, 'destroy']);
-
             Route::get('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'index']);
             Route::post('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'store']);
             Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
@@ -79,7 +74,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
             Route::post('/tags', [App\Http\Controllers\App\TagController::class, 'store']);
             Route::put('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'update']);
             Route::delete('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'destroy']);
-
         });
     });
 });
@@ -120,9 +114,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
 
     Route::get('/users/{user}/bookmarks', [App\Http\Controllers\Admin\UserBookmarkController::class, 'index']);
     Route::delete('/users/{user}/bookmarks/{bookmark}', [App\Http\Controllers\Admin\UserBookmarkController::class, 'destroy'])->scopeBindings();
-
-    Route::get('/users/{user}/categories', [App\Http\Controllers\Admin\UserCategoryController::class, 'index']);
-    Route::delete('/users/{user}/categories/{category}', [App\Http\Controllers\Admin\UserCategoryController::class, 'destroy'])->scopeBindings();
 
     Route::get('/users/{user}/tags', [App\Http\Controllers\Admin\UserTagController::class, 'index']);
     Route::delete('/users/{user}/tags/{tag}', [App\Http\Controllers\Admin\UserTagController::class, 'destroy'])->scopeBindings();

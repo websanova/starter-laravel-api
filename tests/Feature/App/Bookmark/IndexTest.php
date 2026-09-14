@@ -3,7 +3,6 @@
 uses()->group('app.bookmark.index');
 
 use App\Models\Bookmark;
-use App\Models\Category;
 use App\Models\User;
 
 test('user can list their bookmarks', function () {
@@ -15,7 +14,7 @@ test('user can list their bookmarks', function () {
     $response->assertStatus(200)
         ->assertJsonCount(3, 'data')
         ->assertJsonStructure([
-            'data' => [['id', 'category_id', 'url', 'title', 'description', 'created_at', 'updated_at']],
+            'data' => [['id', 'url', 'title', 'description', 'created_at', 'updated_at']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });
@@ -31,32 +30,6 @@ test('user only sees their own bookmarks', function () {
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data');
-});
-
-test('user can filter bookmarks by category', function () {
-    $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
-
-    Bookmark::factory()->count(2)->create(['user_id' => $user->id, 'category_id' => $category->id]);
-    Bookmark::factory()->create(['user_id' => $user->id, 'category_id' => null]);
-
-    $response = $this->actingAs($user)->getJson("/bookmarks?category_id={$category->id}");
-
-    $response->assertStatus(200)
-        ->assertJsonCount(2, 'data');
-});
-
-test('user can filter uncategorized bookmarks', function () {
-    $user = User::factory()->create();
-    $category = Category::factory()->create(['user_id' => $user->id]);
-
-    Bookmark::factory()->count(2)->create(['user_id' => $user->id, 'category_id' => $category->id]);
-    Bookmark::factory()->create(['user_id' => $user->id, 'category_id' => null]);
-
-    $response = $this->actingAs($user)->getJson('/bookmarks?category_id=0');
-
-    $response->assertStatus(200)
-        ->assertJsonCount(1, 'data');
 });
 
 test('can set per page limit', function () {

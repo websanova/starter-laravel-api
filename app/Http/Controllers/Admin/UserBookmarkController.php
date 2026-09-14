@@ -19,7 +19,6 @@ class UserBookmarkController extends Controller
     {
         $bookmarks = $user->bookmarks()
             ->forFavorited($request->validated('favorited'))
-            ->forCategory($request->validated('category_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
 

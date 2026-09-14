@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Bookmark;
-use App\Models\Category;
 use App\Models\Plan;
 use App\Models\Stat;
 use App\Models\Tag;
@@ -70,7 +69,6 @@ class CalculateStatsService
         }
 
         $queries['bookmarks']['total'] = Bookmark::query();
-        $queries['categories']['total'] = Category::query();
         $queries['tags']['total'] = Tag::query();
 
         return $queries;
