@@ -20,6 +20,7 @@ class BookmarkResource extends JsonResource
             'description' => $this->description,
             'id' => $this->id,
             'is_favorited' => $this->is_favorited,
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
             'title' => $this->title,
             'updated_at' => $this->updated_at,
             'url' => $this->url,

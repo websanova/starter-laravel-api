@@ -18,6 +18,7 @@ class UserBookmarkController extends Controller
     public function index(IndexRequest $request, User $user): JsonResponse
     {
         $bookmarks = $user->bookmarks()
+            ->with('tags')
             ->forFavorited($request->validated('favorited'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))
             ->paginate($request->validated('per_page', 15));
