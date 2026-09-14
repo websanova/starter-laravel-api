@@ -38,8 +38,8 @@ class RoleAndPermissionSeeder extends Seeder
                 'first_name' => 'Super',
                 'last_name' => 'User',
                 'email_verified_at' => now(),
-                'password' => Hash::make('initinit'),
-                'is_password_reset_required' => true,
+                'password' => Hash::make('testtest'),
+                'is_password_reset_required' => false,
             ],
         );
 
