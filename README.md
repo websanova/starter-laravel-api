@@ -118,11 +118,10 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - List, filter by read/unread, mark individual read/unread, bulk mark all read
 - Consistent payload shape across all notification types
 
-**Mail (Resend)**
-- Resend as the default mail transport (free tier, community Laravel driver)
-- Zero-cost email for a starter project, easily swappable to Mailgun, Postmark, or SES
-- For inbound forwarding, consider Cloudflare Email Routing (free, unlimited)
-- For "send as" replies from a custom address, Gmail supports Resend's SMTP credentials
+**Mail (Mailpit)**
+- Stock Laravel SMTP mailer, configured through the `MAIL_*` env vars, so any provider works
+- Mailpit runs as its own service in `docker-compose.yml` and catches all outgoing mail locally
+- No real sends and no credentials needed for dev, just open the inbox at `http://localhost:8025`
 
 **File Storage (S3)**
 - Off-server storage, AWS and DigitalOcean Spaces ready

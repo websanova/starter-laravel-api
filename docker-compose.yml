@@ -12,10 +12,13 @@ services:
         depends_on:
             - mysql
             - redis
+            - mailpit
         environment:
             DB_HOST: mysql
             DB_PORT: 3306
             REDIS_HOST: redis
+            MAIL_HOST: mailpit
+            MAIL_PORT: 1025
     mysql:
         image: mysql:8.0
         ports:
@@ -31,6 +34,11 @@ services:
         image: redis:7-alpine
         ports:
             - "6379:6379"
+    mailpit:
+        image: axllent/mailpit
+        ports:
+            - "1025:1025"
+            - "8025:8025"
     stripe:
         image: stripe/stripe-cli
         command: listen --forward-to php:8000/stripe/webhook

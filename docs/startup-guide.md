@@ -51,6 +51,12 @@ Follow logs for all services or just one, and run commands inside the php contai
 
 See [Docker Guide](docker-guide.md) for services and the full list of shortcuts.
 
+## Mail
+
+In dev all outgoing mail is caught by the mailpit container, so nothing actually gets sent. Open the inbox at `http://localhost:8025`.
+
+For any live deployment, set up the mail provider of your choice.
+
 ## Stripe
 
 Add your test mode keys, then restart so the stripe container picks up the secret.

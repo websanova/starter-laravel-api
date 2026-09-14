@@ -40,6 +40,7 @@ App runs at `http://localhost:8000`.
 | `php` | The app, on port 8000 |
 | `mysql` | MySQL 8.0 on port 3306, database `laravel`, user `laravel`, password `password` |
 | `redis` | Redis 7 on port 6379 |
+| `mailpit` | Mailpit, catching outgoing mail on port 1025, inbox at `http://localhost:8025` |
 | `stripe` | Stripe CLI, forwarding webhooks to `php:8000/stripe/webhook` |
 
 The Stripe container needs `STRIPE_SECRET` in your `.env` or it won't authenticate. See [Stripe Guide](stripe-guide.md).
