@@ -25,7 +25,7 @@ class UpdateRequest extends FormRequest
             'title' => BookmarkRules::title(required: false),
             'description' => BookmarkRules::description(),
             'is_favorited' => BookmarkRules::isFavorited(),
-            'tag_ids' => ['sometimes', 'array'],
+            'tag_ids' => BookmarkRules::tagIds(),
             'tag_ids.*' => BookmarkRules::tagId($this->user()->id),
         ];
     }

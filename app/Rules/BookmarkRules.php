@@ -42,8 +42,17 @@ class BookmarkRules
     {
         return [
             'integer',
+            'distinct',
             Rule::exists('tags', 'id')->where('user_id', $userId),
         ];
+    }
+
+    /**
+     * Validation rules for the tag_ids field.
+     */
+    public static function tagIds(): array
+    {
+        return ['sometimes', 'array', 'max:5'];
     }
 
     /**
