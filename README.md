@@ -21,7 +21,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 ## Notes
 
-- The commands are experimental and I'm still tinkering with the format. The main idea is to not have the agent run wild without explicit go aheads and to remove reptitive explanations to help stream line workflow. Open to suggestions and feedback.
+- The commands are experimental and the format is still being tinkered with. The main idea is to not have the agent run wild without explicit go aheads and to remove reptitive explanations to help streamline workflow. Open to suggestions and feedback.
 
 ## Features
 
