@@ -34,10 +34,9 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 **Account Verification**
 - Code-based, not signed URLs, works with any client
-- Per-channel modes: each channel independently disabled, auto, or required
+- Multi-channel verification, each channel configurable as disabled, auto, or required
 - Optional per-channel grace period before enforcement
 - Email fully wired, SMS scaffolded (needs a phone-capture flow)
-- Channels toggle on/off on the fly without locking out existing users. Gating tracks whether the user actually has the identifier, so a previously registered user with no phone bypasses a newly-required phone channel. Email is always collected at registration so it enforces immediately. Forcing existing phone-less users to add a number is out of scope, add a phone-required interrupt later if you need it.
 
 **Account Self-Management**
 - Profile, password, avatar
@@ -46,85 +45,81 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Soft delete with configurable grace period
 - Scheduled prune with anonymize or hard delete strategy
 
-**Delete & Restore**
+**User Delete & Restore**
 - Soft delete, anonymize, and hard delete strategies
 - Admin restore and force delete
 - Grace period with auto-restore on login
 - Scheduled prune with configurable strategy
 
 **Search (Fulltext)**
-- Fulltext user search
+- Drop-in fulltext search for any model, used on users out of the box
 - Search stays in sync automatically as records change
-- Exact matching on fields like email
+- Models can add exact matching on fields like email
 
-**Sample CRUD (Bookmarks)**
-- Bookmarks with tags
-- Some filters, sorting, and pagination
-- Demonstrates: relationships, ownership scoping, filtering
-- Admins can view and remove a user's bookmarks and tags
+**Sample CRUD (Bookmarks & Tags)**
+- Reference resources to copy when building your own
+- Relationships, ownership scoping, filtering, sorting, and pagination
+- Admin view and removal of user records
 
 **Rate Limiting**
 - Global throttle on all routes
 - Stricter throttle on auth routes, keyed by email + IP
 
-**Route Structure**
-- Separate user and admin APIs, each with its own login
-- Consistent response shapes
-- JSON-only, all user-facing strings translatable
-- Public settings for clients to read
+**API Structure**
+- Admin endpoints on `/admin` with their own login, account endpoints at the root
+- JSON-only with consistent response shapes
+- All user-facing strings translatable
+
+**Public Settings**
+- Centralized app settings served by the API for reuse across clients
+- Public `/settings` endpoint, no login needed
 
 **Localization (i18n)**
-- Full multi-locale support out of the box, with a sample Canadian French translation included
+- Full multi-locale support out of the box, with a sample translations included
 - Per-user locale preference that localizes emails and notifications automatically, even inside queued jobs where there's no request to read from
 - Responses in the client's requested language, falling back to the base language when a region isn't translated
 - Add a language by dropping in a lang folder, no code changes
-- Translating an app is far easier now that AI can generate a full, accurate translation set in minutes, so supporting locales out of the box is more worthwhile than it used to be
 
 **Roles and Permissions (Spatie)**
-- Two roles: super (god mode), admin (manages users, plans, stats)
+- Ships with super (god mode), admin (manages users, plans, stats) out of the box
 - Coarse permissions with per-target checks
 - Admin can't touch super users, can't delete other admins
-- User management with search and some filters
-- Forced password reset flow with temp password email
-- Seeded super user on first migrate
 
-**Plans & Subscriptions**
-- Flexible plans with usage limits
+**Subscriptions**
 - Multiple billing intervals per plan (monthly, yearly)
-- Prices kept in sync with the provider, no hardcoded amounts
-- Three subscription modes: freemium, trial, required
 - Users subscribe, swap, cancel, resume, admins cancel and resume
-- Embedded checkout collecting address, card, and promo code in one step, with card authentication handled provider-side
-- Optional automatic tax, off by default since it has to be switched on provider-side too
-- Saved card management
-- Billing address management
+- Checkout sessions ready for a Stripe Payment Element checkout built into the client, not hosted or embedded
+- Payment method management
 - Feature limits enforced automatically
-- Admin plan and price management
+
+**Plans**
+- Prices kept in sync with the provider, no hardcoded amounts
+- Three subscription modes (freemium, trial, required)
+- Billing address always collected, automatic tax on the charge toggled by config (off by default)
+- Admin plan editing, with prices synced from Stripe by lookup key
 
 **Billing Providers (Cashier/Stripe)**
 - Stripe through Laravel Cashier out of the box, one provider installed at a time
 - Swappable provider without touching the rest of the app
 
-**Webhooks**
-- Local webhooks work out of the box, no tunnel, no ngrok, no dashboard endpoint for dev
-- Webhooks are the source of truth, including changes made outside the app like dunning and failed renewals
-- Access granted only once payment is confirmed by the provider, never on a client reporting its own success
-- Safe against provider retries
-- Billing state can always be rebuilt from the provider, so a dropped event is recoverable
-- Client-triggered sync after checkout so changes show immediately
+**Webhooks (Cashier/Stripe)**
+- Local webhooks out of the box, no tunnel or dashboard setup for dev
+- Client syncs right after checkout, webhooks back it up if the client never reports back
+- Only signal for changes made outside the app, like portal swaps, dunning, and failed payments
+- Access granted only after the provider confirms payment
+- Safe to process twice, whichever of client sync or webhook lands second does nothing
+- Plan change notifications driven by webhooks
 
 **Promotion Codes**
 - Validated against the provider, nothing stored locally, so it owns amounts, expiry, and limits
-- Codes checked as the user enters them
+- Codes entered directly in checkout
 - Admins can apply or clear discounts on an existing subscription
 
 **Notifications**
-- In-app notifications (bell icon)
+- Database-backed in-app notifications for every user
 - Email + in-app delivery for plan lifecycle events (subscribe, change, cancel, resume)
 - Account emails for welcome, verification, password reset and change, email change
 - List with some filters, mark read/unread, mark all read
-- Unread count for polling
-- Consistent payload shape across all notification types
 
 **Mail (Mailpit)**
 - Works with any SMTP provider
@@ -139,7 +134,6 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 - Scheduled stat calculation with date range breakdowns (all, today, yesterday, day before)
 - Grouped by resource type (subscriptions, bookmarks, tags)
 - Subscription stats per plan and billing interval
-- Admin stats with some filters
 
 **Backups (Spatie)**
 - Daily database backups
