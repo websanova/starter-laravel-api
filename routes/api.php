@@ -67,12 +67,12 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::middleware('subscribed')->group(function () {
             Route::get('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'index']);
             Route::post('/bookmarks', [App\Http\Controllers\App\BookmarkController::class, 'store']);
-            Route::put('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
+            Route::patch('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'update']);
             Route::delete('/bookmarks/{bookmark}', [App\Http\Controllers\App\BookmarkController::class, 'destroy']);
 
             Route::get('/tags', [App\Http\Controllers\App\TagController::class, 'index']);
             Route::post('/tags', [App\Http\Controllers\App\TagController::class, 'store']);
-            Route::put('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'update']);
+            Route::patch('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'update']);
             Route::delete('/tags/{tag}', [App\Http\Controllers\App\TagController::class, 'destroy']);
         });
     });
