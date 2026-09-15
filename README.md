@@ -25,125 +25,30 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 ## Features
 
-**Token Auth (Sanctum)**
-- Register, login, logout, token refresh
-- Password reset via email link, revokes all sessions
-- Configurable token expiration
-- Soft-deleted accounts auto-restore on login during grace period
-- Last active tracking
+* **Token Auth (Sanctum)** - Register, login, logout, refresh, and password reset with configurable token expiration.
+* **Account Verification** - Code-based, multi-channel verification (email wired, SMS scaffolded), each channel set to disabled, auto, or required.
+* **Account Self-Management** - Profile, password, avatar, email change, locale/timezone, and self-delete with a grace period.
+* **User Delete & Restore** - Soft delete, anonymize, or hard delete, with admin restore, auto-restore on login, and scheduled prune.
+* **Search (Fulltext)** - Drop-in fulltext search for any model that stays in sync automatically, used on users out of the box.
+* **Sample CRUD (Bookmarks & Tags)** - Reference resources showing relationships, ownership scoping, filtering, sorting, and pagination.
+* **Rate Limiting** - Global throttle on all routes, stricter on auth routes keyed by email + IP.
+* **API Structure** - JSON-only with consistent response shapes, admin endpoints on `/admin`, and translatable strings.
+* **Public Settings** - Centralized app settings on a public `/settings` endpoint for reuse across clients.
+* **Localization (i18n)** - Multi-locale responses and per-user localized emails, add a language by dropping in a lang folder.
+* **Roles and Permissions (Spatie)** - Super and admin roles with coarse permissions and per-target checks.
+* **Subscriptions** - Subscribe, swap, cancel, and resume with multiple billing intervals, client-built Stripe checkout, and enforced feature limits.
+* **Plans** - Freemium, trial, or required modes with prices synced from the provider and optional automatic tax.
+* **Billing Providers (Cashier/Stripe)** - Stripe via Cashier out of the box, swappable without touching the rest of the app.
+* **Webhooks (Cashier/Stripe)** - Idempotent webhooks that back up client sync and catch outside changes, with local dev needing no tunnel.
+* **Promotion Codes** - Validated against the provider and entered in checkout, with admin apply/clear on existing subscriptions.
+* **Notifications** - Database-backed in-app notifications plus email for account and plan lifecycle events.
+* **Mail (Mailpit)** - Any SMTP provider, with a local mail catcher and test command for dev.
+* **File Storage (S3)** - Off-server storage for AWS or DigitalOcean Spaces, with avatars cropped and resized on upload.
+* **Stats** - Scheduled stats grouped by resource with date range breakdowns and per-plan subscription stats.
+* **Backups (Spatie)** - Daily database backups with scheduled cleanup.
+* **Dev Environment** - Dockerized with MySQL, Redis, Mailpit, and Stripe CLI, plus a helper script and Pest test suite.
 
-**Account Verification**
-- Code-based, not signed URLs, works with any client
-- Multi-channel verification, each channel configurable as disabled, auto, or required
-- Optional per-channel grace period before enforcement
-- Email fully wired, SMS scaffolded (needs a phone-capture flow)
-
-**Account Self-Management**
-- Profile, password, avatar
-- Email change via new inbox confirmation (old stays active until confirmed)
-- Locale and timezone preferences
-- Soft delete with configurable grace period
-- Scheduled prune with anonymize or hard delete strategy
-
-**User Delete & Restore**
-- Soft delete, anonymize, and hard delete strategies
-- Admin restore and force delete
-- Grace period with auto-restore on login
-- Scheduled prune with configurable strategy
-
-**Search (Fulltext)**
-- Drop-in fulltext search for any model, used on users out of the box
-- Search stays in sync automatically as records change
-- Models can add exact matching on fields like email
-
-**Sample CRUD (Bookmarks & Tags)**
-- Reference resources to copy when building your own
-- Relationships, ownership scoping, filtering, sorting, and pagination
-- Admin view and removal of user records
-
-**Rate Limiting**
-- Global throttle on all routes
-- Stricter throttle on auth routes, keyed by email + IP
-
-**API Structure**
-- Admin endpoints on `/admin` with their own login, account endpoints at the root
-- JSON-only with consistent response shapes
-- All user-facing strings translatable
-
-**Public Settings**
-- Centralized app settings served by the API for reuse across clients
-- Public `/settings` endpoint, no login needed
-
-**Localization (i18n)**
-- Full multi-locale support out of the box, with a sample translations included
-- Per-user locale preference that localizes emails and notifications automatically, even inside queued jobs where there's no request to read from
-- Responses in the client's requested language, falling back to the base language when a region isn't translated
-- Add a language by dropping in a lang folder, no code changes
-
-**Roles and Permissions (Spatie)**
-- Ships with super (god mode), admin (manages users, plans, stats) out of the box
-- Coarse permissions with per-target checks
-- Admin can't touch super users, can't delete other admins
-
-**Subscriptions**
-- Multiple billing intervals per plan (monthly, yearly)
-- Users subscribe, swap, cancel, resume, admins cancel and resume
-- Checkout sessions ready for a Stripe Payment Element checkout built into the client, not hosted or embedded
-- Payment method management
-- Feature limits enforced automatically
-
-**Plans**
-- Prices kept in sync with the provider, no hardcoded amounts
-- Three subscription modes (freemium, trial, required)
-- Billing address always collected, automatic tax on the charge toggled by config (off by default)
-- Admin plan editing, with prices synced from Stripe by lookup key
-
-**Billing Providers (Cashier/Stripe)**
-- Stripe through Laravel Cashier out of the box, one provider installed at a time
-- Swappable provider without touching the rest of the app
-
-**Webhooks (Cashier/Stripe)**
-- Local webhooks out of the box, no tunnel or dashboard setup for dev
-- Client syncs right after checkout, webhooks back it up if the client never reports back
-- Only signal for changes made outside the app, like portal swaps, dunning, and failed payments
-- Access granted only after the provider confirms payment
-- Safe to process twice, whichever of client sync or webhook lands second does nothing
-- Plan change notifications driven by webhooks
-
-**Promotion Codes**
-- Validated against the provider, nothing stored locally, so it owns amounts, expiry, and limits
-- Codes entered directly in checkout
-- Admins can apply or clear discounts on an existing subscription
-
-**Notifications**
-- Database-backed in-app notifications for every user
-- Email + in-app delivery for plan lifecycle events (subscribe, change, cancel, resume)
-- Account emails for welcome, verification, password reset and change, email change
-- List with some filters, mark read/unread, mark all read
-
-**Mail (Mailpit)**
-- Works with any SMTP provider
-- Local mail catcher, no real sends and no credentials needed for dev
-- Test email command
-
-**File Storage (S3)**
-- Off-server storage, AWS and DigitalOcean Spaces ready
-- Avatars cropped and resized on upload
-
-**Stats**
-- Scheduled stat calculation with date range breakdowns (all, today, yesterday, day before)
-- Grouped by resource type (subscriptions, bookmarks, tags)
-- Subscription stats per plan and billing interval
-
-**Backups (Spatie)**
-- Daily database backups
-- Scheduled cleanup of old backups
-
-**Dev Environment**
-- Dockerized with MySQL, Redis, Mailpit, and Stripe CLI
-- Helper script for container commands
-- Optional query log in responses for debugging
-- Pest test suite
+For the full breakdown, see the [features overview](https://websanova.com/docs/starter-api/intro/overview).
 
 ## License
 
