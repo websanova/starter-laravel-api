@@ -37,6 +37,18 @@ class UserRules
     }
 
     /**
+     * Validation rules for the email field when confirming a user's email.
+     */
+    public static function emailMatch(string $email): array
+    {
+        return [
+            'required',
+            'string',
+            Rule::in([$email]),
+        ];
+    }
+
+    /**
      * Validation rules for the email field when setting a new email.
      */
     public static function emailNew(?int $ignore = null): array

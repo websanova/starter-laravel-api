@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\User;
 
+use App\Rules\UserRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DestroyRequest extends FormRequest
@@ -19,6 +20,8 @@ class DestroyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'email' => UserRules::emailMatch($this->route('user')->email),
+        ];
     }
 }
