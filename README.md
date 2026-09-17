@@ -25,27 +25,27 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 
 ## Features
 
+* **API Structure** - JSON-only with consistent response shapes, admin endpoints on `/admin`, and translatable strings.
+* **Public Settings** - Centralized app settings on a public `/settings` endpoint for reuse across clients.
+* **Rate Limiting** - Global throttle on all routes, stricter on auth routes keyed by email + IP.
+* **Search (Fulltext)** - Drop-in fulltext search for any model that stays in sync automatically, used on users out of the box.
 * **Token Auth (Sanctum)** - Register, login, logout, refresh, and password reset with configurable token expiration.
 * **Account Verification** - Code-based, multi-channel verification (email wired, SMS scaffolded), each channel set to disabled, auto, or required.
 * **Account Self-Management** - Profile, password, avatar, email change, locale/timezone, and self-delete with a grace period.
 * **User Delete & Restore** - Soft delete, anonymize, or hard delete, with admin restore, auto-restore on login, and scheduled prune.
-* **Search (Fulltext)** - Drop-in fulltext search for any model that stays in sync automatically, used on users out of the box.
 * **Sample CRUD (Bookmarks & Tags)** - Reference resources showing relationships, ownership scoping, filtering, sorting, and pagination.
-* **Rate Limiting** - Global throttle on all routes, stricter on auth routes keyed by email + IP.
-* **API Structure** - JSON-only with consistent response shapes, admin endpoints on `/admin`, and translatable strings.
-* **Public Settings** - Centralized app settings on a public `/settings` endpoint for reuse across clients.
-* **Localization (i18n)** - Multi-locale responses and per-user localized emails, add a language by dropping in a lang folder.
-* **Roles and Permissions (Spatie)** - Super and admin roles with coarse permissions and per-target checks.
-* **Subscriptions** - Subscribe, swap, cancel, and resume with multiple billing intervals, client-built Stripe checkout, and enforced feature limits.
 * **Plans** - Freemium, trial, or required modes with prices synced from the provider and optional automatic tax.
+* **Subscriptions** - Subscribe, swap, cancel, and resume with multiple billing intervals, client-built Stripe checkout, and enforced feature limits.
 * **Billing Providers (Cashier/Stripe)** - Stripe via Cashier out of the box, swappable without touching the rest of the app.
-* **Webhooks (Cashier/Stripe)** - Idempotent webhooks that back up client sync and catch outside changes, with local dev needing no tunnel.
 * **Promotion Codes** - Validated against the provider and entered in checkout, with admin apply/clear on existing subscriptions.
-* **Notifications** - Database-backed in-app notifications plus email for account and plan lifecycle events.
-* **Mail (Mailpit)** - Any SMTP provider, with a local mail catcher and test command for dev.
-* **File Storage (S3)** - Off-server storage for AWS or DigitalOcean Spaces, with avatars cropped and resized on upload.
+* **Webhooks (Cashier/Stripe)** - Idempotent webhooks that back up client sync and catch outside changes, with local dev needing no tunnel.
+* **Roles and Permissions (Spatie)** - Super and admin roles with coarse permissions and per-target checks.
 * **Stats** - Scheduled stats grouped by resource with date range breakdowns and per-plan subscription stats.
+* **Mail (Mailpit)** - Any SMTP provider, with a local mail catcher and test command for dev.
+* **Notifications** - Database-backed in-app notifications plus email for account and plan lifecycle events.
 * **Backups (Spatie)** - Daily database backups with scheduled cleanup.
+* **Localization (i18n)** - Multi-locale responses and per-user localized emails, add a language by dropping in a lang folder.
+* **File Storage (S3)** - Off-server storage for AWS or DigitalOcean Spaces, with avatars cropped and resized on upload.
 * **Dev Environment** - Dockerized with MySQL, Redis, Mailpit, and Stripe CLI, plus a helper script and Pest test suite.
 
 For the full breakdown, see the [features overview](https://websanova.com/docs/starter-api/intro/overview).
