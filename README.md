@@ -48,7 +48,7 @@ Full documentation at [websanova.com/docs/starter-api](https://websanova.com/doc
 * **File Storage (S3)** - Off-server storage for AWS or DigitalOcean Spaces, with avatars cropped and resized on upload.
 * **Dev Environment** - Dockerized with MySQL, Redis, Mailpit, and Stripe CLI, plus a helper script and Pest test suite.
 
-For the full breakdown, see the [features overview](https://websanova.com/docs/starter-api/intro/overview).
+For the full breakdown, see the [features overview](https://websanova.com/docs/starter-api/intro/features).
 
 ## License
 
