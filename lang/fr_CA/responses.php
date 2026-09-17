@@ -83,6 +83,8 @@ return [
     'admin.plan.updated' => 'Forfait mis a jour avec succes.',
     'admin.plan.price_synced' => 'Prix du forfait synchronise avec succes.',
 
+    'model_not_found' => 'Aucun resultat pour :model id :id.',
+
     'throttle' => 'Trop de requetes. Veuillez reessayer dans :seconds secondes.',
 
 ];

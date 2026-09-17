@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -34,6 +37,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => 'forbidden',
                 'message' => __('responses.auth.forbidden'),
             ], 403);
+        });
+
+        $exceptions->renderable(function (NotFoundHttpException $e) {
+            $previous = $e->getPrevious();
+
+            if (! $previous instanceof ModelNotFoundException) {
+                return null;
+            }
+
+            return response()->json([
+                'message' => __('responses.model_not_found', [
+                    'model' => Str::snake(class_basename($previous->getModel()), ' '),
+                    'id' => implode(', ', $previous->getIds()),
+                ]),
+            ], 404);
         });
 
         $exceptions->renderable(function (ThrottleRequestsException $e) {

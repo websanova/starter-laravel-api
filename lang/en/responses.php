@@ -97,6 +97,8 @@ return [
     'admin.plan.updated' => 'Plan updated successfully.',
     'admin.plan.price_synced' => 'Plan price synced successfully.',
 
+    'model_not_found' => 'No query results for :model id :id.',
+
     'throttle' => 'Too many requests. Please try again in :seconds seconds.',
 
 ];
