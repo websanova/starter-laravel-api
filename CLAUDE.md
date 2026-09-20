@@ -45,7 +45,6 @@
 - Write human-readable code. No clever one-liners or condensed expressions that sacrifice clarity.
 - Return the simplest working solution. No over-engineering.
 - No abstractions or helpers for single-use operations.
-- No speculative features or future-proofing.
 - No docstrings or comments on code that was not changed.
 - Inline comments only where logic is non-obvious.
 - Read the file before modifying it. Never edit blind.
