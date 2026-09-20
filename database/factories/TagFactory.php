@@ -12,6 +12,21 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class TagFactory extends Factory
 {
     /**
+     * Tag names to draw from. Faker's word pool is too small and too random
+     * to read like real tags when seeding at volume.
+     */
+    private const NAMES = [
+        'laravel', 'php', 'javascript', 'vue', 'react',
+        'docker', 'devops', 'testing', 'database', 'security',
+        'api', 'design', 'css', 'tailwind', 'performance',
+        'caching', 'queues', 'deployment', 'monitoring', 'logging',
+        'authentication', 'billing', 'stripe', 'webhooks', 'migrations',
+        'eloquent', 'redis', 'mysql', 'postgres', 'nginx',
+        'linux', 'git', 'github', 'terraform', 'aws',
+        's3', 'email', 'cron', 'backups', 'analytics',
+    ];
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -20,7 +35,7 @@ class TagFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => fake()->unique()->word(),
+            'name' => fake()->unique()->randomElement(self::NAMES),
         ];
     }
 }

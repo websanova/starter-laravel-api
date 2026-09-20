@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'timezone' => fake()->boolean() ? fake()->timezone() : null,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('testtest'),
             'remember_token' => Str::random(10),
         ];
     }
