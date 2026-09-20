@@ -16,14 +16,14 @@ class TagFactory extends Factory
      * to read like real tags when seeding at volume.
      */
     private const NAMES = [
-        'laravel', 'php', 'javascript', 'vue', 'react',
-        'docker', 'devops', 'testing', 'database', 'security',
-        'api', 'design', 'css', 'tailwind', 'performance',
-        'caching', 'queues', 'deployment', 'monitoring', 'logging',
-        'authentication', 'billing', 'stripe', 'webhooks', 'migrations',
-        'eloquent', 'redis', 'mysql', 'postgres', 'nginx',
-        'linux', 'git', 'github', 'terraform', 'aws',
-        's3', 'email', 'cron', 'backups', 'analytics',
+        'Laravel', 'PHP', 'JavaScript', 'Vue', 'React',
+        'Docker', 'DevOps', 'Testing', 'Database', 'Security',
+        'API', 'Design', 'CSS', 'Tailwind', 'Performance',
+        'Caching', 'Queues', 'Deployment', 'Monitoring', 'Logging',
+        'Authentication', 'Billing', 'Stripe', 'Webhooks', 'Migrations',
+        'Eloquent', 'Redis', 'MySQL', 'Postgres', 'Nginx',
+        'Linux', 'Git', 'GitHub', 'Terraform', 'AWS',
+        'S3', 'Email', 'Cron', 'Backups', 'Analytics',
     ];
 
     /**

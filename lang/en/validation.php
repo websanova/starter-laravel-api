@@ -3,6 +3,7 @@
 return [
 
     'tag.name_format' => 'Must start with a letter or number. Allowed: letters, numbers, spaces, dots (.), hyphens (-), plus (+), hash (#).',
+    'tag.name_duplicate' => 'You already have a tag with this name.',
 
     'bookmark.url_duplicate' => 'You have already saved this URL.',
 

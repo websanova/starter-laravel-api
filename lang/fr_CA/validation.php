@@ -158,6 +158,7 @@ return [
     'attributes' => [],
 
     'tag.name_format' => 'Doit commencer par une lettre ou un chiffre. Autorises : lettres, chiffres, espaces, points (.), tirets (-), plus (+), diese (#).',
+    'tag.name_duplicate' => 'Vous avez deja une etiquette portant ce nom.',
 
     'bookmark.url_duplicate' => 'Vous avez deja enregistre cette URL.',
 

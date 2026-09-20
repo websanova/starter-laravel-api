@@ -35,7 +35,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => TagRules::name(),
+            'name' => TagRules::name($this->user()->id),
         ];
     }
 }

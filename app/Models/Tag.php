@@ -36,13 +36,13 @@ class Tag extends Model
         parent::boot();
 
         static::creating(function (Tag $tag) {
-            $tag->name = strtolower(trim($tag->name));
+            $tag->name = trim($tag->name);
             $tag->slug = Str::slug($tag->name);
         });
 
         static::updating(function (Tag $tag) {
             if ($tag->isDirty('name')) {
-                $tag->name = strtolower(trim($tag->name));
+                $tag->name = trim($tag->name);
                 $tag->slug = Str::slug($tag->name);
             }
         });

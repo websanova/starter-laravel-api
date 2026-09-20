@@ -14,7 +14,7 @@ test('user can update their tag', function () {
     ]);
 
     $response->assertStatus(200)
-        ->assertJsonPath('data.name', 'laravel')
+        ->assertJsonPath('data.name', 'Laravel')
         ->assertJsonPath('data.slug', 'laravel');
 });
 

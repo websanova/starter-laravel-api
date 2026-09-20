@@ -13,11 +13,11 @@ test('user can create a tag', function () {
     ]);
 
     $response->assertStatus(201)
-        ->assertJsonPath('data.name', 'laravel')
+        ->assertJsonPath('data.name', 'Laravel')
         ->assertJsonPath('data.slug', 'laravel');
 });
 
-test('name is lowercased and trimmed', function () {
+test('name casing is preserved and trimmed', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->postJson('/tags', [
@@ -25,7 +25,7 @@ test('name is lowercased and trimmed', function () {
     ]);
 
     $response->assertStatus(201)
-        ->assertJsonPath('data.name', 'vue js')
+        ->assertJsonPath('data.name', 'Vue JS')
         ->assertJsonPath('data.slug', 'vue-js');
 });
 
@@ -38,7 +38,8 @@ test('duplicate slug for same user is rejected', function () {
         'name' => 'Laravel',
     ]);
 
-    $response->assertStatus(500);
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('name');
 });
 
 test('different users can have the same tag name', function () {

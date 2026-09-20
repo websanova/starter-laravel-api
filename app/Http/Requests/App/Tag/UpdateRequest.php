@@ -21,7 +21,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => TagRules::name(required: false),
+            'name' => TagRules::name($this->user()->id, $this->route('tag')->id, required: false),
         ];
     }
 }
