@@ -10,18 +10,6 @@ use Illuminate\Validation\Rule;
 class BookmarkRules
 {
     /**
-     * Validation rules for the description field.
-     */
-    public static function description(): array
-    {
-        return [
-            'nullable',
-            'string',
-            'max:1000',
-        ];
-    }
-
-    /**
      * Validation rules for the is_favorited field.
      */
     public static function isFavorited(): array

@@ -19,7 +19,7 @@ test('super can list a user\'s bookmarks', function () {
     $response->assertStatus(200)
         ->assertJsonCount(3, 'data')
         ->assertJsonStructure([
-            'data' => [['id', 'user_id', 'url', 'title', 'description', 'is_favorited', 'created_at', 'updated_at']],
+            'data' => [['id', 'user_id', 'url', 'title', 'is_favorited', 'created_at', 'updated_at']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });

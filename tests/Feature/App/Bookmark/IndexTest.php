@@ -15,7 +15,7 @@ test('user can list their bookmarks', function () {
     $response->assertStatus(200)
         ->assertJsonCount(3, 'data')
         ->assertJsonStructure([
-            'data' => [['id', 'url', 'title', 'description', 'created_at', 'updated_at']],
+            'data' => [['id', 'url', 'title', 'created_at', 'updated_at']],
             'meta' => ['current_page', 'per_page', 'total'],
         ]);
 });

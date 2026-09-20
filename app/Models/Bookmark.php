@@ -25,7 +25,6 @@ class Bookmark extends Model
         'user_id',
         'url',
         'title',
-        'description',
         'is_favorited',
     ];
 

@@ -19,19 +19,6 @@ test('user can create a bookmark', function () {
         ->assertJsonPath('data.title', 'Example');
 });
 
-test('user can create a bookmark with a description', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->postJson('/bookmarks', [
-        'url' => 'https://example.com',
-        'title' => 'Example',
-        'description' => 'A test bookmark',
-    ]);
-
-    $response->assertStatus(201)
-        ->assertJsonPath('data.description', 'A test bookmark');
-});
-
 test('url is required', function () {
     $user = User::factory()->create();
 

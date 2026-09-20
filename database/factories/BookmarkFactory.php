@@ -22,7 +22,6 @@ class BookmarkFactory extends Factory
             'user_id' => User::factory(),
             'url' => fake()->unique()->url(),
             'title' => fake()->sentence(3),
-            'description' => fake()->optional()->sentence(),
         ];
     }
 }

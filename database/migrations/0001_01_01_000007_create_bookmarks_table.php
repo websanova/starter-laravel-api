@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('url', 2048);
             $table->char('url_hash', 64);
             $table->string('title');
-            $table->text('description')->nullable();
             $table->boolean('is_favorited')->default(false);
             $table->timestamps();
 

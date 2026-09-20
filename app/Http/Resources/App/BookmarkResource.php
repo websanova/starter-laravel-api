@@ -17,7 +17,6 @@ class BookmarkResource extends JsonResource
     {
         return [
             'created_at' => $this->created_at,
-            'description' => $this->description,
             'id' => $this->id,
             'is_favorited' => $this->is_favorited,
             'tags' => TagResource::collection($this->whenLoaded('tags')),

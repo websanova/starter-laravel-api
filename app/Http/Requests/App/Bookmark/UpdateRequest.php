@@ -23,7 +23,6 @@ class UpdateRequest extends FormRequest
         return [
             'url' => BookmarkRules::url($this->user()->id, $this->route('bookmark')->id, required: false),
             'title' => BookmarkRules::title(required: false),
-            'description' => BookmarkRules::description(),
             'is_favorited' => BookmarkRules::isFavorited(),
             'tag_ids' => BookmarkRules::tagIds(),
             'tag_ids.*' => BookmarkRules::tagId($this->user()->id),
