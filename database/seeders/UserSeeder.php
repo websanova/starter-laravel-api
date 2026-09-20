@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\Bookmark;
 use App\Models\Tag;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -42,6 +44,19 @@ class UserSeeder extends Seeder
                 ->each(fn ($bookmark) => $bookmark->tags()->attach(
                     $tagIds->random(rand(1, 3))
                 ));
+
+            // Written straight to the table rather than through notify(), which
+            // would also fire the mail channel.
+            if ($email) {
+                $user->notifications()->create([
+                    'id' => Str::uuid(),
+                    'type' => WelcomeNotification::class,
+                    'data' => [
+                        'title' => __('notifications.welcome.subject'),
+                        'body' => __('notifications.welcome.line1'),
+                    ],
+                ]);
+            }
         }
     }
 }
