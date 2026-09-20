@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         ];
 
         for ($i = 0; $i < 200; $i++) {
-            $rows[] = ['email' => null, 'bookmarks' => rand(10, 20), 'tags' => rand(5, 10), 'role' => null, 'welcome' => false, 'avatar' => fake()->boolean(90)];
+            $rows[] = ['email' => null, 'bookmarks' => rand(10, 20), 'tags' => rand(5, 10), 'role' => null, 'welcome' => false, 'avatar' => fake()->boolean(75)];
         }
 
         foreach ($rows as ['email' => $email, 'bookmarks' => $bookmarks, 'tags' => $tags, 'role' => $role, 'welcome' => $welcome, 'avatar' => $avatar]) {
