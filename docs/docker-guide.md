@@ -20,10 +20,13 @@ The container boots but won't serve the app yet. Dependencies aren't installed a
 ./dev install
 ./dev restart
 ./dev artisan migrate
+./dev artisan db:seed
 ./dev artisan plans:sync
 ```
 
-Migration creates roles, permissions, and three users, `super@starter.com`, `admin@starter.com` and `user@starter.com`, all with `testtest`. None require a password change on first login. See [Startup Guide](startup-guide.md) for production.
+Migration creates roles, permissions and the super user, `super@starter.com` with `testtest`, which doesn't require a password change on first login. See [Startup Guide](startup-guide.md) for production.
+
+The seed is local only, never run it on a server. It gives you `admin@starter.com` and the `small@`, `medium@` and `large@starter.com` accounts, same password, plus a couple hundred random users with bookmarks, tags and notifications to fill things out.
 
 On subsequent runs, just start the containers. The entrypoint detects `vendor/` and serves automatically.
 
