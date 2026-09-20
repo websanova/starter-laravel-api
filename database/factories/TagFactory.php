@@ -15,7 +15,7 @@ class TagFactory extends Factory
      * Tag names to draw from. Faker's word pool is too small and too random
      * to read like real tags when seeding at volume.
      */
-    private const NAMES = [
+    public const NAMES = [
         'Laravel', 'PHP', 'JavaScript', 'Vue', 'React',
         'Docker', 'DevOps', 'Testing', 'Database', 'Security',
         'API', 'Design', 'CSS', 'Tailwind', 'Performance',
@@ -35,7 +35,7 @@ class TagFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => fake()->unique()->randomElement(self::NAMES),
+            'name' => fake()->randomElement(self::NAMES),
         ];
     }
 }
