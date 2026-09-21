@@ -20,6 +20,7 @@ class BookmarkController extends Controller
     {
         $bookmarks = $request->user()->bookmarks()
             ->with('tags')
+            ->forSearch($request->validated('search'))
             ->forFavorited($request->validated('favorited'))
             ->forTag($request->validated('tag_id'))
             ->sortBy($request->validated('sort_by'), $request->validated('sort_dir'))

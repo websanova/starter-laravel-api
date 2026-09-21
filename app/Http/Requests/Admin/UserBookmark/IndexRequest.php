@@ -24,6 +24,7 @@ class IndexRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'search' => SharedRules::search(),
             'favorited' => BookmarkRules::isFavorited(),
             'tag_id' => SharedRules::id(),
             'sort_by' => BookmarkRules::sortBy(),

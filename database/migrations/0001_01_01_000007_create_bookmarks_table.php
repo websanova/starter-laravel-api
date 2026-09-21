@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,9 +19,15 @@ return new class extends Migration
             $table->char('url_hash', 64);
             $table->string('title');
             $table->boolean('is_favorited')->default(false);
+            $table->text('keywords')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'url_hash']);
+
+            // Search index
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->fullText('keywords');
+            }
 
             // Filtering indexes
             $table->index('is_favorited');

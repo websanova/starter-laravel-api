@@ -4,17 +4,30 @@ namespace App\Models;
 
 use App\Enums\BookmarkSort;
 use App\Enums\SortDirection;
+use App\Models\Concerns\Searchable;
+use App\Observers\SearchableObserver;
 use Database\Factories\BookmarkFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+#[ObservedBy(SearchableObserver::class)]
 class Bookmark extends Model
 {
     /** @use HasFactory<BookmarkFactory> */
-    use HasFactory;
+    use HasFactory, Searchable;
+
+    /**
+     * The fields that feed into the keywords column for fulltext search.
+     *
+     * @var list<string>
+     */
+    protected array $searchable = [
+        'title',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +39,7 @@ class Bookmark extends Model
         'url',
         'title',
         'is_favorited',
+        'keywords',
     ];
 
     /**
