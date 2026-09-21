@@ -12,8 +12,6 @@ Read files yourself for context. Never ask what is in a file. Never ask for info
 
 This is analysis and breakdown. Look for alternatives, think outside the box. If the approach seems wrong, say so and suggest a different one.
 
-## Rules
-
 - No code samples.
 - No sycophancy.
 - No essays, no long-winded explanations.
