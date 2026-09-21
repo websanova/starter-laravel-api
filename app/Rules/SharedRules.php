@@ -30,7 +30,7 @@ class SharedRules
      */
     public static function search(): array
     {
-        return ['sometimes', 'string', 'max:255'];
+        return ['sometimes', 'nullable', 'string', 'min:3', 'max:255'];
     }
 
     /**
