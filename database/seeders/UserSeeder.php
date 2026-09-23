@@ -42,9 +42,21 @@ class UserSeeder extends Seeder
         }
 
         foreach ($rows as ['email' => $email, 'bookmarks' => $bookmarks, 'tags' => $tags, 'role' => $role, 'welcome' => $welcome, 'avatar' => $avatar]) {
-            $user = User::factory()->create(
-                $email ? ['email' => $email] : []
-            );
+            // Everything would otherwise land on today, leaving the stats
+            // calculator with nothing in its yesterday and day before ranges.
+            $createdAt = fake()->dateTimeBetween('-7 days', 'now');
+
+            $attributes = [
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+                'last_active_at' => fake()->dateTimeBetween($createdAt, 'now'),
+            ];
+
+            if ($email) {
+                $attributes['email'] = $email;
+            }
+
+            $user = User::factory()->create($attributes);
 
             if ($role) {
                 $user->assignRole($role);
@@ -76,12 +88,14 @@ class UserSeeder extends Seeder
                 ->count($tags)
                 ->for($user)
                 ->sequence(...$names)
+                ->state(fn () => self::timestamps($createdAt))
                 ->create()
                 ->pluck('id');
 
             Bookmark::factory()
                 ->count($bookmarks)
                 ->for($user)
+                ->state(fn () => self::timestamps($createdAt))
                 ->create()
                 ->each(fn ($bookmark) => $bookmark->tags()->attach(
                     $tagIds->random(rand(1, 3))
@@ -100,5 +114,21 @@ class UserSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    /**
+     * A timestamp pair somewhere between the user's own creation and now, so
+     * their rows never predate them.
+     *
+     * @return array<string, \DateTimeInterface>
+     */
+    protected static function timestamps(\DateTimeInterface $createdAt): array
+    {
+        $timestamp = fake()->dateTimeBetween($createdAt, 'now');
+
+        return [
+            'created_at' => $timestamp,
+            'updated_at' => $timestamp,
+        ];
     }
 }

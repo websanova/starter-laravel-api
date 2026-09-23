@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -42,5 +43,14 @@ class Stat extends Model
         }
 
         $query->where('group', $group);
+    }
+
+    /**
+     * Groups that are still calculated but not worth showing yet. Subscription
+     * stats have no seeded data behind them, so they only ever report zeros.
+     */
+    public function scopeVisible(Builder $query): void
+    {
+        $query->whereNot('group', StatGroup::Subscriptions->value);
     }
 }

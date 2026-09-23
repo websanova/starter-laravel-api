@@ -16,6 +16,7 @@ class StatController extends Controller
     public function index(IndexRequest $request): JsonResponse
     {
         $stats = Stat::query()
+            ->visible()
             ->forGroup($request->validated('group'))
             ->get();
 

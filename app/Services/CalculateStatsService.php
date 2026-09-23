@@ -23,12 +23,12 @@ class CalculateStatsService
                 continue;
             }
 
-            foreach ($groupQueries as $key => $query) {
+            foreach ($groupQueries as $key => $entry) {
                 foreach ($this->dateRanges() as $range => $dates) {
-                    $q = clone $query;
+                    $q = clone $entry['query'];
 
                     if ($dates) {
-                        $q->whereBetween('created_at', $dates);
+                        $q->whereBetween($entry['column'] ?? 'created_at', $dates);
                     }
 
                     Stat::updateOrCreate(
@@ -45,31 +45,39 @@ class CalculateStatsService
     }
 
     /**
-     * All stat queries grouped by their stat group.
+     * All stat queries grouped by their stat group. The column is what the
+     * date ranges filter on, defaulting to created_at when left out.
      *
-     * @return array<string, array<string, \Illuminate\Database\Eloquent\Builder>>
+     * @return array<string, array<string, array{query: \Illuminate\Database\Eloquent\Builder, column?: string}>>
      */
     protected function queries(): array
     {
         $queries = [];
 
         foreach (Plan::cached() as $plan) {
-            $queries['subscriptions']["signups_{$plan->slug}"] = User::query()->where('plan_id', $plan->id);
+            $queries['subscriptions']["signups_{$plan->slug}"] = ['query' => User::query()->where('plan_id', $plan->id)];
 
             foreach ($plan->prices as $price) {
                 if (!$price->stripe_price_id) {
                     continue;
                 }
 
-                $queries['subscriptions']["{$plan->slug}_{$price->interval->value}"] = User::query()
+                $queries['subscriptions']["{$plan->slug}_{$price->interval->value}"] = ['query' => User::query()
                     ->whereHas('subscriptions', fn ($q) => $q
                         ->where('stripe_price', $price->stripe_price_id)
-                        ->where('stripe_status', 'active'));
+                        ->where('stripe_status', 'active'))];
             }
         }
 
-        $queries['bookmarks']['total'] = Bookmark::query();
-        $queries['tags']['total'] = Tag::query();
+        $queries['users']['registrations'] = ['query' => User::query()];
+
+        $queries['users']['active'] = [
+            'query' => User::query()->whereNotNull('last_active_at'),
+            'column' => 'last_active_at',
+        ];
+
+        $queries['bookmarks']['total'] = ['query' => Bookmark::query()];
+        $queries['tags']['total'] = ['query' => Tag::query()];
 
         return $queries;
     }
