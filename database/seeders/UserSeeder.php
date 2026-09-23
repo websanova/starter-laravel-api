@@ -54,6 +54,7 @@ class UserSeeder extends Seeder
 
             if ($email) {
                 $attributes['email'] = $email;
+                $attributes['locale'] = 'en-US';
             }
 
             $user = User::factory()->create($attributes);
