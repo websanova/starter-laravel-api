@@ -51,6 +51,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/payment-method/intent', [App\Http\Controllers\App\PaymentMethodIntentController::class, 'store']);
         Route::post('/payment-method/sync', [App\Http\Controllers\App\PaymentMethodSyncController::class, 'store']);
 
+        Route::patch('/preferences', [App\Http\Controllers\App\PreferenceController::class, 'update']);
+
         Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
         Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
 
@@ -94,6 +96,8 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 'password-updated', 'admin'])->group(function () {
+    Route::patch('/preferences', [App\Http\Controllers\Admin\PreferenceController::class, 'update']);
+
     Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'show']);
 
     Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index']);

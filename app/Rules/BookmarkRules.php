@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use App\Enums\BookmarkSort;
+use App\Enums\BookmarkView;
 use App\Models\Bookmark;
 use Closure;
 use Illuminate\Validation\Rule;
@@ -79,5 +80,13 @@ class BookmarkRules
                 }
             },
         ];
+    }
+
+    /**
+     * Validation rules for the view field.
+     */
+    public static function view(): array
+    {
+        return ['sometimes', 'string', Rule::enum(BookmarkView::class)];
     }
 }

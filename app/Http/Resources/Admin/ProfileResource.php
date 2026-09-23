@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Enums\PreferenceScope;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,6 +21,7 @@ class ProfileResource extends JsonResource
             'id' => $this->id,
             'last_name' => $this->last_name,
             'locale' => $this->locale,
+            'preferences' => $this->preferencesFor(PreferenceScope::Admin),
             'role' => $this->roles->first()?->name,
             'timezone' => $this->timezone,
             'updated_at' => $this->updated_at,

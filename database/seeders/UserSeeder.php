@@ -55,6 +55,10 @@ class UserSeeder extends Seeder
             if ($email) {
                 $attributes['email'] = $email;
                 $attributes['locale'] = 'en-US';
+
+                // Null rather than the defaults themselves, so these rows read
+                // back whatever config currently says.
+                $attributes['preferences'] = null;
             }
 
             $user = User::factory()->create($attributes);

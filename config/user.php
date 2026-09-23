@@ -1,5 +1,10 @@
 <?php
 
+use App\Enums\BookmarkSort;
+use App\Enums\BookmarkView;
+use App\Enums\SortDirection;
+use App\Enums\UserSort;
+
 return [
 
     /*
@@ -30,5 +35,32 @@ return [
     */
 
     'supported_locales' => explode(',', env('USER_SUPPORTED_LOCALES', 'en-US,en-CA,fr-CA')),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Preferences
+    |--------------------------------------------------------------------------
+    |
+    | Saved client display state, keyed by scope. Only the keys a user has
+    | actually changed are stored on their row, and these fill in the rest at
+    | read time. Adding or removing a key here takes effect on the next
+    | request without a migration or a backfill over existing rows.
+    |
+    */
+
+    'preferences' => [
+
+        'admin' => [
+            'users_sort_by' => UserSort::CreatedAt->value,
+            'users_sort_dir' => SortDirection::Desc->value,
+        ],
+
+        'app' => [
+            'bookmarks_sort_by' => BookmarkSort::CreatedAt->value,
+            'bookmarks_sort_dir' => SortDirection::Desc->value,
+            'bookmarks_view' => BookmarkView::Expanded->value,
+        ],
+
+    ],
 
 ];

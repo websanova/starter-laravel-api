@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\PreferenceScope;
 use App\Enums\SortDirection;
 use App\Enums\StoragePath;
 use App\Enums\UserRole;
@@ -64,6 +65,7 @@ class User extends Authenticatable implements HasLocalePreference
         'last_name',
         'locale',
         'timezone',
+        'preferences',
         'email',
         'email_verified_at',
         'phone',
@@ -106,6 +108,7 @@ class User extends Authenticatable implements HasLocalePreference
             'last_active_at' => 'datetime',
             'password' => 'hashed',
             'is_password_reset_required' => 'boolean',
+            'preferences' => 'array',
         ];
     }
 
@@ -244,6 +247,38 @@ class User extends Authenticatable implements HasLocalePreference
         }
 
         return config('app.fallback_locale');
+    }
+
+    /**
+     * Get the user's preferences for the given scope, with anything they have
+     * not set themselves filled in from config. Keys no longer in config are
+     * dropped rather than returned, so removing a preference takes effect
+     * without having to clean up the rows that still carry it.
+     */
+    public function preferencesFor(PreferenceScope $scope): array
+    {
+        $defaults = config("user.preferences.{$scope->value}");
+        $stored = $this->preferences[$scope->value] ?? [];
+
+        return array_intersect_key(array_merge($defaults, $stored), $defaults);
+    }
+
+    /**
+     * Merge a partial set of preferences into the given scope.
+     */
+    public function setPreferences(PreferenceScope $scope, array $values): void
+    {
+        $preferences = $this->preferences ?? [];
+
+        // Merged over what is stored rather than over the resolved set, so
+        // that touching one preference does not freeze the current defaults
+        // for the others into the row.
+        $preferences[$scope->value] = array_intersect_key(
+            array_merge($preferences[$scope->value] ?? [], $values),
+            config("user.preferences.{$scope->value}")
+        );
+
+        $this->update(['preferences' => $preferences]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\App;
 
+use App\Enums\PreferenceScope;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -42,6 +43,7 @@ class ProfileResource extends JsonResource
                 'slug' => $plan->slug,
                 'tier' => $plan->tier,
             ] : null,
+            'preferences' => $this->preferencesFor(PreferenceScope::App),
             'subscription' => $subscription ? [
                 'ends_at' => $subscription->ends_at,
                 'interval' => Plan::intervalForPriceId($subscription->stripe_price),
