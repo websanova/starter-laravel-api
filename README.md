@@ -39,6 +39,7 @@ The starter-flows repo is a separate set of feature specs, implementation-agnost
 * **Token Auth (Sanctum)** - Register, login, logout, refresh, and password reset with configurable token expiration.
 * **Account Verification** - Code-based, multi-channel verification (email wired, SMS scaffolded), each channel set to disabled, auto, or required.
 * **Account Self-Management** - Profile, password, avatar, email change, locale/timezone, and self-delete with a grace period.
+* **Preferences** - Saved client display state with defaults in config, stored partial so adding or removing one needs no migration, and scoped to keep admin preferences out of the app payload.
 * **User Delete & Restore** - Soft delete, anonymize, or hard delete, with admin restore, auto-restore on login, and scheduled prune.
 * **Sample CRUD (Bookmarks & Tags)** - Reference resources showing relationships, ownership scoping, filtering, sorting, and pagination.
 * **Plans** - Freemium, trial, or required modes with prices synced from the provider and optional automatic tax.
