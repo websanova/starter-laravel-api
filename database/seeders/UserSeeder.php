@@ -31,6 +31,7 @@ class UserSeeder extends Seeder
 
         $rows = [
             ['email' => 'admin@starter.com', 'bookmarks' => 0, 'tags' => 0, 'role' => UserRole::Admin, 'welcome' => false, 'avatar' => 'animal-07.jpg'],
+            ['email' => 'empty@starter.com', 'bookmarks' => 0, 'tags' => 0, 'role' => null, 'welcome' => true, 'avatar' => 'animal-02.jpg'],
             ['email' => 'small@starter.com', 'bookmarks' => 50, 'tags' => 5, 'role' => null, 'welcome' => true, 'avatar' => 'cat-07.jpg'],
             ['email' => 'medium@starter.com', 'bookmarks' => 100, 'tags' => 10, 'role' => null, 'welcome' => true, 'avatar' => 'cat-05.jpg'],
             ['email' => 'large@starter.com', 'bookmarks' => 200, 'tags' => 20, 'role' => null, 'welcome' => true, 'avatar' => 'cat-01.jpg'],
