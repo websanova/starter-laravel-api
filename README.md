@@ -2,9 +2,11 @@
 
 A Laravel API starter with a full auth system, account management, and production-ready integrations out of the box. No frontend, no Blade, no Vite. Just a clean JSON API.
 
+Part of the Starters, built at [Websanova](https://www.websanova.com).
+
 ## Docs
 
-Full documentation at [websanova.com/docs/starter-api](https://websanova.com/docs/starter-api).
+Full documentation at [websanova.com/docs/starter-api](https://www.websanova.com/docs/starter-api).
 
 - [Startup Guide](docs/startup-guide.md)
 - [Docker Guide](docs/docker-guide.md)
@@ -61,4 +63,4 @@ MIT - see [LICENSE](LICENSE).
 
 ---
 
-Built and maintained by [Rob](https://www.websanova.com/about). I take freelance and contract work, including MVP projects built on the Starters. Check out the [hire page](https://www.websanova.com/hire) for more info.
+Built and maintained by Rob at [Websanova](https://www.websanova.com). I take freelance and contract work, including MVP projects built on the Starters. Check out the [hire page](https://www.websanova.com/hire) for more info.
