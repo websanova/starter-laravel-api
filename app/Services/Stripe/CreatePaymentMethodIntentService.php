@@ -14,18 +14,27 @@ class CreatePaymentMethodIntentService implements CreatePaymentMethodIntentProvi
      * element mounts against. Nothing is charged, so the client always confirms
      * this as a setup.
      *
-     * Only ever a replacement. Subscribe collects the first card inside its own
-     * checkout session and that session is what creates the customer, so no
-     * customer means the user never subscribed rather than something to make
-     * here.
+     * An addition as much as a replacement, since a user who has never
+     * subscribed reaches this page, and it is also the way back for a cancelled
+     * user who removed theirs.
+     *
+     * The address has to be on the customer before a secret is handed out, which
+     * is what makes it impossible to store a card against a customer with no
+     * address. No customer means no address either, so both answer the same way
+     * and the client goes back to the address step. Nothing is created here, the
+     * address call ahead of this one is what makes the customer.
      */
     public function handle(User $user): ServiceResult
     {
         if (!$user->hasStripeId()) {
-            return ServiceResult::error('customer_missing');
+            return ServiceResult::error('address_required');
         }
 
         try {
+            if (!$user->asStripeCustomer()->address) {
+                return ServiceResult::error('address_required');
+            }
+
             /**
              * The card is collected now and billed later on renewals, with no
              * one at the keyboard to authenticate, so Stripe is told up front

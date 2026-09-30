@@ -23,6 +23,10 @@ class SyncPaymentMethodService implements SyncPaymentMethodProvider
      * for it, because the webhook already covers every path where the client
      * cannot report back, and guessing which of the customer's intents was
      * meant is only needed once that is no longer true.
+     *
+     * The address is not part of this. It is written before the setup intent is
+     * ever issued, so by the time a card can be confirmed the customer already
+     * carries one and the webhook covers this whole call on its own.
      */
     public function handle(User $user, string $setupIntentId): ServiceResult
     {

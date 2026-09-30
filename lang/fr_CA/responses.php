@@ -68,6 +68,9 @@ return [
 
     'payment_method.updated' => 'Mode de paiement mis a jour avec succes.',
     'payment_method.nothing_to_sync' => 'Aucun nouveau mode de paiement a appliquer.',
+    'payment_method.address_updated' => 'Adresse de facturation mise a jour avec succes.',
+    'payment_method.address_invalid' => 'Cette adresse n a pas pu etre verifiee. Veuillez la corriger et reessayer.',
+    'payment_method.address_required' => 'Une adresse de facturation est requise avant d ajouter un mode de paiement.',
     'payment_method.subscription_active' => 'Votre mode de paiement ne peut pas etre retire tant que votre abonnement se renouvelle.',
     'payment_method.customer_missing' => 'Aucun compte de facturation n a ete trouve pour votre compte. Veuillez contacter le soutien.',
     'payment_method.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',

@@ -18,11 +18,30 @@ test('user without a stripe customer cannot open a setup intent', function () {
     $response = $this->actingAs($user)->postJson('/payment-method/intent');
 
     $response->assertStatus(409)
-        ->assertJsonPath('error', 'customer_missing');
+        ->assertJsonPath('error', 'address_required');
 });
 
-test('user with a stripe customer can open a setup intent', function () {
+test('user without an address cannot open a setup intent', function () {
     $user = stripeSandboxUser();
+
+    $response = $this->actingAs($user)->postJson('/payment-method/intent');
+
+    $response->assertStatus(409)
+        ->assertJsonPath('error', 'address_required');
+})->group('stripe');
+
+test('user with an address can open a setup intent', function () {
+    $user = stripeSandboxUser();
+
+    $user->updateStripeCustomer([
+        'address' => [
+            'city' => 'Toronto',
+            'country' => 'CA',
+            'line1' => '100 Queen Street West',
+            'postal_code' => 'M5H 2N2',
+            'state' => 'ON',
+        ],
+    ]);
 
     $response = $this->actingAs($user)->postJson('/payment-method/intent');
 
