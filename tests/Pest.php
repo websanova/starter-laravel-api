@@ -63,9 +63,17 @@ function stripeSandboxUser(): User
     return $user;
 }
 
+/**
+ * A card on the customer in the state the app stores one, redisplayable, which
+ * is what a checkout session filters its saved cards on. The attach call does
+ * not take the field and a card has to be attached before it can be updated,
+ * so it takes two calls.
+ */
 function stripeSandboxCard(User $user, string $card = 'pm_card_visa'): StripePaymentMethod
 {
-    return Cashier::stripe()->paymentMethods->attach($card, ['customer' => $user->stripe_id]);
+    $paymentMethod = Cashier::stripe()->paymentMethods->attach($card, ['customer' => $user->stripe_id]);
+
+    return Cashier::stripe()->paymentMethods->update($paymentMethod->id, ['allow_redisplay' => 'always']);
 }
 
 /**
