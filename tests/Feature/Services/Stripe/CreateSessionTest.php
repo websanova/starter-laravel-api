@@ -67,6 +67,22 @@ test('user with a card on file is not asked for an address', function () {
 
     stripeSandboxCard($user);
 
+    /**
+     * The address goes on with the card because that is the state the branch is
+     * written for, the payment method flow having written both. Automatic tax
+     * refuses a create that neither carries an address nor collects one.
+     */
+    $user->updateStripeCustomer([
+        'name' => 'Ada Lovelace',
+        'address' => [
+            'city' => 'Toronto',
+            'country' => 'CA',
+            'line1' => '100 Queen Street West',
+            'postal_code' => 'M5H 2N2',
+            'state' => 'ON',
+        ],
+    ]);
+
     $result = app(CreateSessionService::class)->handle($user, createSessionPlan(), PlanInterval::Monthly);
 
     $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
