@@ -99,13 +99,6 @@ class CreateSessionService implements CreateSessionProvider
                  * element's own save consent checkbox.
                  */
                 'saved_payment_method_options' => ['payment_method_save' => 'enabled'],
-                /**
-                 * The card confirmed here becomes the subscription's default,
-                 * so every renewal after the first invoice charges it.
-                 */
-                'subscription_data' => [
-                    'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
-                ],
             ];
 
             /**
