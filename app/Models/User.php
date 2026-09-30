@@ -72,13 +72,6 @@ class User extends Authenticatable implements HasLocalePreference
         'phone_verified_at',
         'password',
         'avatar',
-        'billing_name',
-        'billing_line1',
-        'billing_line2',
-        'billing_city',
-        'billing_state',
-        'billing_postal_code',
-        'billing_country',
         'plan_id',
         'keywords',
         'last_active_at',
@@ -279,45 +272,6 @@ class User extends Authenticatable implements HasLocalePreference
         );
 
         $this->update(['preferences' => $preferences]);
-    }
-
-    /**
-     * The name handed to the billing provider. Overridden because Cashier
-     * reads a "name" attribute this model does not have, which leaves the
-     * customer nameless, and because the billing name is its own field rather
-     * than the user's own name.
-     */
-    public function stripeName(): ?string
-    {
-        return $this->billing_name;
-    }
-
-    /**
-     * The billing address handed to the billing provider. Country and postal
-     * code are the pair automatic tax resolves a location from, so the rest is
-     * only carried so that invoices read properly.
-     */
-    public function billingAddress(): array
-    {
-        return array_filter([
-            'city' => $this->billing_city,
-            'country' => $this->billing_country,
-            'line1' => $this->billing_line1,
-            'line2' => $this->billing_line2,
-            'postal_code' => $this->billing_postal_code,
-            'state' => $this->billing_state,
-        ]);
-    }
-
-    /**
-     * Whether the user has enough of an address for the provider to resolve a
-     * tax location. A country on its own is enough in most of the world, but
-     * not in countries that tax below the national level, so both are held to
-     * the same bar rather than guessing per country.
-     */
-    public function hasBillingAddress(): bool
-    {
-        return !is_null($this->billing_country) && !is_null($this->billing_postal_code);
     }
 
     /**

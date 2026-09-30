@@ -55,11 +55,6 @@ return [
     'bookmark.updated' => 'Bookmark updated successfully.',
     'bookmark.deleted' => 'Bookmark deleted successfully.',
 
-    'billing.address_updated' => 'Billing address updated successfully.',
-    'billing.address_invalid' => 'This address could not be verified. Please check it and try again.',
-    'billing.customer_missing' => 'No billing account was found for your account. Please contact support.',
-    'billing.provider_unavailable' => 'The billing provider could not be reached. Please try again.',
-
     'subscription.required' => 'An active subscription is required to access this resource.',
     'subscription.created' => 'Subscription created successfully.',
     'subscription.updated' => 'Subscription updated successfully.',
@@ -68,7 +63,6 @@ return [
     'subscription.synced' => 'Subscription synced successfully.',
     'subscription.already_subscribed' => 'You already have an active subscription.',
     'subscription.payment_required' => 'Your subscription has an outstanding payment. Update your payment method to continue.',
-    'subscription.address_required' => 'A billing address is required before you can subscribe.',
     'subscription.payment_method_required' => 'A payment method is required before you can subscribe.',
     'subscription.payment_failed' => 'Your payment method was declined. Update it and try again.',
     'subscription.nothing_to_sync' => 'There is no completed checkout to apply.',

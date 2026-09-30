@@ -39,8 +39,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/avatar', [App\Http\Controllers\App\AvatarController::class, 'store']);
         Route::delete('/avatar', [App\Http\Controllers\App\AvatarController::class, 'destroy']);
 
-        Route::put('/billing/address', [App\Http\Controllers\App\BillingAddressController::class, 'update']);
-
         Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
 
         Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);

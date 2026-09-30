@@ -55,10 +55,6 @@ return [
     'bookmark.updated' => 'Signet mis a jour avec succes.',
     'bookmark.deleted' => 'Signet supprime avec succes.',
 
-    'billing.address_invalid' => 'Cette adresse n a pas pu etre verifiee. Veuillez la corriger et reessayer.',
-    'billing.customer_missing' => 'Aucun compte de facturation n a ete trouve pour votre compte. Veuillez contacter le soutien.',
-    'billing.provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
-
     'subscription.required' => 'Un abonnement actif est requis pour acceder a cette ressource.',
     'subscription.created' => 'Abonnement cree avec succes.',
     'subscription.updated' => 'Abonnement mis a jour avec succes.',

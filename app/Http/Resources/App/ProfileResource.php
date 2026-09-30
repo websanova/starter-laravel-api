@@ -20,11 +20,9 @@ class ProfileResource extends JsonResource
 
         return [
             'avatar_url' => $this->avatar_url,
-            'billing_address' => $this->billingAddress() ? new BillingAddressResource($this) : null,
             'created_at' => $this->created_at,
             'email' => $this->email,
             'first_name' => $this->first_name,
-            'has_billing_address' => $this->hasBillingAddress(),
             'has_payment_method' => $this->hasDefaultPaymentMethod(),
             'id' => $this->id,
             'is_on_grace_period' => $this->is_on_grace_period,

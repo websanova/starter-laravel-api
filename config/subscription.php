@@ -56,10 +56,9 @@ return [
     | on in the provider's own dashboard, and a subscription will be rejected if
     | it is enabled on only one side.
     |
-    | A billing address is a precondition of subscribing either way, so this
-    | flag decides nothing more than what goes on the subscription itself.
-    | Users without one are turned away with "subscription.address_required"
-    | before the provider is ever called.
+    | The address it calculates from is collected in the checkout session and
+    | held on the provider's customer, so this flag decides nothing more than
+    | whether the subscription carries automatic tax.
     |
     */
 

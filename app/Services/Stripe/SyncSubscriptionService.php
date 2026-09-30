@@ -16,9 +16,9 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
 {
     /**
      * Write every local row a completed checkout session accounts for, all of
-     * it read off the one session. The subscription, the address the user
-     * entered and the card that paid for it are only known to Stripe until this
-     * runs, since none of them existed before the confirm.
+     * it read off the one session. The subscription and the card that paid for
+     * it are only known to Stripe until this runs, since neither existed before
+     * the confirm.
      *
      * Shared by the client call and the webhook, which differ only in what
      * prompts them. Everything is an updateOrCreate against ids Stripe already
@@ -72,7 +72,7 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
         DB::transaction(function () use ($user, $session) {
             $this->commitSubscription($user, $session->subscription);
 
-            $this->commitUser($user, $session->customer_details ?? null);
+            $this->commitUser($user);
         });
 
         return ServiceResult::success();
@@ -110,27 +110,12 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
     }
 
     /**
-     * Write the name and address Stripe collected in the session and the plan
-     * the new subscription entitles the user to. Both are only pushed to the
-     * provider by the session itself, so this side is the copy rather than the
-     * source, and it is skipped rather than blanked when the session carries
-     * no address.
+     * Write the plan the new subscription entitles the user to. Nothing about
+     * the address is stored here, the customer at the provider holds it.
      */
-    protected function commitUser(User $user, mixed $customerDetails): void
+    protected function commitUser(User $user): void
     {
         $user->load('subscriptions');
-
-        if ($customerDetails?->address) {
-            $user->fill([
-                'billing_city' => $customerDetails->address->city,
-                'billing_country' => $customerDetails->address->country,
-                'billing_line1' => $customerDetails->address->line1,
-                'billing_line2' => $customerDetails->address->line2,
-                'billing_name' => $customerDetails->name,
-                'billing_postal_code' => $customerDetails->address->postal_code,
-                'billing_state' => $customerDetails->address->state,
-            ]);
-        }
 
         $user->fillPlan()->save();
     }
