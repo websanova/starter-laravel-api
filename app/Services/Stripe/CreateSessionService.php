@@ -32,9 +32,9 @@ class CreateSessionService implements CreateSessionProvider
     /**
      * Open a Checkout Session and hand back the secret the client mounts its
      * address and payment elements against. Nothing else is created here. The
-     * address, the card, the promotion code, the tax and the subscription all
-     * hang off the session and only exist once the user confirms, so a user who
-     * abandons the page leaves a session that ages out on its own.
+     * address, the card, the tax and the subscription all hang off the session
+     * and only exist once the user confirms, so a user who abandons the page
+     * leaves a session that ages out on its own.
      *
      * Stripe creates the subscription inside that confirm, in the browser, so
      * this is the only place the server sees the user and the only place the
@@ -43,6 +43,32 @@ class CreateSessionService implements CreateSessionProvider
     public function handle(User $user, Plan $plan, PlanInterval $interval): ServiceResult
     {
         $user->loadMissing('subscriptions');
+
+        $subscription = $user->subscription();
+
+        /**
+         * The check goes before anything at Stripe because it reads the local
+         * subscription, so it needs neither the customer nor the sweep, and a
+         * refused user costs no call at all.
+         */
+        if ($subscription) {
+            /**
+             * Past due and unpaid are named apart from a live subscription
+             * so the client can send the user to the card page rather than
+             * tell them they are already subscribed. Both still refuse,
+             * since the subscription exists at Stripe either way and a
+             * second one is wrong regardless. Checked first because whether
+             * a past due subscription counts as valid is a Cashier setting,
+             * and this does not depend on how it is set.
+             */
+            if ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID) {
+                return ServiceResult::error('payment_required');
+            }
+
+            if ($subscription->valid()) {
+                return ServiceResult::error('already_subscribed');
+            }
+        }
 
         try {
             /**
@@ -57,27 +83,6 @@ class CreateSessionService implements CreateSessionProvider
 
             $this->expireOpenSessions($customer->id);
 
-            $subscription = $user->subscription();
-
-            if ($subscription) {
-                /**
-                 * Past due and unpaid are named apart from a live subscription
-                 * so the client can send the user to the card page rather than
-                 * tell them they are already subscribed. Both still refuse,
-                 * since the subscription exists at Stripe either way and a
-                 * second one is wrong regardless. Checked first because whether
-                 * a past due subscription counts as valid is a Cashier setting,
-                 * and this does not depend on how it is set.
-                 */
-                if ($subscription->pastDue() || $subscription->stripe_status === StripeSubscription::STATUS_UNPAID) {
-                    return ServiceResult::error('payment_required');
-                }
-
-                if ($subscription->valid()) {
-                    return ServiceResult::error('already_subscribed');
-                }
-            }
-
             $payload = [
                 'ui_mode' => 'elements',
                 'mode' => 'subscription',
@@ -87,8 +92,6 @@ class CreateSessionService implements CreateSessionProvider
                     ['price' => $plan->priceId($interval), 'quantity' => 1],
                 ],
                 'return_url' => config('app.frontend_url') . '/subscribe',
-                'billing_address_collection' => 'required',
-                'allow_promotion_codes' => true,
                 /**
                  * The payment element only looks the customer's saved cards up
                  * when this is on. Without it the user is handed blank card
@@ -97,28 +100,34 @@ class CreateSessionService implements CreateSessionProvider
                  */
                 'saved_payment_method_options' => ['payment_method_save' => 'enabled'],
                 /**
-                 * The address the user enters in the session only reaches the
-                 * customer through this, and it has to reach it, otherwise the
-                 * renewals after the first invoice have no tax location to
-                 * calculate from. Stripe also refuses the create without it
-                 * once automatic tax is on and a customer is passed.
+                 * The card confirmed here becomes the subscription's default,
+                 * so every renewal after the first invoice charges it.
                  */
-                'customer_update' => ['address' => 'auto', 'name' => 'auto'],
+                'subscription_data' => [
+                    'payment_settings' => ['save_default_payment_method' => 'on_subscription'],
+                ],
             ];
+
+            /**
+             * The address the user enters in the session only reaches the
+             * customer through customer_update, and it has to reach it,
+             * otherwise the renewals after the first invoice have no tax
+             * location to calculate from. Stripe also refuses the create
+             * without it once automatic tax is on and a customer is passed.
+             *
+             * Both are skipped for a customer with a card on file, since the
+             * payment method flow already wrote an address there. Asking again
+             * puts a step in front of a user with nothing to correct, and
+             * customer_update would overwrite a tax address from a form they
+             * did not come to fill in.
+             */
+            if (!$this->hasSavedPaymentMethod($customer->id)) {
+                $payload['billing_address_collection'] = 'required';
+                $payload['customer_update'] = ['address' => 'auto', 'name' => 'auto'];
+            }
 
             if (config('subscription.automatic_tax')) {
                 $payload['automatic_tax'] = ['enabled' => true];
-            }
-
-            /**
-             * trial_end rather than trial_period_days, since a user carrying a
-             * partial trial keeps whatever is left of it and a whole number of
-             * days cannot say that. Built here rather than through Cashier's
-             * checkout builder, which floors the same value at 48 hours out and
-             * would hand back time the user has already spent.
-             */
-            if ($trialEndsAt = $user->resolveTrialEnd()) {
-                $payload['subscription_data']['trial_end'] = $trialEndsAt->getTimestamp();
             }
 
             $session = Cashier::stripe()->checkout->sessions->create($payload);
@@ -143,8 +152,8 @@ class CreateSessionService implements CreateSessionProvider
      * open on another device stays good for up to a day and buys a second
      * subscription when the user comes back to it.
      *
-     * Running before the subscription check is what makes that check useful,
-     * since a session swept here can no longer complete behind it.
+     * A user who already has a subscription never reaches here, since the
+     * check above refuses them before anything at Stripe is touched.
      */
     protected function expireOpenSessions(string $customerId): void
     {
@@ -163,5 +172,25 @@ class CreateSessionService implements CreateSessionProvider
                 // between the list and here is no longer open.
             }
         }
+    }
+
+    /**
+     * Whether the customer has a card the session will hand back in
+     * savedPaymentMethods, which is what the client opens its confirm step on.
+     *
+     * Read from Stripe and filtered to the same allow_redisplay the session
+     * filters on, so the two cannot disagree. A local flag drifts, and it only
+     * knows about the default payment method where the session surfaces any
+     * saved one, which would land a user on a confirm step of a session that
+     * was still asking for an address.
+     */
+    protected function hasSavedPaymentMethod(string $customerId): bool
+    {
+        $paymentMethods = Cashier::stripe()->customers->allPaymentMethods($customerId, [
+            'allow_redisplay' => 'always',
+            'limit' => 1,
+        ]);
+
+        return count($paymentMethods->data) > 0;
     }
 }
