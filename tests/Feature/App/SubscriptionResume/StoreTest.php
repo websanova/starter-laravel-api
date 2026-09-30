@@ -15,7 +15,8 @@ test('user without cancelled subscription cannot resume', function () {
 
     $response = $this->actingAs($user)->postJson('/subscription/resume');
 
-    $response->assertStatus(403);
+    $response->assertStatus(409)
+        ->assertJsonPath('error', 'nothing_to_resume');
 });
 
 

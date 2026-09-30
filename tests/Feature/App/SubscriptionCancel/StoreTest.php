@@ -19,7 +19,8 @@ test('user without subscription cannot cancel', function () {
 
     $response = $this->actingAs($user)->postJson('/subscription/cancel');
 
-    $response->assertStatus(403);
+    $response->assertStatus(409)
+        ->assertJsonPath('error', 'nothing_to_cancel');
 });
 
 test('cancelling runs the subscription to the end of the term', function () {
