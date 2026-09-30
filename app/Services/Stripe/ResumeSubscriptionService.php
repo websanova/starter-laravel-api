@@ -36,6 +36,15 @@ class ResumeSubscriptionService implements ResumeSubscriptionProvider
             return ServiceResult::success(['subscription' => $subscription]);
         }
 
+        /**
+         * A term that ran out while the page sat open has nothing left at Stripe
+         * to resume, so it answers the same as having no subscription at all and
+         * the user subscribes again through create.
+         */
+        if (!$subscription->onGracePeriod()) {
+            return ServiceResult::error('nothing_to_resume');
+        }
+
         try {
             if (!$this->hasRenewalPaymentMethod($user, $subscription)) {
                 return ServiceResult::error('payment_method_missing');
