@@ -8,6 +8,8 @@ The exception is the `stripe` group. Those tests talk to a real Stripe sandbox r
 php artisan test --group stripe
 ```
 
+If you want them in the default run, drop the `<groups><exclude>` block from `phpunit.xml` and everything runs together. Worth knowing what that buys you. The suite then needs sandbox credentials to pass at all, every run creates and deletes customers at Stripe, and it goes from a couple of seconds to most of a minute. Reasonable on a project where billing is what you are working on, less so in CI on a branch that never touches it.
+
 ## Sandbox setup
 
 A sandbox is a full isolated copy of a Stripe account with its own keys, data and webhook endpoints. Use one dedicated to this suite rather than the test mode you develop against, so a cleanup bug can never touch data you created by hand. When it fills up, delete the whole sandbox and make another.
