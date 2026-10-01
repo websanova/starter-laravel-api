@@ -11,7 +11,7 @@ test('super can list a user\'s tags', function () {
     $super->assignRole(UserRole::Super);
 
     $target = User::factory()->create();
-    Tag::factory()->count(3)->create(['user_id' => $target->id]);
+    userTags($target, 3);
 
     $response = $this->actingAs($super)->getJson("/admin/users/{$target->id}/tags");
 
@@ -27,7 +27,7 @@ test('admin can list a user\'s tags', function () {
     $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
-    Tag::factory()->count(3)->create(['user_id' => $target->id]);
+    userTags($target, 3);
 
     $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/tags");
 
@@ -59,8 +59,8 @@ test('returns only the target user\'s tags', function () {
     $target = User::factory()->create();
     $other = User::factory()->create();
 
-    Tag::factory()->count(2)->create(['user_id' => $target->id]);
-    Tag::factory()->count(3)->create(['user_id' => $other->id]);
+    userTags($target, 2);
+    userTags($other, 3);
 
     $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/tags");
 

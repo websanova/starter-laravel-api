@@ -59,7 +59,7 @@ test('user can resend their bookmark url unchanged', function () {
 test('user can add tags to a bookmark', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
-    $tags = Tag::factory()->count(2)->create(['user_id' => $user->id]);
+    $tags = userTags($user, 2);
 
     $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => $tags->pluck('id')->all(),
@@ -72,7 +72,7 @@ test('user can add tags to a bookmark', function () {
 test('user can replace tags on a bookmark', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
-    $oldTags = Tag::factory()->count(2)->create(['user_id' => $user->id]);
+    $oldTags = userTags($user, 2);
     $vue = Tag::factory()->create(['user_id' => $user->id, 'name' => 'vue']);
     $bookmark->tags()->attach($oldTags);
 
@@ -131,7 +131,7 @@ test('user cannot attach another user tag', function () {
 test('user cannot attach more than the max tags', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
-    $tags = Tag::factory()->count(config('bookmark.max_tags') + 1)->create(['user_id' => $user->id]);
+    $tags = userTags($user, config('bookmark.max_tags') + 1);
 
     $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => $tags->pluck('id')->all(),

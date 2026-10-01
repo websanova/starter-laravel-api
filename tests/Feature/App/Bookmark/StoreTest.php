@@ -126,7 +126,7 @@ test('user cannot attach another user tag', function () {
 
 test('user can attach up to the max tags', function () {
     $user = User::factory()->create();
-    $tags = Tag::factory()->count(config('bookmark.max_tags'))->create(['user_id' => $user->id]);
+    $tags = userTags($user, config('bookmark.max_tags'));
 
     $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',
@@ -140,7 +140,7 @@ test('user can attach up to the max tags', function () {
 
 test('user cannot attach more than the max tags', function () {
     $user = User::factory()->create();
-    $tags = Tag::factory()->count(config('bookmark.max_tags') + 1)->create(['user_id' => $user->id]);
+    $tags = userTags($user, config('bookmark.max_tags') + 1);
 
     $response = $this->actingAs($user)->postJson('/bookmarks', [
         'url' => 'https://example.com',

@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Laravel\Cashier\Cashier;
 use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\SetupIntent as StripeSetupIntent;
@@ -127,4 +129,15 @@ function stripeSandboxFlush(): void
     foreach (stripeSandboxTrack() as $customer) {
         Cashier::stripe()->customers->delete($customer);
     }
+}
+
+/**
+ * Tags for one user with distinct names. The factory draws from a fixed list
+ * at random, so asking it for several at once can collide on the unique
+ * user_id/slug index.
+ */
+function userTags(User $user, int $count): Collection
+{
+    return collect(range(1, $count))
+        ->map(fn ($i) => Tag::factory()->create(['user_id' => $user->id, 'name' => "tag{$i}"]));
 }
