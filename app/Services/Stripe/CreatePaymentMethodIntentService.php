@@ -41,7 +41,10 @@ class CreatePaymentMethodIntentService implements CreatePaymentMethodIntentProvi
              * what it is for and asks the bank for the mandate while the user
              * is still here.
              */
-            $setupIntent = $user->createSetupIntent(['usage' => 'off_session']);
+            $setupIntent = $user->createSetupIntent([
+                'usage' => 'off_session',
+                'payment_method_types' => ['card'],
+            ]);
         } catch (ApiErrorException $e) {
             return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
         }
