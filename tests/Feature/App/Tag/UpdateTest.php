@@ -9,7 +9,7 @@ test('user can update their tag', function () {
     $user = User::factory()->create();
     $tag = Tag::factory()->for($user)->create(['name' => 'laravl']);
 
-    $response = $this->actingAs($user)->putJson("/tags/{$tag->id}", [
+    $response = $this->actingAs($user)->patchJson("/tags/{$tag->id}", [
         'name' => 'Laravel',
     ]);
 
@@ -23,7 +23,7 @@ test('user cannot update another users tag', function () {
     $other = User::factory()->create();
     $tag = Tag::factory()->for($other)->create(['name' => 'laravel']);
 
-    $response = $this->actingAs($user)->putJson("/tags/{$tag->id}", [
+    $response = $this->actingAs($user)->patchJson("/tags/{$tag->id}", [
         'name' => 'vue',
     ]);
 
@@ -34,7 +34,7 @@ test('name must be a string', function () {
     $user = User::factory()->create();
     $tag = Tag::factory()->for($user)->create(['name' => 'laravel']);
 
-    $response = $this->actingAs($user)->putJson("/tags/{$tag->id}", [
+    $response = $this->actingAs($user)->patchJson("/tags/{$tag->id}", [
         'name' => 123,
     ]);
 
@@ -46,7 +46,7 @@ test('name must not exceed 50 characters', function () {
     $user = User::factory()->create();
     $tag = Tag::factory()->for($user)->create(['name' => 'laravel']);
 
-    $response = $this->actingAs($user)->putJson("/tags/{$tag->id}", [
+    $response = $this->actingAs($user)->patchJson("/tags/{$tag->id}", [
         'name' => str_repeat('a', 51),
     ]);
 
@@ -57,7 +57,7 @@ test('name must not exceed 50 characters', function () {
 test('unauthenticated user cannot update a tag', function () {
     $tag = Tag::factory()->create();
 
-    $response = $this->putJson("/tags/{$tag->id}", [
+    $response = $this->patchJson("/tags/{$tag->id}", [
         'name' => 'vue',
     ]);
 
