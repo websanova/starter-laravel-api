@@ -109,6 +109,8 @@ test('resend does nothing when mode is disabled', function () {
 
     $response = $this->actingAs($user)->postJson('/verify/resend', ['channel' => 'email']);
 
-    $response->assertStatus(200);
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('channel');
+
     Notification::assertNothingSent();
 });
