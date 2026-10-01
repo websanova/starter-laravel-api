@@ -10,7 +10,7 @@ test('user can update their bookmark', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'title' => 'Updated Title',
     ]);
 
@@ -23,7 +23,7 @@ test('user cannot update another user bookmark', function () {
     $other = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $other->id]);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'title' => 'Hijacked',
     ]);
 
@@ -35,7 +35,7 @@ test('user cannot change url to one they already saved', function () {
     Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com']);
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://other.com']);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'url' => 'https://example.com',
     ]);
 
@@ -47,7 +47,7 @@ test('user can resend their bookmark url unchanged', function () {
     $user = User::factory()->create();
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'url' => 'https://example.com']);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'url' => 'https://example.com',
         'title' => 'Updated',
     ]);
@@ -61,7 +61,7 @@ test('user can add tags to a bookmark', function () {
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
     $tags = Tag::factory()->count(2)->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => $tags->pluck('id')->all(),
     ]);
 
@@ -76,7 +76,7 @@ test('user can replace tags on a bookmark', function () {
     $vue = Tag::factory()->create(['user_id' => $user->id, 'name' => 'vue']);
     $bookmark->tags()->attach($oldTags);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => [$vue->id],
     ]);
 
@@ -91,7 +91,7 @@ test('user can clear tags on a bookmark', function () {
     $tag = Tag::factory()->create(['user_id' => $user->id]);
     $bookmark->tags()->attach($tag);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => [],
     ]);
 
@@ -105,7 +105,7 @@ test('omitting tags leaves them untouched', function () {
     $tag = Tag::factory()->create(['user_id' => $user->id, 'name' => 'laravel']);
     $bookmark->tags()->attach($tag);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'title' => 'Updated',
     ]);
 
@@ -120,7 +120,7 @@ test('user cannot attach another user tag', function () {
     $tag = Tag::factory()->create(['user_id' => $other->id]);
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => [$tag->id],
     ]);
 
@@ -133,7 +133,7 @@ test('user cannot attach more than the max tags', function () {
     $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
     $tags = Tag::factory()->count(config('bookmark.max_tags') + 1)->create(['user_id' => $user->id]);
 
-    $response = $this->actingAs($user)->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
         'tag_ids' => $tags->pluck('id')->all(),
     ]);
 
@@ -144,7 +144,7 @@ test('user cannot attach more than the max tags', function () {
 test('unauthenticated user cannot update a bookmark', function () {
     $bookmark = Bookmark::factory()->create();
 
-    $response = $this->putJson("/bookmarks/{$bookmark->id}", [
+    $response = $this->patchJson("/bookmarks/{$bookmark->id}", [
         'title' => 'Updated',
     ]);
 
