@@ -1,0 +1,6 @@
+---
+description: Service conventions
+globs: app/Services/**/*.php
+alwaysApply: false
+---
+Follow @.ai/rules/services.md

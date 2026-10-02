@@ -1,0 +1,6 @@
+---
+description: Enum conventions
+globs: app/Enums/**/*.php
+alwaysApply: false
+---
+Follow @.ai/rules/enums.md

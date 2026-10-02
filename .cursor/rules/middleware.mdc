@@ -1,0 +1,6 @@
+---
+description: Middleware conventions
+globs: app/Http/Middleware/**/*.php
+alwaysApply: false
+---
+Follow @.ai/rules/middleware.md

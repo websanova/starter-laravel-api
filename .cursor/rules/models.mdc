@@ -1,0 +1,6 @@
+---
+description: Model conventions
+globs: app/Models/**/*.php
+alwaysApply: false
+---
+Follow @.ai/rules/models.md

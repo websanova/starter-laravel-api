@@ -1,0 +1,6 @@
+---
+description: Notification conventions
+globs: app/Notifications/**/*.php
+alwaysApply: false
+---
+Follow @.ai/rules/notifications.md

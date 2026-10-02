@@ -8,6 +8,7 @@ Part of the Starters, built at [Websanova](https://www.websanova.com).
 
 Full documentation at [websanova.com/docs/starter-api](https://www.websanova.com/docs/starter-api).
 
+- [Agent Guide](docs/agent-guide.md)
 - [Startup Guide](docs/startup-guide.md)
 - [Docker Guide](docs/docker-guide.md)
 - [Stripe Guide](docs/stripe-guide.md)

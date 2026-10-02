@@ -1,0 +1,6 @@
+---
+description: Artisan command conventions
+globs: app/Console/Commands/**/*.php,routes/console.php
+alwaysApply: false
+---
+Follow @.ai/rules/commands.md
