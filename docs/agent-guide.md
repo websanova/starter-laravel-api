@@ -4,7 +4,7 @@ Agent files are generated and managed by Boost, so be mindful about editing them
 
 ## Install and update
 
-Additional agents can be added with boost.
+Comes with Claude out of the box (mainly for the commands) but just install via boost for whatever suits your needs.
 
 ```
 php artisan boost:install
