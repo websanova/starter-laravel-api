@@ -1,6 +1,0 @@
----
-description: Observer conventions
-globs: app/Observers/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/observers.md

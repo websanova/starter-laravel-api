@@ -1,6 +1,0 @@
----
-description: API resource conventions
-globs: app/Http/Resources/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/resources.md

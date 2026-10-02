@@ -1,6 +1,0 @@
----
-description: Validation rule conventions
-globs: app/Rules/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/rules.md

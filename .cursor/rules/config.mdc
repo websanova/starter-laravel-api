@@ -1,6 +1,0 @@
----
-description: Config and env conventions
-globs: config/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/config.md

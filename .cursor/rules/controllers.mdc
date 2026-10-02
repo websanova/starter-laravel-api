@@ -1,6 +1,0 @@
----
-description: Controller conventions
-globs: app/Http/Controllers/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/controllers.md

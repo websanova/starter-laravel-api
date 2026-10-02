@@ -1,6 +1,0 @@
----
-description: Routing conventions
-globs: routes/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/routing.md

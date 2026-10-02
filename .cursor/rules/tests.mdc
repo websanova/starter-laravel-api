@@ -1,6 +1,0 @@
----
-description: Test conventions
-globs: tests/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/tests.md

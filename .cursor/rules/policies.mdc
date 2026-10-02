@@ -1,6 +1,0 @@
----
-description: Policy conventions
-globs: app/Policies/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/policies.md

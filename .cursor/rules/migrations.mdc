@@ -1,6 +1,0 @@
----
-description: Migration conventions
-globs: database/migrations/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/migrations.md

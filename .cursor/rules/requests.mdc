@@ -1,6 +1,0 @@
----
-description: Form request conventions
-globs: app/Http/Requests/**/*.php
-alwaysApply: false
----
-Follow @.ai/rules/requests.md

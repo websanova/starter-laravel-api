@@ -1,5 +1,28 @@
 # Agent Setup
 
+Agent files are generated and managed by Boost, so be mindful about editing them. Anything inside the `<laravel-boost-guidelines>` markers gets overwritten on the next run.
 
+## Install and update
 
-Rules are guaranteed but blind. They fire on a path glob, every time, no judgment involved. Skills are smart but unreliable. They fire on the agent's judgment, which can miss. So the question is whether you can name the files it applies to. If you can, write a rule and glob it. If you can't, because the knowledge spans controllers, jobs and config depending on the task, write a skill and accept it will sometimes be skipped. Pick wrong and the text isn't there when it matters, with no warning.
+Additional agents can be added with boost.
+
+```
+php artisan boost:install
+php artisan boost:update
+```
+
+## Commands
+
+Not all agents support commands, currently only setup with Claude Code via `.claude/comands/` folder and a definition list in `CLAUDE.md`.
+
+Most exist to gate what an agent can do in a turn, so brainstorming or summarising happens without touching files, and writes stay behind an explicit `/ex`. Kill or modify them as needed for your workflow.
+
+One to be aware of is `/flow` which reads specs from the separate flows repo and compares them against this one rather than working from the code alone. It will need to know about where the flows repo live, which with Claude can be aded to a git ignored `CLAUDE.local.md` like so:
+
+```
+- Flows live at `/path/to/starter-flows/public/specs/flows`. This is an external directory, outside this project.
+```
+
+## Rules
+
+Rules aren't universal. Cursor picks up `.ai/rules` natively by glob, but Claude has no such concept and only reaches them through the index import in the Boost guidelines. That's prose rather than a real load, so be wary of assuming they were picked up.
