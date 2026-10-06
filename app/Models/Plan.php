@@ -87,9 +87,17 @@ class Plan extends Model
      */
     public static function cached(): Collection
     {
-        return Cache::rememberForever(static::$cacheKey, function () {
-            return static::with('prices')->orderBy('tier')->get();
+        $plans = Cache::rememberForever(static::$cacheKey, function () {
+            return static::with('prices')->orderBy('tier')->get()
+                ->map(fn (Plan $plan) => [
+                    'attributes' => $plan->getAttributes(),
+                    'prices' => $plan->prices->map->getAttributes()->all(),
+                ])
+                ->all();
         });
+
+        return static::hydrate(array_column($plans, 'attributes'))
+            ->each(fn (Plan $plan, int $index) => $plan->setRelation('prices', Price::hydrate($plans[$index]['prices'])));
     }
 
     /**
@@ -217,7 +225,7 @@ class Plan extends Model
     protected function displayName(): Attribute
     {
         return Attribute::make(
-            get: fn () => __('plans.' . $this->slug . '.name'),
+            get: fn () => __('plans.'.$this->slug.'.name'),
         );
     }
 }
