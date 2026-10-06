@@ -46,11 +46,9 @@ class PruneDeletedUsers extends Command
                 }
             });
 
-        if ($count === 0) {
-            $this->info('No users to prune.');
-        } else {
-            $this->info("Pruned {$count} user(s) using '{$strategy->value}' strategy.");
-        }
+        $this->components->info('Pruning deleted users.');
+        $this->components->twoColumnDetail("{$strategy->value} strategy", "{$count} user(s)");
+        $this->newLine();
 
         return self::SUCCESS;
     }

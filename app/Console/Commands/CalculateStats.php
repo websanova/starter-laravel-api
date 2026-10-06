@@ -26,9 +26,19 @@ class CalculateStats extends Command
      */
     public function handle(CalculateStatsService $service): int
     {
-        $count = $service->handle($this->option('group'));
+        $this->components->info('Calculating stats.');
 
-        $this->info("Calculated {$count} stat(s).");
+        foreach ($service->groups() as $group) {
+            if ($this->option('group') && $group !== $this->option('group')) {
+                continue;
+            }
+
+            $this->components->task($group, function () use ($service, $group) {
+                $service->handle($group);
+            });
+        }
+
+        $this->newLine();
 
         return self::SUCCESS;
     }

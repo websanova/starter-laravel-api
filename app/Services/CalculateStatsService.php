@@ -45,6 +45,16 @@ class CalculateStatsService
     }
 
     /**
+     * The stat group names, in calculation order.
+     *
+     * @return list<string>
+     */
+    public function groups(): array
+    {
+        return array_keys($this->queries());
+    }
+
+    /**
      * All stat queries grouped by their stat group. The column is what the
      * date ranges filter on, defaulting to created_at when left out.
      *

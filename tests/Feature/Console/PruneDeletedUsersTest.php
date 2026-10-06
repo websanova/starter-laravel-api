@@ -14,7 +14,7 @@ test('delete strategy hard-deletes users past grace period', function () {
     $user->forceFill(['deleted_at' => now()->subDays(31)])->save();
 
     $this->artisan('users:prune-deleted')
-        ->expectsOutputToContain("Pruned 1 user(s)")
+        ->expectsOutputToContain('1 user(s)')
         ->assertSuccessful();
 
     $this->assertDatabaseMissing('users', ['id' => $user->id]);
@@ -34,7 +34,7 @@ test('anonymize strategy anonymizes users past grace period', function () {
     $user->forceFill(['deleted_at' => now()->subDays(31)])->save();
 
     $this->artisan('users:prune-deleted')
-        ->expectsOutputToContain("Pruned 1 user(s)")
+        ->expectsOutputToContain('1 user(s)')
         ->assertSuccessful();
 
     $pruned = User::withTrashed()->find($user->id);
@@ -53,7 +53,7 @@ test('users within grace period are not pruned', function () {
     $user->delete();
 
     $this->artisan('users:prune-deleted')
-        ->expectsOutputToContain('No users to prune.')
+        ->expectsOutputToContain('0 user(s)')
         ->assertSuccessful();
 
     $this->assertDatabaseHas('users', ['id' => $user->id]);
@@ -64,6 +64,6 @@ test('no users to prune outputs info message', function () {
     config(['auth.delete.prune_strategy' => AccountPruneStrategy::Delete]);
 
     $this->artisan('users:prune-deleted')
-        ->expectsOutputToContain('No users to prune.')
+        ->expectsOutputToContain('0 user(s)')
         ->assertSuccessful();
 });

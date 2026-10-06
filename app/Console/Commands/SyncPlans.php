@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Contracts\SyncPlanPricesProvider;
 use App\Models\Plan;
 use Illuminate\Console\Command;
+use Illuminate\Console\View\TaskResult;
 
 class SyncPlans extends Command
 {
@@ -27,21 +28,23 @@ class SyncPlans extends Command
      */
     public function handle(SyncPlanPricesProvider $syncPlanPrices): int
     {
-        $synced = 0;
-        $failed = 0;
+        $this->components->info('Syncing plans.');
 
         foreach (Plan::all() as $plan) {
-            $result = $syncPlanPrices->handle($plan);
+            $result = null;
 
-            if ($result->success) {
-                $synced++;
-            } else {
-                $failed++;
-                $this->error("Plan '{$plan->slug}': {$result->error}");
+            $this->components->task($plan->slug, function () use ($syncPlanPrices, $plan, &$result) {
+                $result = $syncPlanPrices->handle($plan);
+
+                return $result->success ? TaskResult::Success->value : TaskResult::Failure->value;
+            });
+
+            if (! $result->success) {
+                $this->components->error("Plan '{$plan->slug}': {$result->error}");
             }
         }
 
-        $this->info("Synced {$synced} plan(s), {$failed} failed.");
+        $this->newLine();
 
         return self::SUCCESS;
     }

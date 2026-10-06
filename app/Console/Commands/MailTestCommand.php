@@ -25,16 +25,20 @@ class MailTestCommand extends Command
         $email = $this->argument('email') ?? config('mail.to.address');
 
         if (! $email) {
-            $this->error('No recipient. Pass an email argument or set MAIL_TO_ADDRESS.');
+            $this->components->error('No recipient. Pass an email argument or set MAIL_TO_ADDRESS.');
 
             return self::FAILURE;
         }
 
-        Mail::raw('Test email from '.config('app.name').'.', function ($message) use ($email) {
-            $message->to($email)->subject('Test Email');
+        $this->components->info('Sending test email.');
+
+        $this->components->task("To {$email}", function () use ($email) {
+            Mail::raw('Test email from '.config('app.name').'.', function ($message) use ($email) {
+                $message->to($email)->subject('Test Email');
+            });
         });
 
-        $this->info('Test email sent to '.$email.'.');
+        $this->newLine();
 
         return self::SUCCESS;
     }
