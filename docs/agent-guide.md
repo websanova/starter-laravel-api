@@ -11,9 +11,9 @@ php artisan boost:install
 php artisan boost:update
 ```
 
-## MCP
+## Boost MCP
 
-Local dev only. Boost runs an MCP server that hands tools to the client (Claude Code, Cursor, etc) for querying the database, inspecting schema and searching package docs. None of it relates to exposing an MCP server to your own users, which is a separate thing entirely.
+Local dev only. Boost runs an MCP server that hands tools to the client (Claude Code, Cursor, etc) for querying the database, inspecting schema and searching package docs. None of it relates to exposing an MCP server to your own users, which is a separate thing entirely, see [MCP Server Guide](mcp-server-guide.md).
 
 Running `boost:install` writes the config to `.mcp.json`, but it assumes PHP on your host. With `sail: false` in `boost.json` and a hand-rolled compose setup there's nothing for it to detect, so you have to point it at the container yourself.
 

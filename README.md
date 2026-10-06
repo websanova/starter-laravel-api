@@ -12,6 +12,7 @@ Full documentation at [websanova.com/docs/starter-api](https://www.websanova.com
 - [Startup Guide](docs/startup-guide.md)
 - [Docker Guide](docs/docker-guide.md)
 - [Stripe Guide](docs/stripe-guide.md)
+- [MCP Server Guide](docs/mcp-server-guide.md)
 - [Testing Guide](docs/testing-guide.md)
 - [Flows Guide](docs/flows-guide.md)
 
