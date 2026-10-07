@@ -7,6 +7,7 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 // Named for cashier:webhook, which resolves this URL by route name when run without --url.
 Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
+Route::get('/oauth/consent', [App\Http\Controllers\App\ConsentController::class, 'show']);
 Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 Route::get('/settings', [App\Http\Controllers\App\SettingController::class, 'show']);
 Route::get('/timezones', [App\Http\Controllers\App\TimezoneController::class, 'index']);
@@ -44,6 +45,8 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
         Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);
+
+        Route::post('/oauth/consent', [App\Http\Controllers\App\ConsentController::class, 'store']);
 
         Route::delete('/payment-method', [App\Http\Controllers\App\PaymentMethodController::class, 'destroy']);
         Route::put('/payment-method/address', [App\Http\Controllers\App\PaymentMethodAddressController::class, 'update']);

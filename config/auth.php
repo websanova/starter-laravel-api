@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\AccountPruneStrategy;
+use App\Models\OAuthUser;
 use App\Models\User;
 
 return [
@@ -43,6 +44,11 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'oauth_users',
+        ],
     ],
 
     /*
@@ -66,6 +72,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+
+        'oauth_users' => [
+            'driver' => 'eloquent',
+            'model' => OAuthUser::class,
         ],
 
         // 'users' => [

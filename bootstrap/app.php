@@ -6,6 +6,7 @@ use App\Http\Middleware\EnsureSubscribed;
 use App\Http\Middleware\EnsureVerified;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\Queries;
+use App\Http\Middleware\ResolveOAuthUser;
 use App\Http\Middleware\SetLocaleFromHeader;
 use App\Http\Middleware\TrackLastActive;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -39,6 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password-updated' => EnsurePasswordUpdated::class,
             'admin' => EnsureAdmin::class,
             'subscribed' => EnsureSubscribed::class,
+            'oauth-user' => ResolveOAuthUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
