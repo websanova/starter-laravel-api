@@ -45,6 +45,7 @@ App runs at `http://localhost:8000`.
 | `redis` | Redis 7 on port 6379 |
 | `mailpit` | Mailpit, catching outgoing mail on port 1025, inbox at `http://localhost:8025` |
 | `stripe` | Stripe CLI, forwarding webhooks to `php:8000/stripe/webhook` |
+| `inspector` | MCP Inspector on port 6274, only runs through `./dev inspector`, see [MCP Server Guide](mcp-server-guide.md) |
 
 The Stripe container needs `STRIPE_SECRET` in your `.env` or it won't authenticate. See [Stripe Guide](stripe-guide.md).
 
@@ -84,3 +85,4 @@ If you'd rather have both in one place, set `LOG_STACK=stderr` and Laravel's log
 | `./dev mysql <args>` | The mysql client in the mysql container |
 | `./dev sh <service>` | A shell in the given service |
 | `./dev logs [service]` | Follow logs, all services or one |
+| `./dev inspector` | Run the MCP Inspector in the foreground, Ctrl+C stops and removes it |

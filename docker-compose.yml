@@ -46,6 +46,22 @@ services:
             STRIPE_API_KEY: ${STRIPE_SECRET}
         depends_on:
             - php
+    inspector:
+        image: node:22-alpine
+        profiles:
+            - inspector
+        command: npx -y @modelcontextprotocol/inspector
+        ports:
+            - "127.0.0.1:6274:6274"
+        environment:
+            HOST: 0.0.0.0
+            DANGEROUSLY_BIND_ALL_INTERFACES: "true"
+            MCP_INSPECTOR_SECRET_STORE: memory
+        volumes:
+            - npm_cache:/root/.npm
+        depends_on:
+            - php
 
 volumes:
     mysql_data:
+    npm_cache:

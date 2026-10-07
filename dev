@@ -13,5 +13,6 @@ case "$1" in
     down) docker compose down ;;
     restart) docker compose down && docker compose up -d --force-recreate ;;
     logs) shift; docker compose logs -f "$@" ;;
+    inspector) docker compose run --rm --service-ports inspector ;;
     *) echo "Usage: ./dev {php|composer|artisan|mysql} [args]" ;;
 esac

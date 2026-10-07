@@ -63,6 +63,26 @@ If `claude` isn't on your path, the desktop app bundles a copy that can be run b
 
 Servers load when a conversation starts, so open a new one, then ask Claude to call the hello tool on `starter` and on `starter-admin`. Each should greet the account its token belongs to. To check the admin guard, swap the admin server's token for the user one and the call should fail with a 403.
 
+## Inspector
+
+As it's set up now. The inspector gets destroyed so any pre config is gone and mcp servers (and tokens) need to be added manually each time. We could preconfigure the mcp server paths/endpoints but the tokens would still expire (on reseed or after x days) and require updating (less work though). And right now this is similar to the hard coded bearer style of the Claude Code manual setup.
+
+The MCP Inspector is a web UI that connects to a server as a client, lists its tools, calls them and shows the raw JSON-RPC going back and forth. It's the quickest way to tell whether a problem is in the server or in a client's config.
+
+Laravel ships `php artisan mcp:inspector`, but it's only a launcher that fills in the URL and runs `npx @modelcontextprotocol/inspector`, so it needs PHP and Node in the same place. Neither the host nor the php container has both, and adding Node to an API-only image for a debug tool isn't worth it. So the starter skips it and runs the Inspector in its own Node container instead, behind a compose profile so `./dev up` leaves it alone.
+
+```bash
+./dev inspector
+```
+
+It isn't always on like Mailpit or the Stripe CLI. Those are part of how the app runs day to day, while the Inspector is a debug tool you open now and then. It also generates a new session token on every start and checks the npm registry on boot, so keeping it in `./dev up` would slow that down and change the URL on every restart.
+
+`./dev inspector` runs it in the foreground, so give it its own terminal. Ctrl+C stops it and removes the container, so there's nothing to clean up afterwards.
+
+Open the URL it prints, which carries the Inspector's session token, then connect to `http://php:8000/mcp` or `http://php:8000/admin/mcp` with the `Authorization: Bearer <token>` header. It's `php` rather than `localhost` because the connection is made from inside the Inspector container, where `localhost` is the container itself. Same reason the `stripe` service forwards to `php:8000`.
+
+The port is bound to `127.0.0.1` only, since the page embeds that session token. Inside the container the Inspector has to listen on all interfaces, which it refuses to do without `DANGEROUSLY_BIND_ALL_INTERFACES`, so that's set in the compose file.
+
 ## Testing
 
 The package's `Server::tool()` test helper calls the tool directly and skips route middleware, so it can't prove the guards work. The tests in `tests/Feature/App/Mcp` and `tests/Feature/Admin/Mcp` POST a JSON-RPC `tools/call` to the actual route instead, which runs the full middleware stack the same way a client would.
