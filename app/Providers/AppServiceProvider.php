@@ -32,7 +32,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
-use Laravel\Mcp\Server\Registrar;
 use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
@@ -77,11 +76,6 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($email . '|' . $request->ip());
         });
-
-        // The only scope the MCP package advertises. Its description is what the consent screen shows.
-        Passport::tokensCan([
-            Registrar::OAUTH_SCOPE => 'Use the MCP server on your behalf',
-        ]);
 
         // Short access tokens so MCP clients actually exercise the refresh_token grant.
         Passport::tokensExpireIn(CarbonInterval::hour());
