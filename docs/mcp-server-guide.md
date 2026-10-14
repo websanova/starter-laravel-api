@@ -1,6 +1,6 @@
 # MCP Server Guide
 
-Work in progress. The API exposes its own MCP servers so users can work with their data from Claude and other MCP clients. Auth currently runs on Sanctum bearer tokens, which is enough to test locally with Claude Code. The plan is to move to Passport OAuth so users can connect from any client without handling tokens themselves.
+The API exposes its own MCP servers so users can work with their data from Claude and other MCP clients. Auth runs on Passport OAuth, so a client only needs the server URL.
 
 This is separate from Boost's MCP server, which is local dev tooling for agents working on the codebase, see [Agent Guide](agent-guide.md).
 
@@ -11,11 +11,11 @@ There are two servers, mirroring the App and Admin split in the regular API.
 - `/mcp` runs `AppServer`, for the authenticated user working with their own data.
 - `/admin/mcp` runs `AdminServer`, for admins managing any user.
 
-Both are registered in `routes/ai.php` with the same middleware stacks as their API counterparts, so a user who can't reach `/profile` or `/admin/users` can't reach the matching MCP server either. The package loads `routes/ai.php` outside the `api` middleware group, so `throttle:api` doesn't come along for free and is added to each server explicitly.
+The paths are set in `config/mcp.php`. Both are registered in `routes/ai.php` with the same middleware stacks as their API counterparts, so a user who can't reach `/profile` or `/admin/users` can't reach the matching MCP server either. The package loads `routes/ai.php` outside the `api` middleware group, so `throttle:api` doesn't come along for free and is added to each server explicitly.
 
 Route middleware applies to the whole server. Anything that should only gate some tools, like `subscribed` for bookmarks, goes in the tool's `shouldRegister()` instead, which hides the tool from users who don't qualify.
 
-Servers live in `app/Mcp/Servers` and tools in `app/Mcp/Tools/App` and `app/Mcp/Tools/Admin`. Adding a capability is mostly writing the class and listing it on the server. Each server has a `HelloTool` that greets the authenticated user, which is handy for checking a connection end to end.
+Servers live in `app/Mcp/Servers` and tools in `app/Mcp/Tools/App` and `app/Mcp/Tools/Admin`. Adding a capability is mostly writing the class and listing it on the server. Each server has a `HelloTool` that greets the authenticated user, for checking a connection end to end.
 
 ## Tools, resources and prompts
 
@@ -33,15 +33,44 @@ The client doesn't route tool calls, the model does. When a conversation starts,
 
 That makes the `#[Description]` on each tool and the `#[Instructions]` on each server what decides whether the right tool gets picked, especially when a user has several MCP connectors installed. Write them like API docs for the model. Say what the tool does, when to use it and when not to. A `list-bookmarks` tool should say it only returns the current user's bookmarks, so the model doesn't reach for it on an admin request.
 
-## Sanctum vs Passport
+## OAuth
 
-OAuth 2.1 is the auth the MCP spec documents and what most clients expect. Connectors in claude.ai and Claude Desktop authenticate through OAuth and don't take a custom header. With OAuth a user pastes the server URL, logs in and approves in the browser, and they're connected. That's the experience the starter is aiming for, so Passport is the target.
+OAuth 2.1 is the auth the MCP spec documents and what most clients expect. Connectors in claude.ai and Claude Desktop authenticate through OAuth and don't take a custom header.
 
-Sanctum works today because the servers are protected with plain route middleware, so any client that can send an `Authorization` header can connect. Claude Code can, which makes it the quickest way to check the servers and guards before OAuth adds more moving parts. The catch is tokens come from `/login` and expire after `SANCTUM_TOKEN_EXPIRATION` (7 days by default), so a token pasted into a client config stops working every week.
+What happens when a client connects.
 
-## Example in Claude
+1. The client calls the server without a token and gets a 401 pointing at the resource metadata.
+2. It reads the discovery metadata under `/.well-known`, which names the authorization server and its endpoints. Each MCP server is its own authorization server, so the app and admin servers don't share a login.
+3. It registers itself at `/oauth/register`, so there's no client to create ahead of time. The route is public, which is why it gets the `auth` throttle. The `redirect_domains` in `config/mcp.php` limit where a client can send the user back to, and ship with claude.ai, claude.com and localhost on any port for Claude Code.
+4. It opens the browser at the frontend's `/oauth/authorize` page, on `FRONTEND_APP_URL` for the app server and `FRONTEND_ADMIN_URL` for the admin one. The API serves no HTML, so the frontend logs the user in, shows the consent screen from `GET /oauth/consent` and posts the decision to `POST /oauth/consent`. The response carries the `redirect_uri` to send the browser on to.
+5. The client trades the code for tokens using PKCE. Access tokens last an hour and refresh tokens 30 days.
 
-Manual setup with Sanctum, using the seeded users. Log in as a regular user and as an admin.
+Passport authenticates its own `OAuthUser` model, so the `oauth-user` middleware swaps it for the real `User` before anything else runs. That keeps `verified`, `password-updated` and `admin` working the same as on the API. A soft deleted account isn't found there and gets a 401.
+
+### Testing locally
+
+Passport needs its signing keys, which are git ignored, so a fresh clone has to generate them once.
+
+```bash
+./dev artisan passport:keys
+```
+
+The authorize page belongs to the frontend, so the flow can't finish until a frontend is serving `/oauth/authorize` on the URLs in `.env`. Hosted connectors in claude.ai call the server from the internet and can't reach `localhost`, so Claude Code is the way to test locally. Add both servers from the project directory, no header needed.
+
+```bash
+claude mcp add --transport http starter http://localhost:8000/mcp
+claude mcp add --transport http starter-admin http://localhost:8000/admin/mcp
+```
+
+This stores them for this project only, in `~/.claude.json`. If `claude` isn't on your path, the desktop app bundles a copy that can be run by full path. On Linux it's at `~/.config/Claude/claude-code/{version}/claude`.
+
+Servers load when a conversation starts, so open a new one and run `/mcp` to authenticate each server. The browser opens on the frontend login, and once approved the tools are available. Ask Claude to call the hello tool on `starter` and on `starter-admin`. Each should greet the account that approved it. To start over, `claude mcp remove starter` and add it again.
+
+## Sanctum
+
+Don't use this. It's possible, but it's manual and the token expires. Tokens come from `/login`, last `SANCTUM_TOKEN_EXPIRATION` (7 days by default), and have to be pasted into the client config by hand. Hosted clients can't send a custom header at all. It only checks the servers and guards from Claude Code without a frontend.
+
+The servers are protected by `auth:api` and `oauth-user`, which only accept Passport tokens. To use Sanctum, swap those two for `auth:sanctum` on the server in `routes/ai.php`, then log in as a regular user and as an admin using the seeded accounts.
 
 ```bash
 curl -s -X POST http://localhost:8000/login -H "Content-Type: application/json" -d '{"email":"small@starter.com","password":"testtest"}'
@@ -59,27 +88,21 @@ claude mcp add --transport http starter-admin http://localhost:8000/admin/mcp --
 
 This stores them for this project only, in `~/.claude.json`. Don't put them in `.mcp.json`, it's committed and the token would go with it. Replacing a token means removing the server with `claude mcp remove starter` and adding it again.
 
-If `claude` isn't on your path, the desktop app bundles a copy that can be run by full path. On Linux it's at `~/.config/Claude/claude-code/{version}/claude`.
-
 Servers load when a conversation starts, so open a new one, then ask Claude to call the hello tool on `starter` and on `starter-admin`. Each should greet the account its token belongs to. To check the admin guard, swap the admin server's token for the user one and the call should fail with a 403.
 
 ## Inspector
 
-As it's set up now. The inspector gets destroyed so any pre config is gone and mcp servers (and tokens) need to be added manually each time. We could preconfigure the mcp server paths/endpoints but the tokens would still expire (on reseed or after x days) and require updating (less work though). And right now this is similar to the hard coded bearer style of the Claude Code manual setup.
+The MCP Inspector is a web UI that connects to a server as a client, lists its tools, calls them and shows the raw JSON-RPC going back and forth. It separates a server problem from a client config problem.
 
-The MCP Inspector is a web UI that connects to a server as a client, lists its tools, calls them and shows the raw JSON-RPC going back and forth. It's the quickest way to tell whether a problem is in the server or in a client's config.
-
-Laravel ships `php artisan mcp:inspector`, but it's only a launcher that fills in the URL and runs `npx @modelcontextprotocol/inspector`, so it needs PHP and Node in the same place. Neither the host nor the php container has both, and adding Node to an API-only image for a debug tool isn't worth it. So the starter skips it and runs the Inspector in its own Node container instead, behind a compose profile so `./dev up` leaves it alone.
+`php artisan mcp:inspector` is only a launcher that runs `npx @modelcontextprotocol/inspector`, so it needs PHP and Node in the same place. Neither the host nor the php container has both, so the Inspector runs in its own Node container behind a compose profile instead.
 
 ```bash
 ./dev inspector
 ```
 
-It isn't always on like Mailpit or the Stripe CLI. Those are part of how the app runs day to day, while the Inspector is a debug tool you open now and then. It also generates a new session token on every start and checks the npm registry on boot, so keeping it in `./dev up` would slow that down and change the URL on every restart.
+It stays out of `./dev up` since it's a debug tool, and it generates a new session token on every start. It runs in the foreground, so give it its own terminal. Ctrl+C stops it and removes the container. Nothing survives a restart, so servers and tokens have to be entered again each time.
 
-`./dev inspector` runs it in the foreground, so give it its own terminal. Ctrl+C stops it and removes the container, so there's nothing to clean up afterwards.
-
-Open the URL it prints, which carries the Inspector's session token, then connect to `http://php:8000/mcp` or `http://php:8000/admin/mcp` with the `Authorization: Bearer <token>` header. It's `php` rather than `localhost` because the connection is made from inside the Inspector container, where `localhost` is the container itself. Same reason the `stripe` service forwards to `php:8000`.
+Open the URL it prints, which carries the Inspector's session token, then connect to `http://php:8000/mcp` or `http://php:8000/admin/mcp` with an `Authorization: Bearer <token>` header. That's a pasted token, so it only works with the Sanctum setup above. It's `php` rather than `localhost` because the connection is made from inside the Inspector container.
 
 The port is bound to `127.0.0.1` only, since the page embeds that session token. Inside the container the Inspector has to listen on all interfaces, which it refuses to do without `DANGEROUSLY_BIND_ALL_INTERFACES`, so that's set in the compose file.
 
