@@ -17,6 +17,8 @@ claude mcp add --scope user --transport http starter http://localhost:8000/mcp
 claude mcp add --scope user --transport http starter-admin http://localhost:8000/admin/mcp
 ```
 
+These land in Claude Code's own config, so they show up in Claude Code sessions, including the Code tab in Claude Desktop, but not in the general Desktop chat. That chat keeps a separate connector list and doesn't read servers added through the CLI.
+
 List them to see their state. They show as needing authentication until you log in.
 
 ```bash
