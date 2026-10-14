@@ -30,7 +30,7 @@ class EmailChangeNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = url(config('app.frontend_url') . '/email-reset?token=' . $this->token . '&email=' . urlencode($this->email));
+        $url = url(config('app.frontend_app_url') . '/email-reset?token=' . $this->token . '&email=' . urlencode($this->email));
 
         return (new MailMessage)
             ->subject(__('notifications.email_change.subject'))

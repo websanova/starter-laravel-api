@@ -91,7 +91,7 @@ class CreateSessionService implements CreateSessionProvider
                 'line_items' => [
                     ['price' => $plan->priceId($interval), 'quantity' => 1],
                 ],
-                'return_url' => config('app.frontend_url') . '/subscribe',
+                'return_url' => config('app.frontend_app_url') . '/subscribe',
                 /**
                  * The payment element only looks the customer's saved cards up
                  * when this is on. Without it the user is handed blank card
