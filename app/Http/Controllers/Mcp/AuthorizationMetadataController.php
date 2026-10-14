@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\App;
+namespace App\Http\Controllers\Mcp;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Laravel\Mcp\Server\Registrar;
 
-class McpAuthorizationMetadataController extends Controller
+class AuthorizationMetadataController extends Controller
 {
     /**
      * Describe the authorization server of the MCP server at the given path.

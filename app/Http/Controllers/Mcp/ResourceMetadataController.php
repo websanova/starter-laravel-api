@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\App;
+namespace App\Http\Controllers\Mcp;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Laravel\Mcp\Server\Registrar;
 
-class McpResourceMetadataController extends Controller
+class ResourceMetadataController extends Controller
 {
     /**
      * Describe the MCP server at the given path. Each server is its own

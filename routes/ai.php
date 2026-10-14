@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\App\McpAuthorizationMetadataController;
-use App\Http\Controllers\App\McpResourceMetadataController;
+use App\Http\Controllers\Mcp\AuthorizationMetadataController;
+use App\Http\Controllers\Mcp\ResourceMetadataController;
 use App\Mcp\Servers\AdminServer;
 use App\Mcp\Servers\AppServer;
 use Illuminate\Support\Facades\Route;
@@ -19,14 +19,14 @@ Mcp::oauthRoutes();
 // First discovery step. The MCP Client arrives here from the resource_metadata URL in the 401 and asks
 // which authorization server protects the MCP server at {path}. Each server is its own, see config/mcp.php.
 // The route name is required, the package builds the resource_metadata URL in the 401 header from it.
-Route::get('/.well-known/oauth-protected-resource/{path}', [McpResourceMetadataController::class, 'show'])
+Route::get('/.well-known/oauth-protected-resource/{path}', [ResourceMetadataController::class, 'show'])
     ->where('path', '.*')
     ->name('mcp.oauth.protected-resource.nested');
 
 // Second discovery step. Lists the endpoints the MCP Client needs to register, log in and get tokens.
 // The package points authorization_endpoint at the API's own authorize route, but the API serves no
 // html, so it is the frontend page set in config/passport.php instead.
-Route::get('/.well-known/oauth-authorization-server/{path}', [McpAuthorizationMetadataController::class, 'show'])
+Route::get('/.well-known/oauth-authorization-server/{path}', [AuthorizationMetadataController::class, 'show'])
     ->where('path', '.*')
     ->name('mcp.oauth.authorization-server.nested');
 
