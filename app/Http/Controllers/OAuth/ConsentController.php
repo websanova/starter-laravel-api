@@ -24,11 +24,7 @@ class ConsentController extends Controller
      */
     public function show(ShowRequest $request, ServerRequestInterface $psrRequest): JsonResponse
     {
-        try {
-            $authRequest = $this->server->validateAuthorizationRequest($psrRequest);
-        } catch (OAuthServerException $e) {
-            return $this->errorResponse($e);
-        }
+        $authRequest = $this->server->validateAuthorizationRequest($psrRequest);
 
         return response()->json([
             'data' => [
@@ -50,11 +46,7 @@ class ConsentController extends Controller
         // Passport reads the request from the query string, and the App posts it as a body.
         $params = [...$request->safe()->except('approve'), 'response_type' => 'code'];
 
-        try {
-            $authRequest = $this->server->validateAuthorizationRequest($psrRequest->withQueryParams($params));
-        } catch (OAuthServerException $e) {
-            return $this->errorResponse($e);
-        }
+        $authRequest = $this->server->validateAuthorizationRequest($psrRequest->withQueryParams($params));
 
         $authRequest->setUser(new User($request->user()->getAuthIdentifier()));
         $authRequest->setAuthorizationApproved($request->boolean('approve'));
@@ -64,7 +56,7 @@ class ConsentController extends Controller
         } catch (OAuthServerException $e) {
             // A denial is thrown with the redirect_uri already carrying the error and state.
             if (!$e->hasRedirect()) {
-                return $this->errorResponse($e);
+                throw $e;
             }
 
             $response = $e->generateHttpResponse($psrResponse);
@@ -75,13 +67,5 @@ class ConsentController extends Controller
                 'redirect_uri' => $response->getHeaderLine('Location'),
             ],
         ]);
-    }
-
-    protected function errorResponse(OAuthServerException $e): JsonResponse
-    {
-        return response()->json([
-            'error' => $e->getErrorType(),
-            'message' => $e->getMessage(),
-        ], $e->getHttpStatusCode());
     }
 }

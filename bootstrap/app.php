@@ -18,6 +18,7 @@ use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Str;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -54,6 +55,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => 'forbidden',
                 'message' => __('responses.auth.forbidden'),
             ], 403);
+        });
+
+        $exceptions->renderable(function (OAuthServerException $e) {
+            return response()->json([
+                'error' => $e->getErrorType(),
+                'message' => $e->getMessage(),
+            ], $e->getHttpStatusCode());
         });
 
         $exceptions->renderable(function (NotFoundHttpException $e) {
