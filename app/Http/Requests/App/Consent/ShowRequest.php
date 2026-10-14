@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\OAuth\Consent;
+namespace App\Http\Requests\App\Consent;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class ShowRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -12,7 +12,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'approve' => ['required', 'boolean'],
+            'response_type' => ['required', 'in:code'],
             'client_id' => ['required', 'string'],
             'redirect_uri' => ['required', 'string'],
             'scope' => ['required', 'string'],
