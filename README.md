@@ -57,6 +57,7 @@ The starter-flows repo is a separate set of feature specs, implementation-agnost
 * **Localization (i18n)** - Multi-locale responses and per-user localized emails, add a language by dropping in a lang folder.
 * **File Storage (S3)** - Off-server storage for AWS or DigitalOcean Spaces, with avatars cropped and resized on upload.
 * **Dev Environment** - Dockerized with MySQL, Redis, Mailpit, and Stripe CLI, plus a helper script and Pest test suite.
+* **AI (MCP & Agents)** - MCP servers for users and admins with OAuth, plus a Boost and multi-agent setup with commands and rules for working on the codebase.
 
 For the full breakdown, see the [features overview](https://websanova.com/docs/starter-api/intro/features).
 
