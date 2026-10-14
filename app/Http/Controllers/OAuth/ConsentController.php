@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\App;
+namespace App\Http\Controllers\OAuth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\App\OAuthConsent\ShowRequest;
-use App\Http\Requests\App\OAuthConsent\StoreRequest;
+use App\Http\Requests\OAuth\Consent\ShowRequest;
+use App\Http\Requests\OAuth\Consent\StoreRequest;
 use Illuminate\Http\JsonResponse;
 use Laravel\Passport\Bridge\User;
 use League\OAuth2\Server\AuthorizationServer;
@@ -13,7 +13,7 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class OAuthConsentController extends Controller
+class ConsentController extends Controller
 {
     public function __construct(protected AuthorizationServer $server) {}
 

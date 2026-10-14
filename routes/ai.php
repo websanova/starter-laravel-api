@@ -18,6 +18,7 @@ Mcp::oauthRoutes();
 
 // First discovery step. The MCP Client arrives here from the resource_metadata URL in the 401 and asks
 // which authorization server protects the MCP server at {path}. Each server is its own, see config/mcp.php.
+// The route name is required, the package builds the resource_metadata URL in the 401 header from it.
 Route::get('/.well-known/oauth-protected-resource/{path}', [McpResourceMetadataController::class, 'show'])
     ->where('path', '.*')
     ->name('mcp.oauth.protected-resource.nested');
