@@ -10,11 +10,11 @@ The API serves no HTML, so a frontend has to serve `/oauth/authorize` on `FRONTE
 
 Adding the servers as a connector through a client app like Claude Desktop won't work for local dev, since it doesn't work with `localhost` and requires https.
 
-Add them manually with the CLI instead.
+Add them manually with the CLI instead. The `--scope user` flag makes them available from any project or worktree. Without it the CLI defaults to local scope, which ties them to the directory you ran the command in. Either way the API on `localhost:8000` has to be running.
 
 ```bash
-claude mcp add --transport http starter http://localhost:8000/mcp
-claude mcp add --transport http starter-admin http://localhost:8000/admin/mcp
+claude mcp add --scope user --transport http starter http://localhost:8000/mcp
+claude mcp add --scope user --transport http starter-admin http://localhost:8000/admin/mcp
 ```
 
 List them to see their state. They show as needing authentication until you log in.
