@@ -8,11 +8,26 @@ This is separate from Boost's MCP server, which is local dev tooling for agents 
 
 The API serves no HTML, so a frontend has to serve `/oauth/authorize` on `FRONTEND_APP_URL` and `FRONTEND_ADMIN_URL` before the login can finish.
 
-Add the servers as a connector through a client app like Claude Desktop, or directly with the CLI.
+Adding the servers as a connector through a client app like Claude Desktop won't work for local dev, since it doesn't work with `localhost` and requires https.
+
+Add them manually with the CLI instead.
 
 ```bash
 claude mcp add --transport http starter http://localhost:8000/mcp
 claude mcp add --transport http starter-admin http://localhost:8000/admin/mcp
+```
+
+List them to see their state. They show as needing authentication until you log in.
+
+```bash
+claude mcp list
+```
+
+Trigger the login manually. It opens the browser at the frontend's `/oauth/authorize` page, or add `--no-browser` to print the URL instead.
+
+```bash
+claude mcp login starter
+claude mcp login starter-admin
 ```
 
 ## Inspector
