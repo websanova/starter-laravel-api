@@ -30,6 +30,17 @@ claude mcp login starter
 claude mcp login starter-admin
 ```
 
+Clients find the OAuth endpoints through two public discovery routes. They need no authentication, so they are a quick way to check the API is up and publishing the right URLs.
+
+```bash
+curl http://localhost:8000/.well-known/oauth-protected-resource/mcp
+curl http://localhost:8000/.well-known/oauth-protected-resource/admin/mcp
+curl http://localhost:8000/.well-known/oauth-authorization-server/mcp
+curl http://localhost:8000/.well-known/oauth-authorization-server/admin/mcp
+```
+
+The first pair says which authorization server protects each MCP server. The second pair lists the authorize, token and registration endpoints.
+
 ## Inspector
 
 The MCP Inspector is a web UI that connects to a server as a client, lists its tools, calls them and shows the raw JSON-RPC.
