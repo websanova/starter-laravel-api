@@ -128,6 +128,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::get('/users/{user}/tags', [App\Http\Controllers\Admin\UserTagController::class, 'index']);
     Route::delete('/users/{user}/tags/{tag}', [App\Http\Controllers\Admin\UserTagController::class, 'destroy'])->scopeBindings();
 
+    Route::get('/users/{user}/sanctum-tokens', [App\Http\Controllers\Admin\UserSanctumTokenController::class, 'index']);
+    Route::delete('/users/{user}/sanctum-tokens/{sanctum_token}', [App\Http\Controllers\Admin\UserSanctumTokenController::class, 'destroy'])->scopeBindings();
+
+    Route::get('/users/{user}/oauth-tokens', [App\Http\Controllers\Admin\UserOAuthTokenController::class, 'index']);
+    Route::delete('/users/{user}/oauth-tokens/{oauth_token}', [App\Http\Controllers\Admin\UserOAuthTokenController::class, 'destroy'])->scopeBindings();
+
     Route::get('/plans', [App\Http\Controllers\Admin\PlanController::class, 'index']);
     Route::get('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'show']);
     Route::patch('/plans/{plan}', [App\Http\Controllers\Admin\PlanController::class, 'update']);

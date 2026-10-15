@@ -143,6 +143,24 @@ class User extends Authenticatable implements HasLocalePreference
     }
 
     /**
+     * Get the user's Sanctum tokens. Sanctum's own tokens() relation under a
+     * name that scoped route bindings can resolve for {sanctum_token}.
+     */
+    public function sanctumTokens(): MorphMany
+    {
+        return $this->tokens();
+    }
+
+    /**
+     * Get the user's Passport access tokens. Passport's HasApiTokens lives on
+     * OAuthUser, so the relation is declared here for {oauth_token} bindings.
+     */
+    public function oauthTokens(): HasMany
+    {
+        return $this->hasMany(PassportToken::class, 'user_id');
+    }
+
+    /**
      * Get the user's locale, falling back to the configured default.
      */
     protected function locale(): Attribute

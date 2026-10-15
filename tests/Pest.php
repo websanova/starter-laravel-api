@@ -1,10 +1,13 @@
 <?php
 
+use App\Models\PassportToken;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
+use Laravel\Passport\Client;
 use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\SetupIntent as StripeSetupIntent;
 use Tests\TestCase;
@@ -140,4 +143,21 @@ function userTags(User $user, int $count): Collection
 {
     return collect(range(1, $count))
         ->map(fn ($i) => Tag::factory()->create(['user_id' => $user->id, 'name' => "tag{$i}"]));
+}
+
+/**
+ * A Passport access token for one user, active unless the attributes say
+ * otherwise. Passport ships a client factory but none for tokens, and ids are
+ * 80 character strings it generates itself, so the row is written directly.
+ */
+function oauthToken(User $user, array $attributes = []): PassportToken
+{
+    return PassportToken::create(array_merge([
+        'id' => Str::random(80),
+        'user_id' => $user->id,
+        'client_id' => Client::factory()->create()->id,
+        'scopes' => ['*'],
+        'revoked' => false,
+        'expires_at' => now()->addHour(),
+    ], $attributes));
 }
