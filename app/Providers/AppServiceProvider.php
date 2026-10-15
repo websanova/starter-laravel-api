@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
         Passport::refreshTokensExpireIn(CarbonInterval::days(config('passport.refresh_tokens_expire_in')));
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            return config('app.frontend_app_url') . '/reset-password?token=' . $token . '&email=' . urlencode($user->email);
+            return config('auth.reset_password_endpoint') . '?token=' . $token . '&email=' . urlencode($user->email);
         });
     }
 }

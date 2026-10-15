@@ -64,4 +64,18 @@ return [
 
     'automatic_tax' => (bool) env('SUBSCRIPTION_AUTOMATIC_TAX', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Return Endpoints
+    |--------------------------------------------------------------------------
+    |
+    | The frontend pages the billing provider sends the user back to after a
+    | checkout session or a payment method confirmation.
+    |
+    */
+
+    'subscribe_endpoint' => env('FRONTEND_APP_URL', 'http://localhost:5173') . '/subscribe',
+
+    'payment_method_endpoint' => env('FRONTEND_APP_URL', 'http://localhost:5173') . '/payment-method',
+
 ];

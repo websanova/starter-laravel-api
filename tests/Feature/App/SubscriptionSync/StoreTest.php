@@ -21,7 +21,7 @@ function subscriptionSyncSession(User $user): string
         'mode' => 'subscription',
         'customer' => $user->stripe_id,
         'line_items' => [['price' => $price->id, 'quantity' => 1]],
-        'return_url' => config('app.frontend_app_url') . '/subscribe',
+        'return_url' => config('subscription.subscribe_endpoint'),
     ])->id;
 }
 

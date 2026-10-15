@@ -170,4 +170,18 @@ return [
 
     'attempt_throttle' => (int) env('AUTH_ATTEMPT_THROTTLE', 5),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email Link Endpoints
+    |--------------------------------------------------------------------------
+    |
+    | The frontend pages a user lands on from a link in an email. The token
+    | and email are appended to them as a query string.
+    |
+    */
+
+    'reset_password_endpoint' => env('FRONTEND_APP_URL', 'http://localhost:5173') . '/reset-password',
+
+    'email_reset_endpoint' => env('FRONTEND_APP_URL', 'http://localhost:5173') . '/email-reset',
+
 ];

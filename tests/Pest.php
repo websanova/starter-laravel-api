@@ -97,7 +97,7 @@ function stripeSandboxSetupIntent(User $user, StripePaymentMethod $paymentMethod
     ];
 
     if ($confirm) {
-        $payload['return_url'] = config('app.frontend_app_url') . '/payment-method';
+        $payload['return_url'] = config('subscription.payment_method_endpoint');
     }
 
     return Cashier::stripe()->setupIntents->create($payload);
