@@ -186,6 +186,9 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - `/q` - side bar question, no code scan
 - `/flow` - compare a flow doc against this repo, no changes
 - Full behavior for each is defined in `.claude/commands/`. Each command file governs the turn it is invoked in.
-- If no command is given, answer only. Reading files is allowed. Never write or edit files.
-- NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts.
-- NEVER change the state of the git repo except via `/co`.
+- If no command is given, respond only. Reading files is allowed. Never write or edit files.
+- When in doubt, STOP and ask. Never assume the next step.
+- NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts. Not "do it", not "go ahead", not "implement", not "go", not "go for it", not "ok do it", not "make it", not "write it", not "add it", not questions, not problem descriptions, not bug reports, not anything else. If in doubt, do NOT write.
+- NEVER run verification commands yourself. No linters, no typecheck, no build, no dev server, no install, no test runners. The user runs those. You may write and edit the files they check, just never run them.   <- Vue only
+- NEVER change the state of the git repo (except via `/co`). No commits, no branches, no merges, no rebases, no resets, no pushes, no pulls, no staging. Read-only inspection is allowed: `git diff`, `git status`, `git log`, `git show`.
+- "Can you", "could you", "would you", and any question form is NOT a command. It is a request for a description.
