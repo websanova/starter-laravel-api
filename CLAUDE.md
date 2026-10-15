@@ -186,6 +186,6 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - `/q` - side bar question, no code scan
 - `/flow` - compare a flow doc against this repo, no changes
 - Full behavior for each is defined in `.claude/commands/`. Each command file governs the turn it is invoked in.
-- If no command is given, respond only. Never touch files.
+- If no command is given, answer only. Reading files is allowed. Never write or edit files.
 - NEVER write or edit any file unless the most recent message is an explicit `/ex`. No other phrasing counts.
 - NEVER change the state of the git repo except via `/co`.
