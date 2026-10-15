@@ -68,18 +68,18 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! $this->app->isProduction());
 
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute(config('app.api_throttle'))->by($request->user()?->id ?: $request->ip());
         });
 
         RateLimiter::for('auth', function (Request $request) {
             $email = strtolower($request->string('email'));
 
-            return Limit::perMinute(5)->by($email . '|' . $request->ip());
+            return Limit::perMinute(config('auth.attempt_throttle'))->by($email . '|' . $request->ip());
         });
 
         // Short access tokens so MCP clients actually exercise the refresh_token grant.
-        Passport::tokensExpireIn(CarbonInterval::hour());
-        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
+        Passport::tokensExpireIn(CarbonInterval::minutes(config('passport.tokens_expire_in')));
+        Passport::refreshTokensExpireIn(CarbonInterval::days(config('passport.refresh_tokens_expire_in')));
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
             return config('app.frontend_app_url') . '/reset-password?token=' . $token . '&email=' . urlencode($user->email);

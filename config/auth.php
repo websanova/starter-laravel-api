@@ -158,4 +158,16 @@ return [
 
     'activity_throttle' => env('AUTH_ACTIVITY_THROTTLE', 60),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Attempt Throttle
+    |--------------------------------------------------------------------------
+    |
+    | The number of attempts per minute allowed on the public auth endpoints
+    | (login, register, password reset), keyed by email and IP.
+    |
+    */
+
+    'attempt_throttle' => (int) env('AUTH_ATTEMPT_THROTTLE', 5),
+
 ];

@@ -61,4 +61,18 @@ return [
         'admin' => env('FRONTEND_ADMIN_URL', 'http://localhost:5174') . '/oauth/authorize',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Token Lifetimes
+    |--------------------------------------------------------------------------
+    |
+    | Access tokens expire in minutes and refresh tokens in days. Access tokens
+    | are kept short so MCP clients actually exercise the refresh_token grant.
+    |
+    */
+
+    'tokens_expire_in' => (int) env('PASSPORT_TOKENS_EXPIRE_IN', 60),
+
+    'refresh_tokens_expire_in' => (int) env('PASSPORT_REFRESH_TOKENS_EXPIRE_IN', 30),
+
 ];
