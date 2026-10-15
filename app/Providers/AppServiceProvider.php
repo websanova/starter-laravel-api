@@ -13,6 +13,7 @@ use App\Contracts\SyncPaymentMethodProvider;
 use App\Contracts\SyncPlanPricesProvider;
 use App\Contracts\SyncSubscriptionProvider;
 use App\Contracts\UpdatePaymentMethodAddressProvider;
+use App\Models\SanctumToken;
 use App\Services\Stripe\CancelSubscriptionService;
 use App\Services\Stripe\ChangeSubscriptionPlanService;
 use App\Services\Stripe\CreatePaymentMethodIntentService;
@@ -33,6 +34,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
 use Laravel\Passport\Passport;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -80,6 +82,8 @@ class AppServiceProvider extends ServiceProvider
         // Short access tokens so MCP clients actually exercise the refresh_token grant.
         Passport::tokensExpireIn(CarbonInterval::minutes(config('passport.tokens_expire_in')));
         Passport::refreshTokensExpireIn(CarbonInterval::days(config('passport.refresh_tokens_expire_in')));
+
+        Sanctum::usePersonalAccessTokenModel(SanctumToken::class);
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
             return config('auth.reset_password_endpoint') . '?token=' . $token . '&email=' . urlencode($user->email);

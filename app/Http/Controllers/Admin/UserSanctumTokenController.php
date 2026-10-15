@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserSanctumToken\DestroyRequest;
 use App\Http\Requests\Admin\UserSanctumToken\IndexRequest;
 use App\Http\Resources\Admin\SanctumTokenResource;
+use App\Models\SanctumToken;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class UserSanctumTokenController extends Controller
 {
@@ -18,10 +18,7 @@ class UserSanctumTokenController extends Controller
     public function index(IndexRequest $request, User $user): JsonResponse
     {
         $tokens = $user->sanctumTokens()
-            ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            })
+            ->active()
             ->latest()
             ->paginate($request->validated('per_page', 15));
 
@@ -31,7 +28,7 @@ class UserSanctumTokenController extends Controller
     /**
      * Delete a user's Sanctum token.
      */
-    public function destroy(DestroyRequest $request, User $user, PersonalAccessToken $sanctumToken): JsonResponse
+    public function destroy(DestroyRequest $request, User $user, SanctumToken $sanctumToken): JsonResponse
     {
         $sanctumToken->delete();
 

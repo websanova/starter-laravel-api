@@ -19,11 +19,7 @@ class UserOAuthTokenController extends Controller
     {
         $tokens = $user->oauthTokens()
             ->with('client')
-            ->where('revoked', false)
-            ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
-            })
+            ->active()
             ->latest()
             ->paginate($request->validated('per_page', 15));
 
