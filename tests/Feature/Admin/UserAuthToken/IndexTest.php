@@ -1,11 +1,11 @@
 <?php
 
-uses()->group('admin.user-sanctum-token.index');
+uses()->group('admin.user-auth-token.index');
 
 use App\Enums\UserRole;
 use App\Models\User;
 
-test('super can list a user\'s sanctum tokens', function () {
+test('super can list a user\'s auth tokens', function () {
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
 
@@ -13,7 +13,7 @@ test('super can list a user\'s sanctum tokens', function () {
     $target->createToken('auth');
     $target->createToken('auth');
 
-    $response = $this->actingAs($super)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($super)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data')
@@ -23,49 +23,49 @@ test('super can list a user\'s sanctum tokens', function () {
         ]);
 });
 
-test('admin can list a user\'s sanctum tokens', function () {
+test('admin can list a user\'s auth tokens', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
     $target = User::factory()->create();
     $target->createToken('auth');
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data');
 });
 
-test('admin cannot list a super user\'s sanctum tokens', function () {
+test('admin cannot list a super user\'s auth tokens', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
     $super = User::factory()->create();
     $super->assignRole(UserRole::Super);
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$super->id}/sanctum-tokens");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$super->id}/auth-tokens");
 
     $response->assertStatus(403);
 });
 
-test('regular user cannot list a user\'s sanctum tokens', function () {
+test('regular user cannot list a user\'s auth tokens', function () {
     $user = User::factory()->create();
     $target = User::factory()->create();
 
-    $response = $this->actingAs($user)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($user)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(403);
 });
 
-test('unauthenticated user cannot list a user\'s sanctum tokens', function () {
+test('unauthenticated user cannot list a user\'s auth tokens', function () {
     $target = User::factory()->create();
 
-    $response = $this->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(401);
 });
 
-test('returns only the target user\'s sanctum tokens', function () {
+test('returns only the target user\'s auth tokens', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
@@ -75,14 +75,14 @@ test('returns only the target user\'s sanctum tokens', function () {
     $token = $target->createToken('target');
     $other->createToken('other');
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', $token->accessToken->id);
 });
 
-test('does not return expired sanctum tokens', function () {
+test('does not return expired auth tokens', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
@@ -90,14 +90,14 @@ test('does not return expired sanctum tokens', function () {
     $active = $target->createToken('active', ['*'], now()->addDay());
     $target->createToken('expired', ['*'], now()->subMinute());
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.id', $active->accessToken->id);
 });
 
-test('sanctum tokens are sorted by created_at descending', function () {
+test('auth tokens are sorted by created_at descending', function () {
     $admin = User::factory()->create();
     $admin->assignRole(UserRole::Admin);
 
@@ -106,7 +106,7 @@ test('sanctum tokens are sorted by created_at descending', function () {
     $target->createToken('new');
     $target->createToken('mid')->accessToken->forceFill(['created_at' => now()->subDay()])->save();
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens");
 
     $response->assertStatus(200)
         ->assertJsonPath('data.0.name', 'new')
@@ -123,7 +123,7 @@ test('can set per page limit', function () {
     $target->createToken('auth');
     $target->createToken('auth');
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens?per_page=2");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens?per_page=2");
 
     $response->assertStatus(200)
         ->assertJsonCount(2, 'data')
@@ -136,7 +136,7 @@ test('invalid per_page value returns validation error', function () {
 
     $target = User::factory()->create();
 
-    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/sanctum-tokens?per_page=invalid");
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/auth-tokens?per_page=invalid");
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors('per_page');

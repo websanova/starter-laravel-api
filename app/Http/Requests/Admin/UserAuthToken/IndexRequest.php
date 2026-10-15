@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin\UserSanctumToken;
+namespace App\Http\Requests\Admin\UserAuthToken;
 
+use App\Rules\SharedRules;
 use Illuminate\Foundation\Http\FormRequest;
 
-class DestroyRequest extends FormRequest
+class IndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,6 +20,8 @@ class DestroyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'per_page' => SharedRules::perPage(),
+        ];
     }
 }

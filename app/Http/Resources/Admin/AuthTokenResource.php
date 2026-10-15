@@ -6,7 +6,7 @@ use App\Http\Resources\Concerns\CollectsPaginated;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SanctumTokenResource extends JsonResource
+class AuthTokenResource extends JsonResource
 {
     use CollectsPaginated;
 

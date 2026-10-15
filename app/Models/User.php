@@ -144,9 +144,9 @@ class User extends Authenticatable implements HasLocalePreference
 
     /**
      * Get the user's Sanctum tokens. Sanctum's own tokens() relation under a
-     * name that scoped route bindings can resolve for {sanctum_token}.
+     * name that scoped route bindings can resolve for {auth_token}.
      */
-    public function sanctumTokens(): MorphMany
+    public function authTokens(): MorphMany
     {
         return $this->tokens();
     }
