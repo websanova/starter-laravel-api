@@ -4,7 +4,9 @@ uses()->group('admin.user-oauth-token.index');
 
 use App\Enums\UserRole;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Laravel\Passport\Client;
+use Laravel\Passport\RefreshToken;
 
 test('super can list a user\'s oauth tokens', function () {
     $super = User::factory()->create();
@@ -106,6 +108,62 @@ test('does not return revoked or expired oauth tokens', function () {
     $active = oauthToken($target);
     oauthToken($target, ['revoked' => true]);
     oauthToken($target, ['expires_at' => now()->subMinute()]);
+
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/oauth-tokens");
+
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $active->id);
+});
+
+test('returns an expired oauth token while its refresh token is live', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $target = User::factory()->create();
+    $token = oauthToken($target, ['expires_at' => now()->subMinute()]);
+    $refreshToken = RefreshToken::create([
+        'id' => Str::random(80),
+        'access_token_id' => $token->id,
+        'revoked' => false,
+        'expires_at' => now()->addDays(30),
+    ]);
+
+    $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/oauth-tokens");
+
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $token->id)
+        ->assertJsonPath('data.0.expires_at', $refreshToken->expires_at->toJSON());
+});
+
+test('does not return oauth tokens whose refresh token is revoked or expired', function () {
+    $admin = User::factory()->create();
+    $admin->assignRole(UserRole::Admin);
+
+    $target = User::factory()->create();
+    $active = oauthToken($target);
+    $revoked = oauthToken($target);
+    $expired = oauthToken($target);
+
+    RefreshToken::create([
+        'id' => Str::random(80),
+        'access_token_id' => $active->id,
+        'revoked' => false,
+        'expires_at' => now()->addDays(30),
+    ]);
+    RefreshToken::create([
+        'id' => Str::random(80),
+        'access_token_id' => $revoked->id,
+        'revoked' => true,
+        'expires_at' => now()->addDays(30),
+    ]);
+    RefreshToken::create([
+        'id' => Str::random(80),
+        'access_token_id' => $expired->id,
+        'revoked' => false,
+        'expires_at' => now()->subMinute(),
+    ]);
 
     $response = $this->actingAs($admin)->getJson("/admin/users/{$target->id}/oauth-tokens");
 

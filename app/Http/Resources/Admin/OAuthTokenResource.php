@@ -19,7 +19,7 @@ class OAuthTokenResource extends JsonResource
             'client_id' => $this->client_id,
             'client_name' => $this->client->name,
             'created_at' => $this->created_at,
-            'expires_at' => $this->expires_at,
+            'expires_at' => $this->refreshToken?->expires_at ?? $this->expires_at,
             'id' => $this->id,
             'scopes' => $this->scopes,
         ];

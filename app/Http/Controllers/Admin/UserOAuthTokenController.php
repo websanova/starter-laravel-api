@@ -13,12 +13,14 @@ use Illuminate\Http\JsonResponse;
 class UserOAuthTokenController extends Controller
 {
     /**
-     * List a user's active OAuth access tokens.
+     * List a user's active OAuth access tokens. A token is active while its
+     * refresh token is, so an expired access token the client can still
+     * refresh is listed.
      */
     public function index(IndexRequest $request, User $user): JsonResponse
     {
         $tokens = $user->oauthTokens()
-            ->with('client')
+            ->with(['client', 'refreshToken'])
             ->active()
             ->latest()
             ->paginate($request->validated('per_page', 15));

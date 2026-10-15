@@ -12,14 +12,25 @@ use Laravel\Passport\Token;
 class PassportToken extends Token
 {
     /**
-     * Only tokens that are not revoked and have not expired.
+     * Only tokens that are not revoked and still usable. Access tokens are
+     * short lived, so a token with a refresh token stays active for as long as
+     * that refresh token is live. A token without one is active until it
+     * expires.
      */
     public function scopeActive(Builder $query): void
     {
         $query->where('revoked', false)
             ->where(function ($query) {
-                $query->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', now());
+                $query->whereHas('refreshToken', function ($query) {
+                    $query->where('revoked', false)
+                        ->where('expires_at', '>', now());
+                })->orWhere(function ($query) {
+                    $query->whereDoesntHave('refreshToken')
+                        ->where(function ($query) {
+                            $query->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        });
+                });
             });
     }
 }
