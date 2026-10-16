@@ -2,10 +2,15 @@
 
 return [
 
-    'free.name' => 'Starter Basic',
-    'pro.name' => 'Starter Pro',
-
-    'interval.monthly' => 'Monthly',
-    'interval.yearly' => 'Yearly',
+    'free' => [
+        'name' => 'Starter Basic',
+    ],
+    'interval' => [
+        'monthly' => 'Monthly',
+        'yearly' => 'Yearly',
+    ],
+    'pro' => [
+        'name' => 'Starter Pro',
+    ],
 
 ];

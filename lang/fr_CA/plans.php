@@ -2,7 +2,11 @@
 
 return [
 
-    'free.name' => 'Starter Essentiel',
-    'pro.name' => 'Starter Pro',
+    'free' => [
+        'name' => 'Starter Essentiel',
+    ],
+    'pro' => [
+        'name' => 'Starter Pro',
+    ],
 
 ];

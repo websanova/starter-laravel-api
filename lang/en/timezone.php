@@ -10,10 +10,10 @@ return [
         'Asia' => 'Asia',
         'Atlantic' => 'Atlantic',
         'Australia' => 'Australia',
+        'Etc' => 'Etc',
         'Europe' => 'Europe',
         'Indian' => 'Indian',
         'Pacific' => 'Pacific',
-        'Etc' => 'Etc',
     ],
 
 ];

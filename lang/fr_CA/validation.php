@@ -12,6 +12,7 @@ return [
     'alpha_num' => 'Le champ :attribute ne peut contenir que des lettres et des chiffres.',
     'array' => 'Le champ :attribute doit etre un tableau.',
     'ascii' => 'Le champ :attribute ne peut contenir que des caracteres alphanumeriques et des symboles sur un octet.',
+    'attributes' => [],
     'before' => 'Le champ :attribute doit etre une date anterieure au :date.',
     'before_or_equal' => 'Le champ :attribute doit etre une date anterieure ou egale au :date.',
     'between' => [
@@ -20,11 +21,19 @@ return [
         'numeric' => 'La valeur de :attribute doit etre comprise entre :min et :max.',
         'string' => 'Le texte :attribute doit contenir entre :min et :max caracteres.',
     ],
+    'bookmark' => [
+        'url_duplicate' => 'Vous avez deja enregistre cette URL.',
+    ],
     'boolean' => 'Le champ :attribute doit etre vrai ou faux.',
     'can' => 'Le champ :attribute contient une valeur non autorisee.',
     'confirmed' => 'Le champ de confirmation :attribute ne correspond pas.',
     'contains' => 'Le champ :attribute ne contient pas une valeur requise.',
     'current_password' => 'Le mot de passe est incorrect.',
+    'custom' => [
+        'attribute-name' => [
+            'rule-name' => 'custom-message',
+        ],
+    ],
     'date' => 'Le champ :attribute n est pas une date valide.',
     'date_equals' => 'Le champ :attribute doit etre une date egale au :date.',
     'date_format' => 'Le champ :attribute ne correspond pas au format :format.',
@@ -117,10 +126,21 @@ return [
     'present_unless' => 'Le champ :attribute doit etre present sauf si :other est :value.',
     'present_with' => 'Le champ :attribute doit etre present quand :values est present.',
     'present_with_all' => 'Le champ :attribute doit etre present quand :values sont presents.',
+    'price' => [
+        'interval_mismatch' => 'Le prix Stripe est facture sur un intervalle different.',
+        'missing_lookup_key' => 'Une cle de recherche Stripe est requise avant la synchronisation.',
+        'not_found' => 'Aucun prix Stripe actif ne correspond a cette cle de recherche.',
+        'sync_failed' => 'Les prix Stripe n ont pas pu etre recuperes.',
+    ],
     'prohibited' => 'Le champ :attribute est interdit.',
     'prohibited_if' => 'Le champ :attribute est interdit quand :other est :value.',
     'prohibited_unless' => 'Le champ :attribute est interdit sauf si :other est dans :values.',
     'prohibits' => 'Le champ :attribute interdit la presence de :other.',
+    'promotion_code' => [
+        'expired' => 'Le code promotionnel a expire.',
+        'invalid' => 'Le code promotionnel est invalide.',
+        'max_redemptions' => 'Le code promotionnel a atteint son nombre maximal d utilisations.',
+    ],
     'regex' => 'Le format du champ :attribute est invalide.',
     'required' => 'Le champ :attribute est obligatoire.',
     'required_array_keys' => 'Le champ :attribute doit contenir des entrees pour : :values.',
@@ -141,34 +161,16 @@ return [
     ],
     'starts_with' => 'Le champ :attribute doit commencer par l un des elements suivants : :values.',
     'string' => 'Le champ :attribute doit etre une chaine de caracteres.',
+    'tag' => [
+        'name_duplicate' => 'Vous avez deja une etiquette portant ce nom.',
+        'name_format' => 'Doit commencer par une lettre ou un chiffre. Autorises : lettres, chiffres, espaces, points (.), tirets (-), plus (+), diese (#).',
+    ],
     'timezone' => 'Le champ :attribute doit etre un fuseau horaire valide.',
+    'ulid' => 'Le champ :attribute doit etre un ULID valide.',
     'unique' => 'La valeur du champ :attribute est deja utilisee.',
     'uploaded' => 'Le televersement du champ :attribute a echoue.',
     'uppercase' => 'Le champ :attribute doit etre en majuscules.',
     'url' => 'Le champ :attribute doit etre une URL valide.',
-    'ulid' => 'Le champ :attribute doit etre un ULID valide.',
     'uuid' => 'Le champ :attribute doit etre un UUID valide.',
-
-    'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
-    ],
-
-    'attributes' => [],
-
-    'tag.name_format' => 'Doit commencer par une lettre ou un chiffre. Autorises : lettres, chiffres, espaces, points (.), tirets (-), plus (+), diese (#).',
-    'tag.name_duplicate' => 'Vous avez deja une etiquette portant ce nom.',
-
-    'bookmark.url_duplicate' => 'Vous avez deja enregistre cette URL.',
-
-    'promotion_code.invalid' => 'Le code promotionnel est invalide.',
-    'promotion_code.expired' => 'Le code promotionnel a expire.',
-    'promotion_code.max_redemptions' => 'Le code promotionnel a atteint son nombre maximal d utilisations.',
-
-    'price.missing_lookup_key' => 'Une cle de recherche Stripe est requise avant la synchronisation.',
-    'price.sync_failed' => 'Les prix Stripe n ont pas pu etre recuperes.',
-    'price.not_found' => 'Aucun prix Stripe actif ne correspond a cette cle de recherche.',
-    'price.interval_mismatch' => 'Le prix Stripe est facture sur un intervalle different.',
 
 ];
