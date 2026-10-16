@@ -6,6 +6,8 @@ use App\Mcp\Tools\App\Bookmark\CreateBookmarkTool;
 use App\Mcp\Tools\App\Bookmark\DeleteBookmarkTool;
 use App\Mcp\Tools\App\Bookmark\ListBookmarksTool;
 use App\Mcp\Tools\App\Bookmark\UpdateBookmarkTool;
+use App\Mcp\Tools\App\Profile\ShowProfileTool;
+use App\Mcp\Tools\App\Profile\UpdateProfileTool;
 use App\Mcp\Tools\App\Tag\CreateTagTool;
 use App\Mcp\Tools\App\Tag\DeleteTagTool;
 use App\Mcp\Tools\App\Tag\ListTagsTool;
@@ -27,7 +29,9 @@ class AppServer extends Server
         DeleteTagTool::class,
         ListBookmarksTool::class,
         ListTagsTool::class,
+        ShowProfileTool::class,
         UpdateBookmarkTool::class,
+        UpdateProfileTool::class,
         UpdateTagTool::class,
     ];
 
