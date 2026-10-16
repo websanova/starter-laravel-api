@@ -5,20 +5,14 @@ namespace App\Mcp\Tools\App\Bookmark;
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
+use Laravel\Mcp\Server\Attributes\Description;
 
+#[Description('Create a bookmark for the authenticated user.')]
 class CreateBookmarkTool extends ApiTool
 {
     protected string $method = 'POST';
 
     protected string $uri = '/bookmarks';
-
-    /**
-     * Get the tool's description.
-     */
-    public function description(): string
-    {
-        return __('mcp.app.tools.bookmark.create.description');
-    }
 
     /**
      * Get the tool's input schema.
@@ -29,16 +23,16 @@ class CreateBookmarkTool extends ApiTool
     {
         return [
             'url' => $schema->string()
-                ->description(__('mcp.app.tools.bookmark.create.params.url'))
+                ->description('The url of the bookmark. Must be unique among the user\'s bookmarks.')
                 ->required(),
             'title' => $schema->string()
-                ->description(__('mcp.app.tools.bookmark.create.params.title'))
+                ->description('The title of the bookmark.')
                 ->required(),
             'is_favorited' => $schema->boolean()
-                ->description(__('mcp.app.tools.bookmark.create.params.is_favorited')),
+                ->description('Whether the bookmark is favorited.'),
             'tag_ids' => $schema->array()
                 ->items($schema->integer())
-                ->description(__('mcp.app.tools.bookmark.create.params.tag_ids')),
+                ->description('The ids of existing tags for the bookmark. Look them up with the list tags tool, never guess an id.'),
         ];
     }
 }

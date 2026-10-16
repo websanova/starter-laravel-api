@@ -5,22 +5,16 @@ namespace App\Mcp\Tools\App\Bookmark;
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
+use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
+#[Description('List the authenticated user\'s bookmarks with optional filtering and sorting.')]
 #[IsReadOnly]
 class ListBookmarksTool extends ApiTool
 {
     protected string $method = 'GET';
 
     protected string $uri = '/bookmarks';
-
-    /**
-     * Get the tool's description.
-     */
-    public function description(): string
-    {
-        return __('mcp.app.tools.bookmark.list.description');
-    }
 
     /**
      * Get the tool's input schema.
@@ -31,19 +25,19 @@ class ListBookmarksTool extends ApiTool
     {
         return [
             'search' => $schema->string()
-                ->description(__('mcp.app.tools.bookmark.list.params.search')),
+                ->description('Only return bookmarks matching this search term.'),
             'favorited' => $schema->boolean()
-                ->description(__('mcp.app.tools.bookmark.list.params.favorited')),
+                ->description('Only return bookmarks that are favorited or not favorited.'),
             'tag_id' => $schema->integer()
-                ->description(__('mcp.app.tools.bookmark.list.params.tag_id')),
+                ->description('Only return bookmarks with this tag id. Look it up with the list tags tool, never guess an id.'),
             'sort_by' => $schema->string()
                 ->enum(['title', 'created_at'])
-                ->description(__('mcp.app.tools.bookmark.list.params.sort_by')),
+                ->description('The field to sort by.'),
             'sort_dir' => $schema->string()
                 ->enum(['asc', 'desc'])
-                ->description(__('mcp.app.tools.bookmark.list.params.sort_dir')),
+                ->description('The sort direction.'),
             'per_page' => $schema->integer()
-                ->description(__('mcp.app.tools.bookmark.list.params.per_page')),
+                ->description('The number of bookmarks per page.'),
         ];
     }
 }

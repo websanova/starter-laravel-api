@@ -5,22 +5,16 @@ namespace App\Mcp\Tools\App\Tag;
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
+use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[Description('Rename a tag the authenticated user owns.')]
 #[IsIdempotent]
 class UpdateTagTool extends ApiTool
 {
     protected string $method = 'PATCH';
 
     protected string $uri = '/tags/{tag}';
-
-    /**
-     * Get the tool's description.
-     */
-    public function description(): string
-    {
-        return __('mcp.app.tools.tag.update.description');
-    }
 
     /**
      * Get the tool's input schema.
@@ -31,10 +25,10 @@ class UpdateTagTool extends ApiTool
     {
         return [
             'tag' => $schema->integer()
-                ->description(__('mcp.app.tools.tag.update.params.tag'))
+                ->description('The id of the tag to update.')
                 ->required(),
             'name' => $schema->string()
-                ->description(__('mcp.app.tools.tag.update.params.name')),
+                ->description('The new name of the tag. Up to 50 characters, must start with a letter or number, and must be unique among the user\'s tags.'),
         ];
     }
 }

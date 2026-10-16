@@ -5,22 +5,16 @@ namespace App\Mcp\Tools\App\Profile;
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
+use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[Description('Update the authenticated user\'s profile. Only the fields provided are changed.')]
 #[IsIdempotent]
 class UpdateProfileTool extends ApiTool
 {
     protected string $method = 'PATCH';
 
     protected string $uri = '/profile';
-
-    /**
-     * Get the tool's description.
-     */
-    public function description(): string
-    {
-        return __('mcp.app.tools.profile.update.description');
-    }
 
     /**
      * Get the tool's input schema.
@@ -31,13 +25,13 @@ class UpdateProfileTool extends ApiTool
     {
         return [
             'first_name' => $schema->string()
-                ->description(__('mcp.app.tools.profile.update.params.first_name')),
+                ->description('The new first name of the user.'),
             'last_name' => $schema->string()
-                ->description(__('mcp.app.tools.profile.update.params.last_name')),
+                ->description('The new last name of the user.'),
             'locale' => $schema->string()
-                ->description(__('mcp.app.tools.profile.update.params.locale')),
+                ->description('The new locale of the user, such as "en".'),
             'timezone' => $schema->string()
-                ->description(__('mcp.app.tools.profile.update.params.timezone')),
+                ->description('The new timezone of the user as an IANA identifier, such as "America/Toronto".'),
         ];
     }
 }

@@ -13,11 +13,13 @@ use App\Mcp\Tools\App\Tag\DeleteTagTool;
 use App\Mcp\Tools\App\Tag\ListTagsTool;
 use App\Mcp\Tools\App\Tag\UpdateTagTool;
 use Laravel\Mcp\Server;
+use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
 
 #[Name('App Server')]
 #[Version('0.0.1')]
+#[Instructions('Tools for the authenticated user to manage their own account data. Bookmarks reference tags by id, never by name. Resolve tag names to ids with the list tags tool first, and create the tag if it does not exist.')]
 class AppServer extends Server
 {
     protected array $tools = [
@@ -40,12 +42,4 @@ class AppServer extends Server
     protected array $prompts = [
         //
     ];
-
-    /**
-     * Set the instructions from the lang file, attributes cannot call __().
-     */
-    protected function boot(): void
-    {
-        $this->instructions = __('mcp.app.instructions');
-    }
 }
