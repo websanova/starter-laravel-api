@@ -2,7 +2,10 @@
 
 namespace App\Mcp\Servers;
 
-use App\Mcp\Tools\App\HelloTool;
+use App\Mcp\Tools\App\CreateBookmarkTool;
+use App\Mcp\Tools\App\DeleteBookmarkTool;
+use App\Mcp\Tools\App\ListBookmarksTool;
+use App\Mcp\Tools\App\UpdateBookmarkTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -14,7 +17,10 @@ use Laravel\Mcp\Server\Attributes\Version;
 class AppServer extends Server
 {
     protected array $tools = [
-        HelloTool::class,
+        CreateBookmarkTool::class,
+        DeleteBookmarkTool::class,
+        ListBookmarksTool::class,
+        UpdateBookmarkTool::class,
     ];
 
     protected array $resources = [
