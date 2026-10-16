@@ -2,7 +2,12 @@
 
 namespace App\Mcp\Servers;
 
-use App\Mcp\Tools\Admin\HelloTool;
+use App\Mcp\Tools\Admin\User\ShowUserTool;
+use App\Mcp\Tools\Admin\User\UpdateUserTool;
+use App\Mcp\Tools\Admin\UserBookmark\DeleteUserBookmarkTool;
+use App\Mcp\Tools\Admin\UserBookmark\ListUserBookmarksTool;
+use App\Mcp\Tools\Admin\UserTag\DeleteUserTagTool;
+use App\Mcp\Tools\Admin\UserTag\ListUserTagsTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -14,7 +19,12 @@ use Laravel\Mcp\Server\Attributes\Version;
 class AdminServer extends Server
 {
     protected array $tools = [
-        HelloTool::class,
+        DeleteUserBookmarkTool::class,
+        DeleteUserTagTool::class,
+        ListUserBookmarksTool::class,
+        ListUserTagsTool::class,
+        ShowUserTool::class,
+        UpdateUserTool::class,
     ];
 
     protected array $resources = [
