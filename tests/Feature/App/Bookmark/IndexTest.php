@@ -55,6 +55,42 @@ test('invalid tag_id value returns validation error', function () {
         ->assertJsonValidationErrors('tag_id');
 });
 
+test('user can filter bookmarks by favorited', function () {
+    $user = User::factory()->create();
+
+    Bookmark::factory()->count(2)->create(['user_id' => $user->id, 'is_favorited' => true]);
+    Bookmark::factory()->create(['user_id' => $user->id, 'is_favorited' => false]);
+
+    $response = $this->actingAs($user)->getJson('/bookmarks?favorited=1');
+
+    $response->assertStatus(200)
+        ->assertJsonCount(2, 'data')
+        ->assertJsonPath('data.0.is_favorited', true)
+        ->assertJsonPath('data.1.is_favorited', true);
+});
+
+test('user can filter bookmarks by not favorited', function () {
+    $user = User::factory()->create();
+
+    Bookmark::factory()->count(2)->create(['user_id' => $user->id, 'is_favorited' => true]);
+    Bookmark::factory()->create(['user_id' => $user->id, 'is_favorited' => false]);
+
+    $response = $this->actingAs($user)->getJson('/bookmarks?favorited=0');
+
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.is_favorited', false);
+});
+
+test('invalid favorited value returns validation error', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->getJson('/bookmarks?favorited=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('favorited');
+});
+
 test('can set per page limit', function () {
     $user = User::factory()->create();
     Bookmark::factory()->count(5)->create(['user_id' => $user->id]);

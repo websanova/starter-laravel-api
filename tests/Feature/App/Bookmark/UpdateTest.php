@@ -141,6 +141,46 @@ test('user cannot attach more than the max tags', function () {
         ->assertJsonValidationErrors('tag_ids');
 });
 
+test('user can favorite their bookmark', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'is_favorited' => false]);
+
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
+        'is_favorited' => true,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.is_favorited', true);
+
+    $this->assertDatabaseHas('bookmarks', ['id' => $bookmark->id, 'is_favorited' => true]);
+});
+
+test('user can unfavorite their bookmark', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'is_favorited' => true]);
+
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
+        'is_favorited' => false,
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('data.is_favorited', false);
+
+    $this->assertDatabaseHas('bookmarks', ['id' => $bookmark->id, 'is_favorited' => false]);
+});
+
+test('is_favorited must be a boolean', function () {
+    $user = User::factory()->create();
+    $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+
+    $response = $this->actingAs($user)->patchJson("/bookmarks/{$bookmark->id}", [
+        'is_favorited' => 'invalid',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('is_favorited');
+});
+
 test('unauthenticated user cannot update a bookmark', function () {
     $bookmark = Bookmark::factory()->create();
 

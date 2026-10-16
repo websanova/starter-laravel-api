@@ -166,6 +166,55 @@ test('tag ids must be distinct', function () {
         ->assertJsonValidationErrors('tag_ids.1');
 });
 
+test('user can create a favorited bookmark', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'is_favorited' => true,
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJsonPath('data.is_favorited', true);
+
+    $this->assertDatabaseHas('bookmarks', [
+        'user_id' => $user->id,
+        'url' => 'https://example.com',
+        'is_favorited' => true,
+    ]);
+});
+
+test('bookmark is not favorited when is_favorited is omitted', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+    ]);
+
+    $response->assertStatus(201);
+
+    $this->assertDatabaseHas('bookmarks', [
+        'user_id' => $user->id,
+        'url' => 'https://example.com',
+        'is_favorited' => false,
+    ]);
+});
+
+test('is_favorited must be a boolean', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/bookmarks', [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'is_favorited' => 'invalid',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('is_favorited');
+});
+
 test('unauthenticated user cannot create a bookmark', function () {
     $response = $this->postJson('/bookmarks', [
         'url' => 'https://example.com',
