@@ -6,10 +6,8 @@ use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
-use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
 
-#[Description('Greet the authenticated admin. Use to confirm the connection works and which admin account it is authenticated as.')]
 class HelloTool extends Tool
 {
     /**
@@ -20,6 +18,14 @@ class HelloTool extends Tool
         $user = $request->user();
 
         return Response::text("Hello admin {$user->first_name}, you are user #{$user->id}.");
+    }
+
+    /**
+     * Get the tool's description.
+     */
+    public function description(): string
+    {
+        return __('mcp.admin.tools.hello.description');
     }
 
     /**
