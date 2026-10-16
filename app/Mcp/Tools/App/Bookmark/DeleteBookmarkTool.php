@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp\Tools\App;
+namespace App\Mcp\Tools\App\Bookmark;
 
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;

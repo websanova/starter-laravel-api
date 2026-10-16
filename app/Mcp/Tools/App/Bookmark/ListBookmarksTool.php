@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp\Tools\App;
+namespace App\Mcp\Tools\App\Bookmark;
 
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -29,7 +29,7 @@ class ListBookmarksTool extends ApiTool
             'favorited' => $schema->boolean()
                 ->description('Only return bookmarks that are favorited or not favorited.'),
             'tag_id' => $schema->integer()
-                ->description('Only return bookmarks with this tag id.'),
+                ->description('Only return bookmarks with this tag id. Look it up with the list tags tool, never guess an id.'),
             'sort_by' => $schema->string()
                 ->enum(['title', 'created_at'])
                 ->description('The field to sort by.'),

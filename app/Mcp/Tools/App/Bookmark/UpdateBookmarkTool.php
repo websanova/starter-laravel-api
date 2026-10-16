@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp\Tools\App;
+namespace App\Mcp\Tools\App\Bookmark;
 
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -35,7 +35,7 @@ class UpdateBookmarkTool extends ApiTool
                 ->description('Whether the bookmark is favorited.'),
             'tag_ids' => $schema->array()
                 ->items($schema->integer())
-                ->description('The full list of tag ids for the bookmark. Replaces the existing tags, and an empty list removes them all.'),
+                ->description('The full list of existing tag ids for the bookmark. Look them up with the list tags tool, never guess an id. Replaces the existing tags, and an empty list removes them all.'),
         ];
     }
 }

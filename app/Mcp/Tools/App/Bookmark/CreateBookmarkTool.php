@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mcp\Tools\App;
+namespace App\Mcp\Tools\App\Bookmark;
 
 use App\Mcp\Tools\ApiTool;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -32,7 +32,7 @@ class CreateBookmarkTool extends ApiTool
                 ->description('Whether the bookmark is favorited.'),
             'tag_ids' => $schema->array()
                 ->items($schema->integer())
-                ->description('The tag ids for the bookmark.'),
+                ->description('The ids of existing tags for the bookmark. Look them up with the list tags tool, never guess an id.'),
         ];
     }
 }
