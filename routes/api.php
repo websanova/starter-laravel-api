@@ -117,8 +117,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'track-active', 'verified', 
     Route::get('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show']);
     Route::delete('/users/{user}/subscription', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'destroy']);
     Route::post('/users/{user}/subscription/resume', [App\Http\Controllers\Admin\UserSubscriptionResumeController::class, 'store']);
-    Route::post('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'store']);
-    Route::delete('/users/{user}/subscription/coupon', [App\Http\Controllers\Admin\UserSubscriptionCouponController::class, 'destroy']);
 
     Route::get('/users/{user}/bookmarks', [App\Http\Controllers\Admin\UserBookmarkController::class, 'index']);
     Route::delete('/users/{user}/bookmarks/{bookmark}', [App\Http\Controllers\Admin\UserBookmarkController::class, 'destroy'])->scopeBindings();

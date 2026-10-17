@@ -40,15 +40,4 @@ class SubscriptionRules
                     ->whereNotNull('stripe_price_id'))),
         ];
     }
-
-    /**
-     * Validation rules for the promotion code field.
-     */
-    public static function promotionCode(bool $required = false): array
-    {
-        return array_merge(
-            $required ? ['required'] : ['sometimes', 'nullable'],
-            ['string', 'alpha_dash', 'max:50'],
-        );
-    }
 }

@@ -15,8 +15,6 @@ return [
             'restored' => 'User restored successfully.',
             'role_updated' => 'User role updated successfully.',
             'subscription_cancelled' => 'User subscription cancelled successfully.',
-            'subscription_coupon_applied' => 'Coupon applied to user subscription successfully.',
-            'subscription_coupon_removed' => 'Coupon removed from user subscription successfully.',
             'subscription_created' => 'User subscription created successfully.',
             'subscription_resumed' => 'User subscription resumed successfully.',
             'updated' => 'User updated successfully.',

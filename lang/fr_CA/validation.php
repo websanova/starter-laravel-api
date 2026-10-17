@@ -136,11 +136,6 @@ return [
     'prohibited_if' => 'Le champ :attribute est interdit quand :other est :value.',
     'prohibited_unless' => 'Le champ :attribute est interdit sauf si :other est dans :values.',
     'prohibits' => 'Le champ :attribute interdit la presence de :other.',
-    'promotion_code' => [
-        'expired' => 'Le code promotionnel a expire.',
-        'invalid' => 'Le code promotionnel est invalide.',
-        'max_redemptions' => 'Le code promotionnel a atteint son nombre maximal d utilisations.',
-    ],
     'regex' => 'Le format du champ :attribute est invalide.',
     'required' => 'Le champ :attribute est obligatoire.',
     'required_array_keys' => 'Le champ :attribute doit contenir des entrees pour : :values.',

@@ -15,8 +15,6 @@ return [
             'restored' => 'Utilisateur restaure avec succes.',
             'role_updated' => 'Role de l utilisateur mis a jour avec succes.',
             'subscription_cancelled' => 'Abonnement de l utilisateur annule avec succes.',
-            'subscription_coupon_applied' => 'Coupon applique a l abonnement de l utilisateur avec succes.',
-            'subscription_coupon_removed' => 'Coupon retire de l abonnement de l utilisateur avec succes.',
             'subscription_created' => 'Abonnement de l utilisateur cree avec succes.',
             'subscription_resumed' => 'Abonnement de l utilisateur repris avec succes.',
             'updated' => 'Utilisateur mis a jour avec succes.',
