@@ -42,6 +42,9 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
 
         Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
 
+        Route::get('/invoices', [App\Http\Controllers\App\InvoiceController::class, 'index']);
+        Route::get('/invoices/{invoice}/download', [App\Http\Controllers\App\InvoiceDownloadController::class, 'show'])->name('invoices.download');
+
         Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);
         Route::patch('/notifications/{notification}', [App\Http\Controllers\App\NotificationController::class, 'update']);

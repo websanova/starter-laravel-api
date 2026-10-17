@@ -43,6 +43,10 @@ return [
         'sent' => 'Un lien de confirmation a ete envoye a votre nouvelle adresse courriel.',
         'throttled' => 'Veuillez patienter avant de demander un autre changement de courriel.',
     ],
+    'invoice' => [
+        'not_found' => 'Cette facture est introuvable.',
+        'provider_unavailable' => 'Le fournisseur de facturation n a pas pu etre joint. Veuillez reessayer.',
+    ],
     'model_not_found' => 'Aucun resultat pour :model id :id.',
     'password' => [
         'updated' => 'Votre mot de passe a ete mis a jour.',

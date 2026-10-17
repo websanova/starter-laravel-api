@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Invoice;
 use Laravel\Passport\Client;
 use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\SetupIntent as StripeSetupIntent;
@@ -104,6 +105,19 @@ function stripeSandboxSetupIntent(User $user, StripePaymentMethod $paymentMethod
     }
 
     return Cashier::stripe()->setupIntents->create($payload);
+}
+
+/**
+ * A paid invoice on the customer. Cashier charges the default payment method
+ * when it raises an invoice, so a card goes on first if there is none yet.
+ */
+function stripeSandboxInvoice(User $user, int $amount = 1000): Invoice
+{
+    if (!$user->hasDefaultPaymentMethod()) {
+        $user->updateDefaultPaymentMethod(stripeSandboxCard($user)->id);
+    }
+
+    return $user->invoiceFor('Sandbox charge', $amount);
 }
 
 /**

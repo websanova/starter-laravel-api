@@ -43,6 +43,10 @@ return [
         'sent' => 'A confirmation link has been sent to your new email address.',
         'throttled' => 'Please wait before requesting another email change.',
     ],
+    'invoice' => [
+        'not_found' => 'That invoice could not be found.',
+        'provider_unavailable' => 'The billing provider could not be reached. Please try again.',
+    ],
     'model_not_found' => 'No query results for :model id :id.',
     'password' => [
         'updated' => 'Your password has been updated.',

@@ -7,6 +7,8 @@ use App\Contracts\ChangeSubscriptionPlanProvider;
 use App\Contracts\CreatePaymentMethodIntentProvider;
 use App\Contracts\CreateSessionProvider;
 use App\Contracts\DeletePaymentMethodProvider;
+use App\Contracts\FindInvoiceProvider;
+use App\Contracts\ListInvoicesProvider;
 use App\Contracts\ResumeSubscriptionProvider;
 use App\Contracts\SyncPaymentMethodProvider;
 use App\Contracts\SyncPlanPricesProvider;
@@ -18,6 +20,8 @@ use App\Services\Stripe\ChangeSubscriptionPlanService;
 use App\Services\Stripe\CreatePaymentMethodIntentService;
 use App\Services\Stripe\CreateSessionService;
 use App\Services\Stripe\DeletePaymentMethodService;
+use App\Services\Stripe\FindInvoiceService;
+use App\Services\Stripe\ListInvoicesService;
 use App\Services\Stripe\ResumeSubscriptionService;
 use App\Services\Stripe\SyncPaymentMethodService;
 use App\Services\Stripe\SyncPlanPricesService;
@@ -56,6 +60,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CreatePaymentMethodIntentProvider::class, CreatePaymentMethodIntentService::class);
         $this->app->bind(SyncPaymentMethodProvider::class, SyncPaymentMethodService::class);
         $this->app->bind(DeletePaymentMethodProvider::class, DeletePaymentMethodService::class);
+        $this->app->bind(ListInvoicesProvider::class, ListInvoicesService::class);
+        $this->app->bind(FindInvoiceProvider::class, FindInvoiceService::class);
     }
 
     /**
