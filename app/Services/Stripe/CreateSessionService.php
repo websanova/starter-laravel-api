@@ -123,6 +123,10 @@ class CreateSessionService implements CreateSessionProvider
                 $payload['automatic_tax'] = ['enabled' => true];
             }
 
+            if (config('subscription.promotion_codes')) {
+                $payload['allow_promotion_codes'] = true;
+            }
+
             $session = Cashier::stripe()->checkout->sessions->create($payload);
         } catch (ApiErrorException $e) {
             return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);

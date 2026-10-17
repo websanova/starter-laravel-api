@@ -66,6 +66,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Promotion Codes
+    |--------------------------------------------------------------------------
+    |
+    | Lets the user enter a promotion code in the checkout session. The code is
+    | applied and validated by the billing provider, so this flag decides
+    | nothing more than whether the session allows one.
+    |
+    */
+
+    'promotion_codes' => (bool) env('SUBSCRIPTION_PROMOTION_CODES', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Return Endpoints
     |--------------------------------------------------------------------------
     |

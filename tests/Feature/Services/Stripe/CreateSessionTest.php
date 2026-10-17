@@ -89,3 +89,27 @@ test('user with a card on file is not asked for an address', function () {
 
     expect($session->billing_address_collection)->toBeNull();
 })->group('stripe');
+
+test('session allows promotion codes when the flag is on', function () {
+    config(['subscription.promotion_codes' => true]);
+
+    $user = stripeSandboxUser();
+
+    $result = app(CreateSessionService::class)->handle($user, createSessionPlan(), PlanInterval::Monthly);
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
+
+    expect($session->allow_promotion_codes)->toBeTrue();
+})->group('stripe');
+
+test('session does not allow promotion codes when the flag is off', function () {
+    config(['subscription.promotion_codes' => false]);
+
+    $user = stripeSandboxUser();
+
+    $result = app(CreateSessionService::class)->handle($user, createSessionPlan(), PlanInterval::Monthly);
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
+
+    expect($session->allow_promotion_codes)->toBeFalsy();
+})->group('stripe');

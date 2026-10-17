@@ -70,9 +70,6 @@ return [
     'plan' => [
         'limit_reached' => 'Vous avez atteint la limite de cette fonctionnalite pour votre forfait actuel.',
     ],
-    'promotion_code' => [
-        'valid' => 'Code promotionnel applique.',
-    ],
     'subscription' => [
         'cancelled' => 'Abonnement annule avec succes.',
         'created' => 'Abonnement cree avec succes.',

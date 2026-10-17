@@ -58,8 +58,6 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::patch('/profile', [App\Http\Controllers\App\ProfileController::class, 'update']);
         Route::delete('/profile', [App\Http\Controllers\App\ProfileController::class, 'destroy']);
 
-        Route::post('/promotion-code/verify', [App\Http\Controllers\App\PromotionCodeVerifyController::class, 'store']);
-
         Route::post('/subscription/cancel', [App\Http\Controllers\App\SubscriptionCancelController::class, 'store']);
         Route::post('/subscription/resume', [App\Http\Controllers\App\SubscriptionResumeController::class, 'store']);
         Route::post('/subscription/session', [App\Http\Controllers\App\SubscriptionSessionController::class, 'store']);

@@ -20,6 +20,7 @@ class SettingController extends Controller
                 'subscription_automatic_tax' => config('subscription.automatic_tax'),
                 'subscription_card_upfront' => config('subscription.require_card_upfront'),
                 'subscription_mode' => config('subscription.mode')->value,
+                'subscription_promotion_codes' => config('subscription.promotion_codes'),
                 'subscription_trial_days' => config('subscription.trial_days'),
                 'verification_code_length' => config('verification.code_length'),
                 'verification_required' => collect(VerificationChannel::cases())

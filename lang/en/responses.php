@@ -70,9 +70,6 @@ return [
     'plan' => [
         'limit_reached' => 'You have reached the limit for this feature on your current plan.',
     ],
-    'promotion_code' => [
-        'valid' => 'Promotion code applied.',
-    ],
     'subscription' => [
         'already_subscribed' => 'You already have an active subscription.',
         'cancelled' => 'Subscription cancelled successfully.',
