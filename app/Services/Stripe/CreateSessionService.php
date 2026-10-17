@@ -4,6 +4,7 @@ namespace App\Services\Stripe;
 
 use App\Contracts\CreateSessionProvider;
 use App\Enums\PlanInterval;
+use App\Enums\SubscriptionMode;
 use App\Models\Plan;
 use App\Models\User;
 use App\Support\ServiceResult;
@@ -125,6 +126,15 @@ class CreateSessionService implements CreateSessionProvider
 
             if (config('subscription.promotion_codes')) {
                 $payload['allow_promotion_codes'] = true;
+            }
+
+            /**
+             * trial_end rather than trial_period_days, since a user carrying a
+             * partial trial keeps whatever is left of it and a whole number of
+             * days cannot say that.
+             */
+            if (config('subscription.mode') === SubscriptionMode::Trial && $trialEnd = $user->resolveTrialEnd($plan)) {
+                $payload['subscription_data']['trial_end'] = $trialEnd->getTimestamp();
             }
 
             $session = Cashier::stripe()->checkout->sessions->create($payload);

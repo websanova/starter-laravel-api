@@ -3,6 +3,7 @@
 uses()->group('service.stripe.create-session');
 
 use App\Enums\PlanInterval;
+use App\Enums\SubscriptionMode;
 use App\Models\Plan;
 use App\Models\Price;
 use App\Services\Stripe\CreateSessionService;
@@ -112,4 +113,55 @@ test('session does not allow promotion codes when the flag is off', function () 
     $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
 
     expect($session->allow_promotion_codes)->toBeFalsy();
+})->group('stripe');
+
+/**
+ * The plan from createSessionPlan() is the lowest tier that is not free, which
+ * makes it the trial plan. A trial leaves nothing due today, so the session
+ * total is what shows whether one was sent.
+ */
+test('session has nothing due today when the user has trial days left on the trial plan', function () {
+    config(['subscription.mode' => SubscriptionMode::Trial]);
+
+    $user = stripeSandboxUser();
+
+    $user->update(['trial_ends_at' => now()->addDays(7)]);
+
+    $result = app(CreateSessionService::class)->handle($user, createSessionPlan(), PlanInterval::Monthly);
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
+
+    expect($session->amount_total)->toBe(0);
+})->group('stripe');
+
+test('session charges the total when the mode is not trial', function () {
+    config(['subscription.mode' => SubscriptionMode::Freemium]);
+
+    $user = stripeSandboxUser();
+
+    $user->update(['trial_ends_at' => now()->addDays(7)]);
+
+    $result = app(CreateSessionService::class)->handle($user, createSessionPlan(), PlanInterval::Monthly);
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
+
+    expect($session->amount_total)->toBeGreaterThan(0);
+})->group('stripe');
+
+test('session charges the total when the plan is not the trial plan', function () {
+    config(['subscription.mode' => SubscriptionMode::Trial]);
+
+    $user = stripeSandboxUser();
+
+    $user->update(['trial_ends_at' => now()->addDays(7)]);
+
+    $plan = createSessionPlan();
+
+    $plan->update(['tier' => 5]);
+
+    $result = app(CreateSessionService::class)->handle($user, $plan, PlanInterval::Monthly);
+
+    $session = Cashier::stripe()->checkout->sessions->retrieve($result->data['id']);
+
+    expect($session->amount_total)->toBeGreaterThan(0);
 })->group('stripe');

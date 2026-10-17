@@ -109,6 +109,15 @@ class Plan extends Model
     }
 
     /**
+     * Get the plan a trial applies to from cache, the lowest tier that is not
+     * free. The cache is ordered by tier, so the first match is the lowest.
+     */
+    public static function trial(): ?self
+    {
+        return static::cached()->first(fn (Plan $plan) => $plan->slug !== PlanTier::Free->value);
+    }
+
+    /**
      * Get the plans that may be listed publicly. Required mode has no free
      * tier to offer, so it is withheld even when the plan remains active.
      */

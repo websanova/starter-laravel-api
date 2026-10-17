@@ -27,14 +27,20 @@ trait ManagesSubscription
 
     /**
      * Resolve the trial end date handed to Stripe when a subscription is
-     * created. An existing stamp decides on its own, carrying over untouched so
-     * the clock never resets and granting nothing once it has passed, which is
+     * created. A trial only applies to the trial plan, so any other plan gets
+     * nothing, whatever is left of a stamped trial included. On the trial plan
+     * an existing stamp decides on its own, carrying over untouched so the
+     * clock never resets and granting nothing once it has passed, which is
      * what stops a second trial. Only an unstamped user reaches the fresh
      * window, and only when they were paywalled from registration and have
      * never subscribed before.
      */
-    public function resolveTrialEnd(): ?Carbon
+    public function resolveTrialEnd(Plan $plan): ?Carbon
     {
+        if ($plan->isNot(Plan::trial())) {
+            return null;
+        }
+
         if ($this->trial_ends_at) {
             return $this->trial_ends_at->isFuture() ? $this->trial_ends_at : null;
         }

@@ -10,10 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Cashier;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
+use Stripe\PaymentMethod as StripePaymentMethod;
 use Stripe\Subscription as StripeSubscription;
 
 class SyncSubscriptionService implements SyncSubscriptionProvider
 {
+    public function __construct(private ReplacePaymentMethodService $replacePaymentMethod)
+    {
+    }
+
     /**
      * Write every local row a completed checkout session accounts for, all of
      * it read off the one session. The subscription and the card that paid for
@@ -75,6 +80,18 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
             $this->commitUser($user);
         });
 
+        /**
+         * After the transaction because the repoint reads the subscription row
+         * it just wrote, and outside it because it reaches Stripe.
+         */
+        if ($session->subscription->status === StripeSubscription::STATUS_TRIALING) {
+            try {
+                $this->commitTrialPaymentMethod($user, $paymentMethod);
+            } catch (ApiErrorException $e) {
+                return ServiceResult::error('provider_unavailable', ['debug' => [$e->getMessage()]]);
+            }
+        }
+
         return ServiceResult::success();
     }
 
@@ -107,6 +124,25 @@ class SyncSubscriptionService implements SyncSubscriptionProvider
                 'quantity' => $item->quantity ?? null,
             ],
         );
+    }
+
+    /**
+     * Point the customer and the subscription at the card a trial was confirmed
+     * with. Nothing paid the $0 invoice, so there is no charge for Stripe to
+     * make either of them default off the back of, and they are set by hand.
+     *
+     * The subscription's own card is used when it carries one. Otherwise the
+     * card the user just entered is the newest one attached to the customer.
+     */
+    protected function commitTrialPaymentMethod(User $user, ?StripePaymentMethod $paymentMethod): void
+    {
+        $paymentMethodId = $paymentMethod?->id ?? $user->paymentMethods()->first()?->id;
+
+        if (!$paymentMethodId) {
+            return;
+        }
+
+        $this->replacePaymentMethod->handle($user, $paymentMethodId);
     }
 
     /**
