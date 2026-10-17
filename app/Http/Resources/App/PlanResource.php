@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\App;
 
+use App\Enums\SubscriptionMode;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,6 +17,7 @@ class PlanResource extends JsonResource
         return [
             'features' => $this->features,
             'id' => $this->id,
+            'is_trial' => config('subscription.mode') === SubscriptionMode::Trial && $this->is(Plan::trial()),
             'name' => $this->display_name,
             'prices' => (object) $this->prices->mapWithKeys(fn ($price) => [
                 $price->interval->value => [

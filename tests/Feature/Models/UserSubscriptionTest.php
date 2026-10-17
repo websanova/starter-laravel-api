@@ -112,6 +112,13 @@ test('trial plan is the lowest tier that is not free', function () {
     expect(Plan::trial()->id)->toBe($lower->id);
 });
 
+test('trial plan skips plans that are inactive or private', function () {
+    Plan::factory()->inactive()->create(['tier' => 0]);
+    Plan::factory()->private()->create(['tier' => 0]);
+
+    expect(Plan::trial()->slug)->toBe('pro');
+});
+
 test('resolveTrialEnd carries a remaining trial onto the trial plan', function () {
     $user = User::factory()->create(['trial_ends_at' => now()->addDays(5)]);
 

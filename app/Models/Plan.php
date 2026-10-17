@@ -110,11 +110,16 @@ class Plan extends Model
 
     /**
      * Get the plan a trial applies to from cache, the lowest tier that is not
-     * free. The cache is ordered by tier, so the first match is the lowest.
+     * free. Only active, public plans count, since a plan nobody can see would
+     * leave every listed plan without a trial. The cache is ordered by tier, so
+     * the first match is the lowest.
      */
     public static function trial(): ?self
     {
-        return static::cached()->first(fn (Plan $plan) => $plan->slug !== PlanTier::Free->value);
+        return static::cached()
+            ->where('is_active', true)
+            ->where('is_public', true)
+            ->first(fn (Plan $plan) => $plan->slug !== PlanTier::Free->value);
     }
 
     /**
