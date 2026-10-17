@@ -46,8 +46,9 @@ The starter-flows repo is a separate set of feature specs, implementation-agnost
 * **Sample CRUD (Bookmarks & Tags)** - Reference resources showing relationships, ownership scoping, filtering, sorting, and pagination.
 * **Plans** - Freemium, trial, or required modes with prices synced from the provider and optional automatic tax.
 * **Subscriptions** - Subscribe, swap, cancel, and resume with multiple billing intervals, client-built Stripe checkout, and enforced feature limits.
+* **Trials** - Free trial on the lowest paid plan with the card collected up front, remaining days carried into the subscription, and the plan list flagging which plan carries it.
 * **Billing Providers (Cashier/Stripe)** - Stripe via Cashier out of the box, swappable without touching the rest of the app.
-* **Promotion Codes** - Validated against the provider and entered in checkout, with admin apply/clear on existing subscriptions.
+* **Promotion Codes** - Validated and applied by the provider in checkout, nothing stored locally, toggled by config.
 * **Webhooks (Cashier/Stripe)** - Idempotent webhooks that back up client sync and catch outside changes, with local dev needing no tunnel.
 * **Roles and Permissions (Spatie)** - Super and admin roles with coarse permissions and per-target checks.
 * **Stats** - Scheduled stats grouped by resource with date range breakdowns and per-plan subscription stats.
