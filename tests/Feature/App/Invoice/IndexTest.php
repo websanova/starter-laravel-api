@@ -42,13 +42,12 @@ test('user can list their invoices', function () {
     $response->assertStatus(200)
         ->assertJsonCount(1, 'data')
         ->assertJsonStructure([
-            'data' => [['amount', 'currency', 'date', 'download_url', 'id', 'number', 'status']],
+            'data' => [['amount', 'currency', 'date', 'id', 'number', 'status']],
             'meta' => ['current_page', 'per_page', 'total'],
         ])
         ->assertJsonPath('data.0.id', $invoice->id)
         ->assertJsonPath('data.0.amount', 2500)
         ->assertJsonPath('data.0.status', 'paid')
-        ->assertJsonPath('data.0.download_url', route('invoices.download', ['invoice' => $invoice->id]))
         ->assertJsonPath('meta.per_page', 15)
         ->assertJsonPath('meta.total', 1);
 })->group('stripe');

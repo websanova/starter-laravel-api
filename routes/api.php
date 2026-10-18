@@ -7,6 +7,7 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 // Named for cashier:webhook, which resolves this URL by route name when run without --url.
 Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
+Route::get('/invoices/{invoice}/download', [App\Http\Controllers\App\InvoiceDownloadController::class, 'show'])->middleware('signed')->name('invoices.download');
 Route::get('/oauth/consent', [App\Http\Controllers\App\OAuthConsentController::class, 'show']);
 Route::get('/plans', [App\Http\Controllers\App\PlanController::class, 'index']);
 Route::get('/settings', [App\Http\Controllers\App\SettingController::class, 'show']);
@@ -43,7 +44,7 @@ Route::middleware(['auth:sanctum', 'track-active'])->group(function () {
         Route::post('/email', [App\Http\Controllers\App\EmailController::class, 'store']);
 
         Route::get('/invoices', [App\Http\Controllers\App\InvoiceController::class, 'index']);
-        Route::get('/invoices/{invoice}/download', [App\Http\Controllers\App\InvoiceDownloadController::class, 'show'])->name('invoices.download');
+        Route::post('/invoices/{invoice}/download', [App\Http\Controllers\App\InvoiceDownloadController::class, 'store']);
 
         Route::get('/notifications', [App\Http\Controllers\App\NotificationController::class, 'index']);
         Route::post('/notifications/read', [App\Http\Controllers\App\NotificationReadController::class, 'store']);

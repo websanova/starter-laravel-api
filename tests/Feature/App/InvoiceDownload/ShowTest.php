@@ -3,51 +3,74 @@
 uses()->group('app.invoice-download.show');
 
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 afterEach(fn () => stripeSandboxFlush());
 
-test('unauthenticated user cannot download an invoice', function () {
-    $response = $this->getJson('/invoices/in_123/download');
-
-    $response->assertStatus(401);
-});
-
-test('user without a stripe customer cannot download an invoice', function () {
+test('unsigned link is refused', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->getJson('/invoices/in_123/download');
+    $response = $this->getJson("/invoices/in_123/download?user={$user->id}");
+
+    $response->assertStatus(403);
+});
+
+test('signed link for a user without a stripe customer is not found', function () {
+    $user = User::factory()->create();
+
+    $url = URL::temporarySignedRoute('invoices.download', now()->addMinutes(5), [
+        'invoice' => 'in_123',
+        'user' => $user->id,
+    ]);
+
+    $response = $this->getJson($url);
 
     $response->assertStatus(404)
         ->assertJsonPath('error', 'not_found');
 });
 
-test('user cannot download an invoice that does not exist', function () {
+test('signed link for an invoice that does not exist is not found', function () {
     $user = stripeSandboxUser();
 
-    $response = $this->actingAs($user)->getJson('/invoices/in_doesnotexist/download');
+    $url = URL::temporarySignedRoute('invoices.download', now()->addMinutes(5), [
+        'invoice' => 'in_doesnotexist',
+        'user' => $user->id,
+    ]);
+
+    $response = $this->getJson($url);
 
     $response->assertStatus(404)
         ->assertJsonPath('error', 'not_found');
 })->group('stripe');
 
-test('user cannot download another customers invoice', function () {
+test('signed link cannot download another customers invoice', function () {
     $user = stripeSandboxUser();
     $other = stripeSandboxUser();
 
     $invoice = stripeSandboxInvoice($other);
 
-    $response = $this->actingAs($user)->getJson("/invoices/{$invoice->id}/download");
+    $url = URL::temporarySignedRoute('invoices.download', now()->addMinutes(5), [
+        'invoice' => $invoice->id,
+        'user' => $user->id,
+    ]);
+
+    $response = $this->getJson($url);
 
     $response->assertStatus(404)
         ->assertJsonPath('error', 'not_found');
 })->group('stripe');
 
-test('user can download their invoice as a pdf', function () {
+test('signed link downloads the invoice as a pdf without a token', function () {
     $user = stripeSandboxUser();
 
     $invoice = stripeSandboxInvoice($user);
 
-    $response = $this->actingAs($user)->get("/invoices/{$invoice->id}/download");
+    $url = URL::temporarySignedRoute('invoices.download', now()->addMinutes(5), [
+        'invoice' => $invoice->id,
+        'user' => $user->id,
+    ]);
+
+    $response = $this->get($url);
 
     $response->assertStatus(200)
         ->assertHeader('Content-Type', 'application/pdf');

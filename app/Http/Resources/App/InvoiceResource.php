@@ -19,7 +19,6 @@ class InvoiceResource extends JsonResource
             'amount' => $this->rawTotal(),
             'currency' => $this->currency,
             'date' => $this->date(),
-            'download_url' => route('invoices.download', ['invoice' => $this->id]),
             'id' => $this->id,
             'number' => $this->number,
             'status' => $this->status,
