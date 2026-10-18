@@ -75,5 +75,7 @@ test('signed link downloads the invoice as a pdf without a token', function () {
     $response->assertStatus(200)
         ->assertHeader('Content-Type', 'application/pdf');
 
-    expect($response->headers->get('Content-Disposition'))->toStartWith('attachment');
+    expect($response->headers->get('Content-Disposition'))
+        ->toStartWith('attachment')
+        ->toContain($invoice->date()->format('d_m_y') . '.pdf');
 })->group('stripe');

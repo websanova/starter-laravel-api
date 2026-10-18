@@ -9,6 +9,7 @@ use App\Http\Requests\App\InvoiceDownload\StoreRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class InvoiceDownloadController extends Controller
@@ -50,6 +51,8 @@ class InvoiceDownloadController extends Controller
             return $this->error($result, 'invoice', $result->error === 'not_found' ? 404 : 409);
         }
 
-        return $result->data->download();
+        $filename = Str::slug(config('app.name')) . '_' . $result->data->date()->format('d_m_y');
+
+        return $result->data->downloadAs($filename);
     }
 }
