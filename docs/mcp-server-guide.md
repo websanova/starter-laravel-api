@@ -6,7 +6,9 @@ This is separate from Boost's MCP server, which is local dev tooling for agents 
 
 ## Servers
 
-The API serves no HTML, so a frontend has to serve `/oauth/authorize` on `FRONTEND_APP_URL` and `FRONTEND_ADMIN_URL` before the login can finish.
+The API serves no HTML, so a frontend has to serve `/oauth/authorize` on `FRONTEND_APP_URL` and `FRONTEND_ADMIN_URL` before the login can finish. Both come from `.env`, and `.env.example` sets them to `http://localhost:5173` and `http://localhost:5174`.
+
+Passport also needs its encryption keys in `storage`. Without them the servers fail with an "Invalid key supplied" error. See the [Startup Guide](startup-guide.md) for generating them.
 
 Adding the servers as a connector through a client app like Claude Desktop won't work for local dev, since it doesn't work with `localhost` and requires https.
 
@@ -42,6 +44,26 @@ curl http://localhost:8000/.well-known/oauth-authorization-server/admin/mcp
 ```
 
 The first pair says which authorization server protects each MCP server. The second pair lists the authorize, token and registration endpoints.
+
+The server URLs themselves only accept `POST`, so opening `/mcp` in a browser returns a 405 by design. A `POST` without a token returning a 401 is the quick check that the server is up.
+
+```bash
+curl -i -X POST -H 'Accept: application/json' http://localhost:8000/mcp
+```
+
+## Live
+
+Set `FRONTEND_APP_URL` and `FRONTEND_ADMIN_URL` to the real frontend URLs. They fall back to the `localhost` defaults when unset, so the discovery metadata would send clients to a `localhost` login page.
+
+Generate a fresh key pair for live rather than copying the local one. Either run `php artisan passport:keys` once on the server, or set `PASSPORT_PRIVATE_KEY` and `PASSPORT_PUBLIC_KEY` in the environment with newlines written as `\n`. Plain `passport:keys` fails once the keys exist, and `--force` replaces them, which invalidates every issued token, so never add it to a deploy.
+
+On Forge with zero downtime deploys, `storage` is shared across releases, so the key files persist. That makes a guarded line in the deploy script safe, placed after `storage:link`.
+
+```bash
+[ -f storage/oauth-private.key ] || $FORGE_PHP artisan passport:keys
+```
+
+The guard only holds if the release's `storage` is a symlink to the shared directory. If it is a real directory the keys regenerate on every deploy, so use the env vars instead.
 
 ## Inspector
 

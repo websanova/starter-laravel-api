@@ -27,6 +27,12 @@ Generate the app key and migrate.
 ./dev artisan db:seed
 ```
 
+Generate the Passport encryption keys, which the MCP servers use to sign and verify tokens. They are gitignored, so every fresh clone needs them.
+
+```bash
+./dev artisan passport:keys
+```
+
 The API runs at `http://localhost:8000`. Migration seeds `super@starter.com` with `testtest`, which doesn't require a password change on first login, to keep things simple. After a production deploy, update that password right away, or set `is_password_reset_required` to `true` in `RoleAndPermissionSeeder` before migrating to force it.
 
 The seed is local test data and should never run in production. It creates `admin@starter.com` and the `small@`, `medium@` and `large@starter.com` accounts on the same password, along with a couple hundred random users so there's something to page through.
