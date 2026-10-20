@@ -75,4 +75,16 @@ return [
 
     'refresh_tokens_expire_in' => (int) env('PASSPORT_REFRESH_TOKENS_EXPIRE_IN', 30),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Unused Client Lifetime
+    |--------------------------------------------------------------------------
+    |
+    | A client registered through /oauth/register that never got a token
+    | expires in hours. Only needs to outlast a user finishing the login page.
+    |
+    */
+
+    'unused_clients_expire_in' => (int) env('PASSPORT_UNUSED_CLIENTS_EXPIRE_IN', 24),
+
 ];
