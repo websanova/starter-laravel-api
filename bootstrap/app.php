@@ -19,6 +19,7 @@ use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Str;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -47,7 +48,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(fn () => true);
 
-        $exceptions->renderable(function (AuthorizationException $e) {
+        $exceptions->renderable(function (AccessDeniedHttpException $e) {
+            if (! $e->getPrevious() instanceof AuthorizationException) {
+                return null;
+            }
+
             return response()->json([
                 'error' => 'forbidden',
                 'message' => __('responses.auth.forbidden'),
