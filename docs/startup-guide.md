@@ -89,7 +89,7 @@ Grab the webhook signing secret from the stripe container logs.
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 ```
 
-Create a product in Stripe with prices using the lookup keys `pro_monthly` and `pro_yearly`, then sync.
+Create a product in Stripe with prices using the lookup keys `starter_pro_monthly` and `starter_pro_yearly`, then sync.
 
 ```bash
 ./dev artisan plans:sync

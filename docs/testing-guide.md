@@ -20,7 +20,7 @@ A sandbox is a full isolated copy of a Stripe account with its own keys, data an
 
 ## Lookup Keys
 
-Two prices need lookup keys set on the Stripe side, `pro_monthly` and `pro_yearly`. Those are the same keys `PlanSeeder` writes, and the tests resolve prices by looking them up rather than by id, so nothing works out of the box until they match. Anything else in the sandbox is ignored.
+Two prices need lookup keys set on the Stripe side, `starter_pro_monthly` and `starter_pro_yearly`. Those are the same keys `PlanSeeder` writes, and the tests resolve prices by looking them up rather than by id, so nothing works out of the box until they match. Anything else in the sandbox is ignored.
 
 ## Environment
 

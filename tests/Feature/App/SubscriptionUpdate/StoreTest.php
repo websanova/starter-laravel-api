@@ -19,7 +19,7 @@ function subscriptionUpdatePlan(): Plan
 {
     $plan = Plan::factory()->create();
 
-    foreach (['pro_monthly' => PlanInterval::Monthly, 'pro_yearly' => PlanInterval::Yearly] as $lookupKey => $interval) {
+    foreach (['starter_pro_monthly' => PlanInterval::Monthly, 'starter_pro_yearly' => PlanInterval::Yearly] as $lookupKey => $interval) {
         $price = Cashier::stripe()->prices->all(['lookup_keys' => [$lookupKey], 'limit' => 1])->data[0];
 
         Price::factory()->for($plan)->create([

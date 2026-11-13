@@ -15,7 +15,7 @@ afterEach(fn () => stripeSandboxFlush());
  */
 function trialingSandboxSubscription(User $user): string
 {
-    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['pro_monthly'], 'limit' => 1])->data[0];
+    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['starter_pro_monthly'], 'limit' => 1])->data[0];
 
     $stripeSubscription = Cashier::stripe()->subscriptions->create([
         'customer' => $user->stripe_id,

@@ -33,7 +33,7 @@ test('the subscription is repointed at the new card', function () {
 
     $user->updateDefaultPaymentMethod($old->id);
 
-    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['pro_monthly'], 'limit' => 1])->data[0];
+    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['starter_pro_monthly'], 'limit' => 1])->data[0];
 
     $stripeSubscription = Cashier::stripe()->subscriptions->create([
         'customer' => $user->stripe_id,

@@ -52,7 +52,7 @@ test('user with an outstanding payment cannot open a checkout session', function
 test('user without a subscription can open a checkout session', function () {
     $user = stripeSandboxUser();
 
-    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['pro_monthly'], 'limit' => 1])->data[0];
+    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['starter_pro_monthly'], 'limit' => 1])->data[0];
 
     $plan = Plan::factory()->create();
 

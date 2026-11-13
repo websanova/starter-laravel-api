@@ -43,12 +43,12 @@ class PlanSeeder extends Seeder
         );
 
         $pro->prices()->firstOrCreate(
-            ['lookup_key' => 'pro_monthly'],
+            ['lookup_key' => 'starter_pro_monthly'],
             ['interval' => PlanInterval::Monthly->value],
         );
 
         $pro->prices()->firstOrCreate(
-            ['lookup_key' => 'pro_yearly'],
+            ['lookup_key' => 'starter_pro_yearly'],
             ['interval' => PlanInterval::Yearly->value],
         );
     }

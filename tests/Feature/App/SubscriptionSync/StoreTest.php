@@ -14,7 +14,7 @@ afterEach(fn () => stripeSandboxFlush());
  */
 function subscriptionSyncSession(User $user): string
 {
-    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['pro_monthly'], 'limit' => 1])->data[0];
+    $price = Cashier::stripe()->prices->all(['lookup_keys' => ['starter_pro_monthly'], 'limit' => 1])->data[0];
 
     return Cashier::stripe()->checkout->sessions->create([
         'ui_mode' => 'elements',
